@@ -3,7 +3,7 @@
     <Row>
       <Col>
       <Card>
-        <Row class="operation">
+        <Row class="operation" slot="title">
         <Button @click="addForm" type="primary" icon="md-add">添加</Button>
         <Button @click="editForm" icon="md-create" :disabled="disabled01">编辑</Button>
         </Row>

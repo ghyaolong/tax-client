@@ -21,7 +21,7 @@
     </Col>
     </Row>
     <Modal title="税金申请表单" scrollable v-model="showTaxes" :mask-closable='false' :width="1220" style="overflow-y:scroll;">
-          <main>
+          <main v-if="tableList.length>0">
              <table width="1182" height="625" class="taxesTables">
                 <tbody>
                   <tr>
@@ -67,10 +67,10 @@
                   <td width="72">{{item.taxPaid}}</td>
                   <td width="72">{{item.deadline}}</td>
                   <td width="72">{{item.overduePayment}}</td>
-                  <td width="72">{{item.taxesOrderDilay}}</td>
-                  <td width="117">{{item.taxesOrderAmount}}</td>
+                  <td width="72">{{item.paymentCertificate}}</td>
+                  <td width="117">{{item.paymentCertificatePath}}</td>
                   <td width="109">{{item.taxesOrderTime}}</td>
-                  <td width="132">{{item.taxesUpload}}</td>
+                  <td width="132">{{item.isUploadTaxReturns}}</td>
                   <td width="140">{{item.remarks}}</td>
                 </tr>
                 <tr>
@@ -326,26 +326,26 @@ export default {
         } */
       ],
       data: [
-        {
-          id: "1ca4b097e00444278222e2818a422e57",
-          companyName: "元活该哈哈",
-          saveTime: "2018-01-08"
-        },
-        {
-          id: "240c398c12a14d23ace250a8ec91cd96",
-          companyName: "元活该哈哈",
-          saveTime: "2018-01-08"
-        },
-        {
-          id: "240c398c12a14d23ace250a8ec91cd96",
-          companyName: "元活该哈哈",
-          saveTime: "2018-01-08"
-        },
-        {
-          id: "240c398c12a14d23ace250a8ec91cd96",
-          companyName: "元活该哈哈",
-          saveTime: "2018-01-08"
-        }
+        // {
+        //   id: "1ca4b097e00444278222e2818a422e57",
+        //   companyName: "元活该哈哈",
+        //   saveTime: "2018-01-08"
+        // },
+        // {
+        //   id: "240c398c12a14d23ace250a8ec91cd96",
+        //   companyName: "元活该哈哈",
+        //   saveTime: "2018-01-08"
+        // },
+        // {
+        //   id: "240c398c12a14d23ace250a8ec91cd96",
+        //   companyName: "元活该哈哈",
+        //   saveTime: "2018-01-08"
+        // },
+        // {
+        //   id: "240c398c12a14d23ace250a8ec91cd96",
+        //   companyName: "元活该哈哈",
+        //   saveTime: "2018-01-08"
+        // }
       ],
       pageNumber: 1,
       pageSize: 10,
