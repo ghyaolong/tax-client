@@ -147,90 +147,76 @@ export default {
   data() {
     return {
       tableList:[
-        {
-          taxPeriod:'2018-10',
-          taxes:'房产税',
-          payableTax:600,
-          lateFeePayable:10,
-          taxPaid:610,
-          deadline:'2018-12-01',
-          overduePayment:650,
-          taxesOrderDilay:50,
-          taxesOrderAmount:700,
-          taxesOrderTime:'2018-12-15',
-          taxesUpload:'上传/预览/删除',
-          remarks:'测试数据'
-        },
-        {
-          taxPeriod:'2018-10',
-          taxes:'房产税',
-          payableTax:600,
-          lateFeePayable:10,
-          taxPaid:610,
-          deadline:'2018-12-01',
-          overduePayment:650,
-          taxesOrderDilay:50,
-          taxesOrderAmount:700,
-          taxesOrderTime:'2018-12-15',
-          taxesUpload:'上传/预览/删除',
-          remarks:'测试数据'
-        },
-        {
-          taxPeriod:'2018-10',
-          taxes:'房产税',
-          payableTax:600,
-          lateFeePayable:10,
-          taxPaid:610,
-          deadline:'2018-12-01',
-          overduePayment:650,
-          taxesOrderDilay:50,
-          taxesOrderAmount:700,
-          taxesOrderTime:'2018-12-15',
-          taxesUpload:'上传/预览/删除',
-          remarks:'测试数据'
-        },
-        {
-          taxPeriod:'2018-10',
-          taxes:'房产税',
-          payableTax:600,
-          lateFeePayable:10,
-          taxPaid:610,
-          deadline:'2018-12-01',
-          overduePayment:650,
-          taxesOrderDilay:50,
-          taxesOrderAmount:700,
-          taxesOrderTime:'2018-12-15',
-          taxesUpload:'上传/预览/删除',
-          remarks:'测试数据'
-        },
-        {
-          taxPeriod:'2018-10',
-          taxes:'房产税',
-          payableTax:600,
-          lateFeePayable:10,
-          taxPaid:610,
-          deadline:'2018-12-01',
-          overduePayment:650,
-          taxesOrderDilay:50,
-          taxesOrderAmount:700,
-          taxesOrderTime:'2018-12-15',
-          taxesUpload:'上传/预览/删除',
-          remarks:'测试数据'
-        },
-        {
-          taxPeriod:'2018-10',
-          taxes:'房产税',
-          payableTax:600,
-          lateFeePayable:10,
-          taxPaid:610,
-          deadline:'2018-12-01',
-          overduePayment:650,
-          taxesOrderDilay:50,
-          taxesOrderAmount:700,
-          taxesOrderTime:'2018-12-15',
-          taxesUpload:'上传/预览/删除',
-          remarks:'测试数据'
-        }
+        // {
+        //   taxPeriod:'2018-10',
+        //   taxes:'房产税',
+        //   payableTax:600,
+        //   lateFeePayable:10,
+        //   taxPaid:610,
+        //   deadline:'2018-12-01',
+        //   overduePayment:650,
+        //   taxesOrderDilay:50,
+        //   taxesOrderAmount:700,
+        //   taxesOrderTime:'2018-12-15',
+        //   taxesUpload:'上传/预览/删除',
+        //   remarks:'测试数据'
+        // },
+        // {
+        //   taxPeriod:'2018-10',
+        //   taxes:'房产税',
+        //   payableTax:600,
+        //   lateFeePayable:10,
+        //   taxPaid:610,
+        //   deadline:'2018-12-01',
+        //   overduePayment:650,
+        //   taxesOrderDilay:50,
+        //   taxesOrderAmount:700,
+        //   taxesOrderTime:'2018-12-15',
+        //   taxesUpload:'上传/预览/删除',
+        //   remarks:'测试数据'
+        // },
+        // {
+        //   taxPeriod:'2018-10',
+        //   taxes:'房产税',
+        //   payableTax:600,
+        //   lateFeePayable:10,
+        //   taxPaid:610,
+        //   deadline:'2018-12-01',
+        //   overduePayment:650,
+        //   taxesOrderDilay:50,
+        //   taxesOrderAmount:700,
+        //   taxesOrderTime:'2018-12-15',
+        //   taxesUpload:'上传/预览/删除',
+        //   remarks:'测试数据'
+        // },
+        // {
+        //   taxPeriod:'2018-10',
+        //   taxes:'房产税',
+        //   payableTax:600,
+        //   lateFeePayable:10,
+        //   taxPaid:610,
+        //   deadline:'2018-12-01',
+        //   overduePayment:650,
+        //   taxesOrderDilay:50,
+        //   taxesOrderAmount:700,
+        //   taxesOrderTime:'2018-12-15',
+        //   taxesUpload:'上传/预览/删除',
+        //   remarks:'测试数据'
+        // },
+        // {
+        //   taxPeriod:'2018-10',
+        //   taxes:'房产税',
+        //   payableTax:600,
+        //   lateFeePayable:10,
+        //   taxPaid:610,
+        //   deadline:'2018-12-01',
+        //   overduePayment:650,
+        //   taxesOrderDilay:50,
+        //   taxesOrderAmount:700,
+        //   taxesOrderTime:'2018-12-15',
+        //   taxesUpload:'上传/预览/删除',
+        //   remarks:'测试数据'
+        // }
       ],
       showTaxes:false,
       loading: false,
@@ -424,7 +410,7 @@ export default {
     }
   },
   mounted() {
-    // this.init();
+    this.init();
   }
 };
 </script>
