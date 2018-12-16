@@ -100,6 +100,12 @@ export const getCompanyListData = params => {
 export const getCompanyByName = params => {
     return postRequest('/company/getByName', params)
 }
+
+// 添加税种
+export const getAssignTaxes = params => {
+    return postRequest('/company/assignTaxes', params)
+}
+
 // 添加公司
 export const addCompany = params => {
     return postRequest('/company/add', params)
@@ -345,6 +351,12 @@ export const taxReadyHandle = params => {
 export const taxAlreadyHandle = params => {
     return postRequest('/tax/alreadyHandle', params)
 }
+
+//查询流程详情
+export const getTaxAuditLog = (flowNum,params) => {
+    return getRequest(`/tax/getTaxAuditLog/${flowNum}`, params)
+}
+
 // 补充税金申请
 export const taxReplenishment = params => {
     return postRequest('/tax/replenishment', params)
@@ -370,11 +382,21 @@ export const previewFile = name => {
 export const getFilesList = params => {
     return postRequest('/material/getAllPage', params);
 }
+// 增加调度 
+export const addSchedualList = params => {
+    return postRequest('/schedual/add', params)
+}
+
+// 编辑调度 
+export const editSchedualList = params => {
+    return postRequest('/schedual/edit', params)
+}
 
 // 查询调度
 export const getSchedualList = params => {
     return postRequest('/schedual/getAllByPage', params)
 }
+
 // 暂停调度
 export const schedualPause = params => {
     return postRequest('/schedual/pause', params)

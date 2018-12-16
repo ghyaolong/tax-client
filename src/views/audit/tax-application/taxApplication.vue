@@ -632,7 +632,7 @@ export default {
     },
     /* 选择公司后获取对应的税种等信息 */
     changeCompany(company={name: '', label:''}) {
-      debugger
+      // debugger
       this.loading = true;
       getCompanyByName({name: company.label})
         .then(res => {
@@ -743,7 +743,7 @@ export default {
       }).finally(() => {
         this.loading = false;
       })
-      this.handleReset('form')
+      // this.handleReset('form')
       this.data = []
     },
     handleReset(formName) {

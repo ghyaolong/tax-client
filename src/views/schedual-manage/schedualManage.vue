@@ -3,6 +3,10 @@
     <Row>
       <Col>
       <Card>
+        <Row class="operation">
+        <Button @click="addForm" type="primary" icon="md-add">添加</Button>
+        <Button @click="editForm" icon="md-create" :disabled="disabled01">编辑</Button>
+        </Row>
         <!-- <Form inline :label-width="90" class="search-form">
           <Form-item label="公司名称" prop="company">
             <Select v-model="company" filterable style="width: 200px" label-in-value>
@@ -24,7 +28,7 @@
           </Form-item>
         </Form> -->
     <Row>
-      <Table :loading="loading" border :columns="columns" 
+      <Table highlight-row @on-current-change="currentChange" :loading="loading" border :columns="columns" 
       :data="data" ref="table" sortable="custom" ></Table>
     </Row>
     <Row type="flex" justify="end" class="page">
@@ -33,21 +37,81 @@
     </Card>
     </Col>
     </Row>
+    <Modal :title="modalTitle" :mask-closable='false' v-model="showModal" >
+                <Form 
+                    ref="formCustom"
+                    :model="formCustom" 
+                    :label-width="100" 
+                    label-position="right"
+                    :rules="ruleCustom"
+                    style="width:450px"
+                >
+                    <FormItem label="调度类名称" prop="jobClassName">
+                        <Input  v-model="formCustom.jobClassName" placeholder="请输入调度类名称" />
+                    </FormItem>
+                    <FormItem label="备注" prop="description">
+                        <Input  v-model="formCustom.description" placeholder="请输入备注" />
+                    </FormItem>
+                    <FormItem label="corn表达式" prop="cronExpression">
+                        <Input  v-model="formCustom.cronExpression" placeholder="请输入corn表达式" />
+                    </FormItem>
+                    <FormItem label="状态" prop="status">
+                      <i-switch size="large" v-model="addStatus" @on-change="changeEditSwitch">
+                        <span slot="open">启用</span>
+                        <span slot="close">禁用</span>
+                      </i-switch>
+                    </FormItem>
+                </Form>
+                <div slot="footer">
+                <Button type="text" @click="handleReset">取消</Button>
+                <Button type="primary" :loading="savePassLoading" @click="handleSubmit">提交</Button>
+            </div>
+    </Modal>
   </div>
 </template>
 
 <script>
-import { getSchedualList, schedualPause, schedualResume, schedualDel } from '@/api/index.js'
+import {
+  addSchedualList,
+  editSchedualList,
+  getSchedualList,
+  schedualPause,
+  schedualResume,
+  schedualDel
+} from "@/api/index.js";
 export default {
-  name: 'schedualManage',
+  name: "schedualManage",
   data() {
     return {
+      disabled01:true,
+      addStatus: true,
+      modalType: 0,
+      modalTitle: "",
+      showModal: false,
+      savePassLoading: false,
+      formCustom: {
+        cronExpression: "",
+        jobClassName: "",
+        description: "",
+        status: 0
+      },
+      ruleCustom: {
+        jobClassName: [
+          { required: true, message: "调度类名称不能为空", trigger: "blur" }
+        ],
+        description: [
+          { required: true, message: "备注不能为空", trigger: "blur" }
+        ],
+        cronExpression: [
+          { required: true, message: "corn表达式不能为空", trigger: "blur" }
+        ]
+      },
       loading: false,
       columns: [
         {
           type: "index",
           width: 80,
-          title: '序号',
+          title: "序号",
           align: "center",
           fixed: "left"
         },
@@ -77,22 +141,22 @@ export default {
           width: 180
         },
         {
-          title: '创建人',
+          title: "创建人",
           key: "createBy",
           width: 110
         },
         {
-          title: '创建时间',
+          title: "创建时间",
           key: "createTime",
           width: 110
         },
         {
-          title: '修改人',
+          title: "修改人",
           key: "updateBy",
           width: 110
         },
         {
-          title: '修改时间',
+          title: "修改时间",
           key: "updateTime",
           width: 110
         },
@@ -179,7 +243,7 @@ export default {
                   },
                   "暂停"
                 ),
-                 h(
+                h(
                   "Button",
                   {
                     props: {
@@ -196,7 +260,7 @@ export default {
                     }
                   },
                   "编辑"
-                ), 
+                ),
                 h(
                   "Button",
                   {
@@ -251,7 +315,7 @@ export default {
                 //     }
                 //   },
                 //   "编辑"
-                // ), 
+                // ),
                 h(
                   "Button",
                   {
@@ -276,24 +340,95 @@ export default {
       pageNumber: 1,
       pageSize: 10,
       total: 0
-    }
+    };
   },
   methods: {
+    currentChange(currentRow){
+      if (currentRow) {
+        this.disabled01 = false
+      }else {
+        this.disabled01 = true
+      }
+      this.formCustom = currentRow;
+      if (currentRow.status == -1) {
+        this.addStatus = false
+      }else if(currentRow.status == 0){
+        this.addStatus = true
+      }
+    },
+    changeEditSwitch(v) {
+      if (v) {
+        this.formCustom.status = 0;
+      } else {
+        this.formCustom.status = -1;
+      }
+    },
+    addForm() {
+      this.modalType = 0;
+      this.modalTitle = "添加调度管理";
+      this.$refs.formCustom.resetFields();
+      this.showModal = true;
+    },
+    editForm() {
+      this.modalType = 1;
+      this.modalTitle = "编辑调度管理";
+      // this.$refs.userForm.resetFields();
+      this.showModal = true;
+    },
+    handleSubmit() {
+      let vm = this;
+      let params = vm.formCustom;
+      this.$refs["formCustom"].validate(valid => {
+        if (valid) {
+          this.savePassLoading = true;
+          if (this.modalType === 0) {
+            // 添加用户 
+          addSchedualList(params).then(res => {
+            if (res.data.status === '0') {
+               this.savePassLoading = false;
+                this.$Message.success("操作成功");
+                this.showModal = false;
+                this.initPageData();
+            }
+          }).catch(() => {
+              this.savePassLoading = false;
+            });;
+          }else {
+            //编辑
+            editSchedualList(params).then(res => {
+              if (res.status == '0') {
+                  this.savePassLoading = false;
+                  this.$Message.success(res.data);
+                  this.showModal = false;
+                  this.initPageData();
+              }
+          }).catch(() => {
+              this.savePassLoading = false;
+            });;
+          }
+        }
+      });
+    },
+    handleReset() {
+      this.showModal = false;
+    },
     init() {
       this.initPageData();
     },
     initPageData() {
       this.loading = true;
       let params = {
-          pageNumber: this.pageNumber,
-          pageSize: this.pageSize
-      }
-      getSchedualList(params).then(res => {
-        this.total = res.data.totalElements;
-        this.data = res.data.list;
-      }).finally(() => {
-        this.loading = false;
-      })
+        pageNumber: this.pageNumber,
+        pageSize: this.pageSize
+      };
+      getSchedualList(params)
+        .then(res => {
+          this.total = res.data.totalElements;
+          this.data = res.data.list;
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
     changePage(v) {
       this.pageNumber = v;
@@ -305,17 +440,19 @@ export default {
       this.initPageData();
     },
     pause(v) {
-       this.$Modal.confirm({
+      this.$Modal.confirm({
         title: "确认停止",
         content: "您确认要停止任务 " + v.jobClassName + " ?",
         onOk: () => {
           this.loading = true;
-          schedualPause(v).then(res => {
-            this.$Message.success("操作成功");
-            this.initPageData();
-          }).finally(() => {
-            this.loading = false;
-          });
+          schedualPause(v)
+            .then(res => {
+              this.$Message.success("操作成功");
+              this.initPageData();
+            })
+            .finally(() => {
+              this.loading = false;
+            });
         }
       });
     },
@@ -325,12 +462,14 @@ export default {
         content: "您确认要恢复任务 " + v.jobClassName + " ?",
         onOk: () => {
           this.loading = true;
-          schedualResume(v).then(res => {
-            this.$Message.success("操作成功");
-            this.initPageData();
-          }).finally(() => {
-            this.loading = false;
-          });
+          schedualResume(v)
+            .then(res => {
+              this.$Message.success("操作成功");
+              this.initPageData();
+            })
+            .finally(() => {
+              this.loading = false;
+            });
         }
       });
     },
@@ -340,18 +479,20 @@ export default {
         content: "您确认要删除任务 " + v.jobClassName + " ?",
         onOk: () => {
           this.loading = true;
-          schedualDel(v.id).then(res => {
-            this.$Message.success("操作成功");
-            this.initPageData();
-          }).finally(() => {
-            this.loading = false;
-          });
+          schedualDel(v.id)
+            .then(res => {
+              this.$Message.success("操作成功");
+              this.initPageData();
+            })
+            .finally(() => {
+              this.loading = false;
+            });
         }
       });
-    },
+    }
   },
   mounted() {
     this.init();
   }
-}
+};
 </script>

@@ -1,5 +1,9 @@
 <style lang="less">
 @import "./companyManage.less";
+.vertical-center {
+  margin: 5px;
+  text-align: center;
+}
 </style>
 <template>
     <div class="search">
@@ -54,18 +58,28 @@
             <Button type="primary" :loading="submitLoading" @click="handleSubmit">提交</Button>
           </div>
         </Modal>
+        <Modal title="税种列表" v-model="modalTaxes" :mask-closable='false' :width="700">
+          <main>
+            <Table border ref="selection" :columns="columns4" @on-selection-change="selectionChange" :data="taxesList"></Table>
+          </main>
+          <footer class="vertical-center" slot="footer">
+              <Button @click="handleReset" style="width: 100px;">取消</Button>
+              <Button type="primary" style="width: 100px;margin-left:8px" :loading="savePassLoading" @click="handleSubmitTaxe">保存</Button>
+          </footer>
+        </Modal>
     </div>
 </template>
 
 <script>
 import {
+  getAssignTaxes,
   getCompanyListData,
   addCompany,
   editCompany,
   deleteCompany,
   getDictListDataByType
 } from "@/api/index";
-import { dictType } from '@/libs/constance.js'
+import { dictType } from "@/libs/constance.js";
 import circleLoading from "../../my-components/circle-loading.vue";
 export default {
   name: "company-manage",
@@ -74,6 +88,25 @@ export default {
   },
   data() {
     return {
+      taxesTypes: [],
+      savePassLoading: false,
+      columns4: [
+        {
+          type: "selection",
+          width: 60,
+          align: "center"
+        },
+        {
+          title: "税种名称",
+          key: "name"
+        },
+        {
+          title: "税种代码",
+          key: "code"
+        }
+      ],
+      taxesList: [],
+      modalTaxes: false,
       loading: true,
       operationLoading: false,
       sortColumn: "createTime",
@@ -134,7 +167,7 @@ export default {
           sortable: true,
           width: 160,
           render: (h, params) => {
-            return h('div', new Date(params.row.establishmentTime).format())
+            return h("div", new Date(params.row.establishmentTime).format());
           }
         },
         {
@@ -210,7 +243,7 @@ export default {
           title: "操作",
           key: "action",
           align: "center",
-          width: 160,
+          width: 240,
           render: (h, params) => {
             /* if (params.row.status === 0) {
               return h("div", [
@@ -268,8 +301,8 @@ export default {
                 )
               ]);
             } else { */
-              return h("div", [
-                /* h(
+            return h("div", [
+              /* h(
                   "Button",
                   {
                     props: {
@@ -288,40 +321,58 @@ export default {
                   },
                   "恢复执行"
                 ), */
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "primary",
-                      size: "small"
-                    },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: () => {
-                        this.edit(params.row);
-                      }
-                    }
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
                   },
-                  "编辑"
-                ),
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "error",
-                      size: "small"
-                    },
-                    on: {
-                      click: () => {
-                        this.remove(params.row);
-                      }
-                    }
+                  style: {
+                    marginRight: "5px"
                   },
-                  "删除"
-                )
-              ]);
+                  on: {
+                    click: () => {
+                      this.DisTaxes(params.row);
+                    }
+                  }
+                },
+                "增加税种"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginRight: "5px"
+                  },
+                  on: {
+                    click: () => {
+                      this.edit(params.row);
+                    }
+                  }
+                },
+                "编辑"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "error",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      this.remove(params.row);
+                    }
+                  }
+                },
+                "删除"
+              )
+            ]);
             // }
           }
         }
@@ -331,10 +382,77 @@ export default {
       pageSize: 10,
       total: 0,
       dictCountrys: [],
-      dictCurrencys: []
+      dictCurrencys: [],
+      currentRows: [],
+      companyId: ""
     };
   },
   methods: {
+    fetchTaxes() {
+      let vm = this;
+      vm.taxesList = [];
+      getDictListDataByType(dictType.taxCategory).then(result => {
+        if (result.status == "0") {
+          let res = result.data;
+          for (let index = 0; index < vm.taxesTypes.length; index++) {
+            const element = vm.taxesTypes[index];
+            res.forEach(row => {
+              if (element.name === row.name) {
+                if (typeof row._checked == "undefined") {
+                  vm.$set(row, "_checked", true);
+                } else {
+                  row._checked = true;
+                }
+              }
+            });
+          }
+          vm.taxesList = res;
+        }
+      });
+    },
+    selectionChange(val) {
+      val.forEach(row => {
+        if (typeof row._checked == "undefined") {
+          this.$set(row, "_checked", true);
+        } else {
+          row._checked = true;
+        }
+      });
+      this.currentRows = val
+    },
+    handleReset() {
+      this.modalTaxes = false;
+    },
+    handleSubmitTaxe() {
+      let vm = this;
+      let arrIds = []
+      vm.currentRows.forEach(element => {
+        if (element._checked) {
+          arrIds.push(element.id)
+        }
+      });
+      let params = {
+        companyId: vm.companyId,
+        taxesIds: arrIds.toString()
+      };
+      vm.savePassLoading = true;
+      getAssignTaxes(params).then(result => {
+        vm.savePassLoading = false;
+        if (result.status == "0") {
+          this.$Message.success(result.data);
+          this.modalTaxes = false;
+          this.getCompanyList();
+        }
+      }).catch(res => {
+        vm.savePassLoading = false;
+      });
+    },
+    DisTaxes(row) {
+      this.companyId = row.id;
+      this.taxesTypes = row.dicts;
+      this.fetchTaxes();
+      this.modalTaxes = true;
+    },
     init() {
       this.getCompanyList();
       this.getDictData();
@@ -364,17 +482,19 @@ export default {
           pageSize: this.pageSize
         },
         companyVo: {
-          name: '',
-          tin: ''
+          name: "",
+          tin: ""
         }
       };
-      getCompanyListData(params).then(res => {
-        this.loading = false;
-        this.data = res.data.list;
-        this.total = res.data.totalElements;
-      }).catch(() => {
-        this.loading = false;
-      });
+      getCompanyListData(params)
+        .then(res => {
+          this.loading = false;
+          this.data = res.data.list;
+          this.total = res.data.totalElements;
+        })
+        .catch(() => {
+          this.loading = false;
+        });
     },
     cancelSubmit() {
       this.modalVisible = false;
@@ -385,24 +505,28 @@ export default {
           if (this.modalType === 0) {
             // 添加
             this.submitLoading = true;
-            addCompany(this.form).then(res => {
-              this.submitLoading = false;
-              this.$Message.success("操作成功");
-              this.getCompanyList();
-              this.modalVisible = false;
-            }).catch(() => {
-              this.submitLoading = false;
-            });
+            addCompany(this.form)
+              .then(res => {
+                this.submitLoading = false;
+                this.$Message.success("操作成功");
+                this.getCompanyList();
+                this.modalVisible = false;
+              })
+              .catch(() => {
+                this.submitLoading = false;
+              });
           } else {
             this.submitLoading = true;
-            editCompany(this.form).then(res => {
-              this.submitLoading = false;
-              this.$Message.success("操作成功");
-              this.getCompanyList();
-              this.modalVisible = false;
-            }).catch(() => {
-              this.submitLoading = false;
-            });
+            editCompany(this.form)
+              .then(res => {
+                this.submitLoading = false;
+                this.$Message.success("操作成功");
+                this.getCompanyList();
+                this.modalVisible = false;
+              })
+              .catch(() => {
+                this.submitLoading = false;
+              });
           }
         }
       });
@@ -440,13 +564,15 @@ export default {
         content: "您确认要删除公司 " + v.name + " ?",
         onOk: () => {
           this.operationLoading = true;
-          deleteCompany(v.id).then(res => {
-            this.operationLoading = false;
-            this.$Message.success("操作成功");
-            this.getCompanyList();
-          }).catch(() => {
-            this.operationLoading = false;
-          });
+          deleteCompany(v.id)
+            .then(res => {
+              this.operationLoading = false;
+              this.$Message.success("操作成功");
+              this.getCompanyList();
+            })
+            .catch(() => {
+              this.operationLoading = false;
+            });
         }
       });
     },
@@ -485,14 +611,12 @@ export default {
     },
     /* 获取字典信息 */
     getDictData() {
-      getDictListDataByType(dictType.country)
-        .then(res => {
-          this.dictCountrys = res.data;
-        });
-      getDictListDataByType(dictType.currency)
-        .then(res => {
-          this.dictCurrencys = res.data;
-        });
+      getDictListDataByType(dictType.country).then(res => {
+        this.dictCountrys = res.data;
+      });
+      getDictListDataByType(dictType.currency).then(res => {
+        this.dictCurrencys = res.data;
+      });
     }
   },
   mounted() {
