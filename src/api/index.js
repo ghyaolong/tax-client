@@ -258,11 +258,11 @@ export const getSearchLogData = (params) => {
 }
 // 删除日志
 export const deleteLog = (ids, params) => {
-    return deleteRequest(`/log/delByIds/${ids}`, params)
+    return deleteRequest(`/logInfo/delByIds/${ids}`, params)
 }
 // 清空日志
 export const deleteAllLog = (params) => {
-    return deleteRequest('/log/delAll', params)
+    return deleteRequest('/logInfo/delAll', params)
 }
 
 
@@ -382,12 +382,12 @@ export const previewFile = name => {
 export const getFilesList = params => {
     return postRequest('/material/getAllPage', params);
 }
-// 增加调度 
+// 增加调度
 export const addSchedualList = params => {
     return postRequest('/schedual/add', params)
 }
 
-// 编辑调度 
+// 编辑调度
 export const editSchedualList = params => {
     return postRequest('/schedual/edit', params)
 }

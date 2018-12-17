@@ -9,7 +9,7 @@
     <div class="search">
         <Row>
             <Col>
-                <Card>     
+                <Card>
                     <Row class="operation">
                         <Button @click="addCompany" type="primary" icon="md-add">新增公司</Button>
                         <!-- <Button @click="delAll" icon="md-trash">批量删除</Button> -->
@@ -179,6 +179,14 @@ export default {
           title: "币种",
           key: "currencyCode",
           sortable: true
+        },
+        {
+          title:"是否分配",
+          key:"isAssign",
+          sortable: true,
+          render: (h, params) => {
+            return h('div', params.row.isAssign && params.row.isAssign==1?"已分配":"未分配")
+          }
         },
         {
           title: "备注",

@@ -81,6 +81,10 @@ export default {
           key: 'fileName'
         },
         {
+          title: '原文件名称',
+          key: 'oriName'
+        },
+        {
           title: '文件类型',
           key: 'materialTypeDict',
           render: (h, params) => {

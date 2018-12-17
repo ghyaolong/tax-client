@@ -55,9 +55,9 @@
           </Form-item>
           <br/>
           <Form-item label="财务报表" prop="financialReportPath">
-            <Upload action="/api/file/upload" 
-            :headers="{accessToken: accessToken}" 
-            name="file" :data="{materialTypeDict: 'FINANCE_REPORT'}" 
+            <Upload action="/api/file/upload"
+            :headers="{accessToken: accessToken}"
+            name="file" :data="{materialTypeDict: 'FINANCE_REPORT'}"
             :show-upload-list="false" :on-success="financeUploadSuc" class="upload-box">
               <Input type="text" readonly v-model="form.financialReportPath" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
@@ -81,7 +81,7 @@
         </Alert>
       </Row> -->
       <Row>
-        <Table ref="table" border :columns="columns" :data="data" 
+        <Table ref="table" border :columns="columns" :data="data"
         @on-selection-change="changeSelect"></Table>
       </Row>
     </Card>
@@ -127,7 +127,7 @@
         v-model="showPreviewModal">
         <Form label-position="left" :label-width="100">
           <FormItem label="预申报表">
-            <Input type="text" readonly 
+            <Input type="text" readonly
             v-model="fileUploadForm.preTaxReturnsPath" />
             <Button v-if="fileUploadForm.preTaxReturns" @click.stop="filePriview(fileUploadForm.preTaxReturnsPath)">预览</Button>
           </FormItem>
@@ -647,12 +647,13 @@ export default {
     },
     /* 财务报表上传成功 */
     financeUploadSuc(res) {
-      debugger
-      if (res.status != 0) {
+      if (res && res.status == 1) {
         return this.$Message.error(res.errMsg);
+      }else{
+        this.form.financialReport = res.data.id;
+        this.form.financialReportPath = res.data.fileName;
       }
-      this.form.financialReport = res.data.id;
-      this.form.financialReportPath = res.data.fileName;
+
     },
     /* 税金申请 - 文件上传 */
     uploadSuc(res) {
@@ -738,6 +739,30 @@ export default {
       let fn = this.$route.params.type === 'readyCommit' ? taxEdit : taxAdd;
       fn(params).then(res => {
         // this.reload()
+        this.form={
+          companyId: '',
+          companyName: '',
+          tin: '',
+          countryCode: '',
+          currency: '',
+          applicantName: '',
+          remarks: '',
+          reviewer: '',
+          financialReport: '',
+          financialReportPath: ''
+        }
+        this.data=[{ taxPeriod: '',
+                taxDict: '',
+                payableTax: 0,
+                lateFeePayable: 0,
+                applTaxPayment: '',
+                deadline: '',
+                taxPaid: 0,
+                overduePayment: 0,
+                paymentTime: '',
+                taxReturns: '',
+                remarks: ''
+              }]
         this.$forceUpdate()
         this.$Message.success('操作成功')
       }).finally(() => {

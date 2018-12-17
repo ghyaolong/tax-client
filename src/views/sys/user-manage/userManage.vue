@@ -119,7 +119,7 @@
                       </div>
                   </Poptip>
                   <Upload action="/xboot/upload/file"
-                          :headers="accessToken" 
+                          :headers="accessToken"
                           :on-success="handleSuccess"
                           :on-error="handleError"
                           :format="['jpg','jpeg','png','gif']"
@@ -286,6 +286,15 @@ export default {
         email: [
           { required: true, message: "请输入邮箱地址" },
           { type: "email", message: "邮箱格式不正确" }
+        ],
+        realName:[
+          { required: true, message: "请输入姓名", trigger: "blur" },
+        ],
+        workNumber:[
+          { required: true, message: "请输入工号", trigger: "blur" },
+        ],
+        sex:[
+            { required: true, message: "请选择性别", trigger: "blur" },
         ]
       },
       submitLoading: false,

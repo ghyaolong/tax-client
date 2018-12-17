@@ -28,7 +28,7 @@
           </Form-item>
         </Form> -->
     <Row>
-      <Table highlight-row @on-current-change="currentChange" :loading="loading" border :columns="columns" 
+      <Table highlight-row @on-current-change="currentChange" :loading="loading" border :columns="columns"
       :data="data" ref="table" sortable="custom" ></Table>
     </Row>
     <Row type="flex" justify="end" class="page">
@@ -38,10 +38,10 @@
     </Col>
     </Row>
     <Modal :title="modalTitle" :mask-closable='false' v-model="showModal" >
-                <Form 
+                <Form
                     ref="formCustom"
-                    :model="formCustom" 
-                    :label-width="100" 
+                    :model="formCustom"
+                    :label-width="100"
                     label-position="right"
                     :rules="ruleCustom"
                     style="width:450px"
@@ -219,7 +219,7 @@ export default {
           title: "操作",
           key: "action",
           align: "center",
-          // width: 180,
+          width: 200,
           fixed: "right",
           render: (h, params) => {
             if (params.row.status === 0) {
@@ -382,7 +382,7 @@ export default {
         if (valid) {
           this.savePassLoading = true;
           if (this.modalType === 0) {
-            // 添加用户 
+            // 添加用户
           addSchedualList(params).then(res => {
             if (res.data.status === '0') {
                this.savePassLoading = false;
@@ -496,3 +496,6 @@ export default {
   }
 };
 </script>
+<style lang="less" scoped>
+
+</style>
