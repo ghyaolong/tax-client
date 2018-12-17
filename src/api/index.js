@@ -345,7 +345,7 @@ export const taxDel = id => {
 }
 // 待办申请
 export const taxReadyHandle = params => {
-    return postRequest('/tax/readyHandle', params)
+    return postRequest('/process/list', params)
 }
 // 已办申请
 export const taxAlreadyHandle = params => {
@@ -413,4 +413,18 @@ export const schedualDel = (ids, params) => {
 // 统计分析
 export const getStatistics = params => {
     return postRequest('/statistics/findAll', params)
+}
+
+// 税金申请--提交
+export const submitJJSQ = params => {
+    return postRequest('/process/start', params)
+}
+
+// 代办任务--处理同意||决绝
+export const dbrwAudit=params=>{
+  return postRequest('/process/audit',params)
+}
+// 代办任务---查看流程图
+export const lookLiuchengtu=params=>{
+  return postRequest('/process/image',params)
 }

@@ -30,7 +30,7 @@
             </Select>
           </Form-item>
           <Form-item label="税务识别号码" prop="tin">
-            <Input type="text" v-model="form.tin" readonly style="width: 200px" />
+            <Input type="text" v-model="form.tin" disabled style="width: 200px" />
           </Form-item>
           <Form-item label="国家" prop="countryCode">
             <Select v-model="form.countryCode" disabled style="width:200px">
@@ -48,8 +48,8 @@
           <Form-item label="备注" prop="remarks">
             <Input type="text" v-model="form.remarks" :maxlength="200" clearable placeholder="请输入备注" style="width: 200px" />
           </Form-item>
-          <Form-item label="选择审核人" prop="reviewer">
-            <Select v-model="form.reviewer" style="width:200px">
+          <Form-item label="选择审核人" prop="currentHandler">
+            <Select v-model="form.currentHandler" style="width:200px">
               <Option v-for="item in reviewers" :value="item.id" :key="item.id">{{ item.realName }}</Option>
             </Select>
           </Form-item>
@@ -71,7 +71,7 @@
         <!-- <Button @click="delAll" icon="md-trash">批量删除</Button> -->
         <Button @click="addColumn" icon="md-add">增加一栏</Button>
         <Button @click="submit('save')" >保存</Button>
-        <Button @click="submit" >提交</Button>
+        <Button @click="submitTrue" >提交</Button>
         <circleLoading v-if="operationLoading"/>
       </Row>
       <!-- <Row>
@@ -81,8 +81,10 @@
         </Alert>
       </Row> -->
       <Row>
-        <Table ref="table" border :columns="columns" :data="data"
-        @on-selection-change="changeSelect"></Table>
+        <Table ref="table" border :columns="columns" :data="data" id="myTable"
+        @on-selection-change="changeSelect">
+      </Table>
+
       </Row>
     </Card>
     </Col>
@@ -173,6 +175,7 @@ import { dictType } from '@/libs/constance.js'
 import { getStore } from '@/libs/storage';
 import Cookies from "js-cookie";
 import circleLoading from "../../my-components/circle-loading.vue"
+import {submitJJSQ} from '@/api/index';
 export default {
   name: 'taxApplication',
   data() {
@@ -194,7 +197,7 @@ export default {
         currency: '',
         applicantName: '',
         remarks: '',
-        reviewer: '',
+        currentHandler: '',
         financialReport: '',
         financialReportPath: ''
       },
@@ -340,51 +343,51 @@ export default {
                   },
                   "上传"
                 ),
-                h(
-                  "Button",
-                  {
-                    props: {
-                      size: "small"
-                    },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: () => {
-                        let item = this.data[params.index];
-                        let {preTaxReturns, preTaxReturnsPath, taxReturns, taxReturnsPath, paymentCertificate, paymentCertificatePath, otherUploadId, otherUpload} = item;
-                        this.fileUploadForm = {
-                          uploadColomunIndex: params.index,
-                          preTaxReturns,
-                          preTaxReturnsPath,
-                          taxReturns,
-                          taxReturnsPath,
-                          paymentCertificate,
-                          paymentCertificatePath,
-                          otherUploadId,
-                          otherUploadPath: otherUpload
-                        }
-                        this.showPreviewModal = true;
-                      }
-                    }
-                  },
-                  "预览"
-                ),
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "error",
-                      size: "small"
-                    },
-                    on: {
-                      click: () => {
-                        // this.remove(params.row);
-                      }
-                    }
-                  },
-                  "删除"
-                )
+                // h(
+                //   "Button",
+                //   {
+                //     props: {
+                //       size: "small"
+                //     },
+                //     style: {
+                //       marginRight: "5px"
+                //     },
+                //     on: {
+                //       click: () => {
+                //         let item = this.data[params.index];
+                //         let {preTaxReturns, preTaxReturnsPath, taxReturns, taxReturnsPath, paymentCertificate, paymentCertificatePath, otherUploadId, otherUpload} = item;
+                //         this.fileUploadForm = {
+                //           uploadColomunIndex: params.index,
+                //           preTaxReturns,
+                //           preTaxReturnsPath,
+                //           taxReturns,
+                //           taxReturnsPath,
+                //           paymentCertificate,
+                //           paymentCertificatePath,
+                //           otherUploadId,
+                //           otherUploadPath: otherUpload
+                //         }
+                //         this.showPreviewModal = true;
+                //       }
+                //     }
+                //   },
+                //   "预览"
+                // ),
+                // h(
+                //   "Button",
+                //   {
+                //     props: {
+                //       type: "error",
+                //       size: "small"
+                //     },
+                //     on: {
+                //       click: () => {
+                //         // this.remove(params.row);
+                //       }
+                //     }
+                //   },
+                //   "删除"
+                // )
               ]);
           }
         },
@@ -411,16 +414,186 @@ export default {
         paymentCertificate: '',
         otherUploadId: ''
       },
-      routeType: ''
+      routeType: '',
+      payableTaxALL:0, // 应缴税额合计
+      lateFeePayable:0, // 应缴滞纳金合计
+      applTaxPayment:0, // 申请纳税款合计
+      taxPaid:0, // 实缴税款合计
+      overduePayment:0, //实缴滞纳金合计
+      taxsjsk:0, // 实缴税款合计
+      userInfo:{}
     }
   },
   methods: {
+    // 真是提交
+    submitTrue() {
+      this.form.applicantName=this.userInfo.username  // 用户名
+      this.form.applicantId=this.userInfo.id // 用户id
+      this.form.executeType=1; // 提交
+      this.form.countryName = this.dictCountrys && this.dictCountrys.filter((item)=>{return item.code==this.form.countryCode})[0].name;
+      this.form.status=0;
+
+
+      let params = {...this.form,details:[...this.data]}
+
+      if (!params.companyId) {
+        this.$Message.error('请选择公司');
+        return;
+      }
+      if (!params.currentHandler) {
+        this.$Message.error('请选择审核人');
+        return;
+      }
+      // let preTaxReturnsVerity = params.details.some(item => {
+      //   return !item.preTaxReturns;
+      // });
+      // if (!params.financialReport) {
+      //   this.$Message.error('请上传财务报表');
+      //   return;
+      // }
+      let dateVerity = params.details.some(item => {
+        return !item.taxPeriod
+      })
+      if (dateVerity) {
+        this.$Message.error('请选择所属期间');
+        return;
+      }
+      params.details.map(item => {
+        item.taxPeriod = item.taxPeriod && item.taxPeriod + '-01';
+      });
+      // 税种
+      let shuizhong = params.details.some(item => {
+        return !item.taxDict
+      })
+      if (shuizhong) {
+        this.$Message.error('请选择税种');
+        return;
+      }
+      //  申请缴纳税款不能为空
+      let flag = params.details.some((item) => {
+        if (item.applTaxPayment == '') {
+          item.applTaxPayment = parseFloat(item.payableTax) + parseFloat(item.lateFeePayable);
+        }
+        return item.applTaxPayment <= 0
+      });
+      if (flag) {
+        this.$Message.error('申请缴纳税款不能为空');
+        return;
+      }
+      //  缴款截止日期
+      let jnjzrq = params.details.some(item => {
+        return !item.deadline
+      })
+      if (jnjzrq) {
+        this.$Message.error('请选择缴款截止日期');
+        return;
+      }
+      //实际缴纳日期
+      let sjjnrqi = params.details.some(item => {
+        return !item.paymentTime
+      })
+      if (sjjnrqi) {
+        this.$Message.error('请选择缴款截止日期');
+        return;
+      }
+      this.loading = true;
+      console.log("params",params)
+      submitJJSQ(params).then((res)=>{
+        this.$Message.success('操作成功')
+        this.form={
+          companyId: '',
+          companyName: '',
+          tin: '',
+          countryCode: '',
+          currency: '',
+          applicantName: '',
+          remarks: '',
+          currentHandler: '',
+          financialReport: '',
+          financialReportPath: '',
+          status:0
+        }
+        this.data=[{ taxPeriod: '',
+                taxDict: '',
+                payableTax: 0,
+                lateFeePayable: 0,
+                applTaxPayment: '',
+                deadline: '',
+                taxPaid: 0,
+                overduePayment: 0,
+                paymentTime: '',
+                taxReturns: '',
+                remarks: '',
+                status:0
+              }]
+      }).finally(() => {
+        this.loading = false;
+      })
+    },
     init() {
       this.initPageData()
       this.initCompanyList()
       this.getReviewerList()
       this.getDictData()
       this.addColumn()
+      this.addTable();
+    },
+    // table下面添加table
+    addTable() {
+      let el=this.$refs.table.$el
+      let tbodyEl=el.querySelector("tbody")
+      let parentEL=tbodyEl.parentNode;
+      var tbodyDIV = document.createElement("tbody");
+      let tdEL = document.createElement("td");
+      tdEL.style['text-align']="center"
+      tdEL.innerHTML="合计"
+      tbodyDIV.append(tdEL)
+      for(let i=0;i<this.columns.length-1;i++) {
+        switch (i) {
+          case 1:
+            let tdEsL=document.createElement("td")
+            tdEsL.setAttribute("id","payableTaxALL")
+            tdEsL.style['text-align']="center"
+            tbodyDIV.append(tdEsL)
+            break;
+          case 2:
+            let lateFeePayabletdEsL=document.createElement("td")
+            lateFeePayabletdEsL.setAttribute("id","lateFeePayable")
+            lateFeePayabletdEsL.style['text-align']="center"
+            tbodyDIV.append(lateFeePayabletdEsL)
+            break;
+          case 3:
+            let applTaxPaymenttdEsL=document.createElement("td")
+            applTaxPaymenttdEsL.setAttribute("id","applTaxPayment")
+            applTaxPaymenttdEsL.style['text-align']="center"
+            tbodyDIV.append(applTaxPaymenttdEsL)
+            break;
+          case 5:
+            let taxPaidtdEsL=document.createElement("td")
+            taxPaidtdEsL.setAttribute("id","taxPaid")
+            taxPaidtdEsL.style['text-align']="center"
+            tbodyDIV.append(taxPaidtdEsL)
+            break;
+          case 6:
+            let overduePaymenttdEsL=document.createElement("td")
+            overduePaymenttdEsL.setAttribute("id","overduePayment")
+            overduePaymenttdEsL.style['text-align']="center"
+            tbodyDIV.append(overduePaymenttdEsL)
+            break;
+          case 7:
+            let taxsjsktdEsL=document.createElement("td")
+            taxsjsktdEsL.setAttribute("id","taxsjsk")
+            taxsjsktdEsL.style['text-align']="center"
+            tbodyDIV.append(taxsjsktdEsL)
+            break;
+          default:
+            tbodyDIV.append(document.createElement("td"))
+            break;
+        }
+
+      }
+      parentEL.appendChild(tbodyDIV)
+      // console.log(parentEL)
     },
     // 获取页面数据
     initPageData() {
@@ -535,14 +708,35 @@ export default {
         overduePayment: 0,
         paymentTime: '',
         taxReturns: '',
-        remarks: ''
+        remarks: '',
+        status:0
       });
+    },
+    // 根据公司添加column
+    addColumnByCompany(dataList){
+      for(let i=0;i<dataList.length;i++) {
+        this.data.push({
+          taxPeriod: dataList[i].taxPeriod ? dataList[i].taxPeriod : "",
+          taxDict: dataList[i].taxDict && dataList[i].taxDict || "",
+          payableTax: dataList[i].payableTax && dataList[i].payableTax || 0,
+          lateFeePayable:dataList[i].lateFeePayable && dataList[i].lateFeePayable || 0,
+          applTaxPayment: dataList[i].applTaxPayment && dataList[i].applTaxPayment || "",
+          deadline: dataList[i].deadline && dataList[i].deadline || "",
+          taxPaid: dataList[i].taxPaid && dataList[i].taxPaid || 0,
+          overduePayment: dataList[i].overduePayment && dataList[i].overduePayment || 0,
+          paymentTime: dataList[i].paymentTime && dataList[i].paymentTime || "",
+          taxReturns: dataList[i].taxReturns && dataList[i].taxReturns || "",
+          remarks: dataList[i].remarks && dataList[i].remarks || "",
+          status:0
+        });
+      }
     },
     /* 表格栏输入框渲染函数 */
     renderInput(h, params) {
       let temp = null;
       if (params.column.key === 'applTaxPayment') {
         temp = parseFloat(params.row.payableTax) + parseFloat(params.row.lateFeePayable);
+        this.$forceUpdate()
       }
       if (params.column.key === 'remarks') {
         return h('Input', {
@@ -558,6 +752,7 @@ export default {
             }
           }
         })
+
       } else {
         return h('InputNumber', {
           props: {
@@ -568,10 +763,12 @@ export default {
             input: e => {
               params.row[params.column.key] = e;
               this.data[params.index] = params.row;
+              this.$forceUpdate()
             }
           }
         })
       }
+
       /* return h('Input', {
         props: {
           type: 'text',
@@ -633,6 +830,7 @@ export default {
     /* 选择公司后获取对应的税种等信息 */
     changeCompany(company={name: '', label:''}) {
       // debugger
+      const that=this
       this.loading = true;
       getCompanyByName({name: company.label})
         .then(res => {
@@ -640,10 +838,21 @@ export default {
           this.form.companyName = company.label;
           this.form.countryCode = res.data.countryCode;
           this.form.currency = res.data.currencyCode;
+          that.addColumnByCompany(that.renderTaxDict(res.data.dicts))
         })
         .finally(() => {
           this.loading = false;
         })
+    },
+    // 处理选择公司后的数据，返回税种code
+    renderTaxDict(arry) {
+      var tempDatalist=[]
+      for(let i=0;i<arry.length;i++) {
+        tempDatalist.push({
+          taxDict:arry[i].code
+        })
+      }
+      return tempDatalist
     },
     /* 财务报表上传成功 */
     financeUploadSuc(res) {
@@ -699,9 +908,9 @@ export default {
     },
     /* 提交 */
     submit(save) {
+      console.log("1111",this.data)
       let params = {...this.form, details: this.data};
       params.executeType = save === 'save' ? 0 : 1;
-      if (save != 'save') {
         if (!params.companyId) {
           this.$Message.error('请选择公司');
           return;
@@ -716,14 +925,13 @@ export default {
           this.$Message.error('申请缴纳税款不能为空');
           return;
         }
-        let preTaxReturnsVerity = params.details.some(item => {
-          return !item.preTaxReturns;
-        });
-        if (preTaxReturnsVerity) {
-          this.$Message.error('请上传预申报表');
-          return;
-        }
-      }
+        // let preTaxReturnsVerity = params.details.some(item => {
+        //   return !item.preTaxReturns;
+        // });
+        // if (preTaxReturnsVerity) {
+        //   this.$Message.error('请上传预申报表');
+        //   return;
+        // }
       let dateVerity = params.details.some(item => {
         return !item.taxPeriod
       })
@@ -747,9 +955,10 @@ export default {
           currency: '',
           applicantName: '',
           remarks: '',
-          reviewer: '',
+          currentHandler: '',
           financialReport: '',
-          financialReportPath: ''
+          financialReportPath: '',
+          status:0
         }
         this.data=[{ taxPeriod: '',
                 taxDict: '',
@@ -761,7 +970,8 @@ export default {
                 overduePayment: 0,
                 paymentTime: '',
                 taxReturns: '',
-                remarks: ''
+                remarks: '',
+                status:0
               }]
         this.$forceUpdate()
         this.$Message.success('操作成功')
@@ -769,7 +979,7 @@ export default {
         this.loading = false;
       })
       // this.handleReset('form')
-      this.data = []
+      // this.data = []
     },
     handleReset(formName) {
         this.$refs[formName].resetFields();
@@ -784,6 +994,30 @@ export default {
   },
   mounted() {
     this.init();
+    this.userInfo = JSON.parse(Cookies.get("userInfo"));
+  },
+  updated:function() {
+    // console.log("update",this.data)
+    var  payableTaxALL=0 // 应缴税额合计
+    var  lateFeePayable=0// 应缴滞纳金合计
+    var  applTaxPayment=0 // 申请纳税款合计
+    var  taxPaid=0 // 实缴税款合计
+    var  overduePayment=0 //实缴滞纳金合计
+    var  taxsjsk=0 // 实缴税款合计
+    for(let i=0;i<this.data.length;i++) {
+        payableTaxALL+=this.data[i].payableTax
+        lateFeePayable+=this.data[i].lateFeePayable
+        applTaxPayment=payableTaxALL+lateFeePayable
+        taxPaid+=this.data[i].taxPaid
+        overduePayment+=this.data[i].overduePayment
+        taxsjsk=taxPaid+overduePayment
+    }
+    document.getElementById("payableTaxALL").innerHTML=payableTaxALL
+    document.getElementById("lateFeePayable").innerHTML=lateFeePayable
+    document.getElementById("applTaxPayment").innerHTML=applTaxPayment
+    document.getElementById("taxPaid").innerHTML=taxPaid
+    document.getElementById("overduePayment").innerHTML=overduePayment
+    document.getElementById("taxsjsk").innerHTML=taxsjsk
   }
 }
 </script>

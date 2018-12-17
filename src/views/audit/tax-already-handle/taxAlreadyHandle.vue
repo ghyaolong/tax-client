@@ -3,12 +3,29 @@
     <Row>
       <Col>
       <Card>
-        <Form inline :label-width="90" class="search-form">
-          <Form-item label="创建时间">
-            <DatePicker type="daterange" v-model="selectDate" format="yyyy-MM-dd" clearable @on-change="selectDateRange" placeholder="选择起始时间" style="width: 200px"></DatePicker>
+        <Form inline :label-width="90" class="search-form" :model="submitData" ref="taxAlreadyHandleForm">
+          <Form-item label="创建时间" prop="selectDate">
+            <DatePicker type="daterange" v-model="submitData.selectDate" format="yyyy-MM-dd" clearable @on-change="selectDateRange" placeholder="选择起始时间" style="width: 200px"></DatePicker>
+          </Form-item>
+          <Form-item label="公司名称" prop="companyName">
+            <Input  placeholder="请输入公司名称" v-model="submitData.companyName"></Input>
+          </Form-item>
+          <Form-item label="流程状态"  >
+            <Select  placeholder="请选择" style="width: 200px">
+              <Option value="1">开始</Option>
+              <Option value="3">停止</Option>
+              <Option value="2">结束</Option>
+            </Select>
+          </Form-item>
+          <Form-item label="申请人" prop="applicantName">
+            <Input  placeholder="请输入申请人" v-model="submitData.applicantName"></Input>
+          </Form-item>
+          <Form-item label="流水号" prop="serialNumber">
+            <Input  placeholder="请输入流水号" v-model="submitData.serialNumber"></Input>
           </Form-item>
           <Form-item style="margin-left:-35px;" class="br">
             <Button @click="initPageData" type="primary" icon="ios-search">搜索</Button>
+            <Button @click="reSet" >重置</Button>
           </Form-item>
         </Form>
     <Row>
@@ -281,6 +298,10 @@ export default {
             );
           }
           // width: 110
+        },{
+          title:"处理环节"
+        },{
+          title:"当前处理人"
         }
         /* {
           title: '操作',
@@ -300,7 +321,7 @@ export default {
                     },
                     on: {
                       click: () => {
-                        
+
                       }
                     }
                   },
@@ -350,12 +371,20 @@ export default {
       pageNumber: 1,
       pageSize: 10,
       total: 0,
-      selectDate: "",
-      startDate: "",
-      endDate: ""
+      submitData:{
+        selectDate:"",
+        companyName:"",
+        serialNumber:"",
+        applicantName:""
+      }
     };
   },
   methods: {
+    reSet(){
+      this.startDate=""
+      this.endDate=""
+      this.$refs['taxAlreadyHandleForm'].resetFields();
+    },
     getTaxAuditLog(val){
         let vm = this;
         let params = val
@@ -381,7 +410,10 @@ export default {
         },
         searchVo: {
           startDate: this.startDate,
-          endDate: this.endDate
+          endDate: this.endDate,
+          companyName:this.submitData.companyName,
+          serialNumber:this.submitData.serialNumber,
+          applicantName:this.submitData.applicantName
         }
       };
       taxAlreadyHandle(params)
@@ -432,6 +464,6 @@ export default {
       border:none;
     }
   }
- 
+
 }
 </style>

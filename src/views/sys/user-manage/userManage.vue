@@ -463,7 +463,7 @@ export default {
           sortType: "desc",
           minWidth: 150,
           render: (h, params) => {
-            return h('div', new Date(params.row.createTime).format())
+            return h('div', params.row.createTime && new Date(params.row.createTime).format())
           }
         },
         {
