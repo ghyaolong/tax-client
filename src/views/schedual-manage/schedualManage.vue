@@ -148,7 +148,10 @@ export default {
         {
           title: "创建时间",
           key: "createTime",
-          width: 110
+          width: 110,
+          render: (h, params) => {
+            return h('div', params.row.createTime && new Date(params.row.createTime).format())
+          }
         },
         {
           title: "修改人",
@@ -158,7 +161,10 @@ export default {
         {
           title: "修改时间",
           key: "updateTime",
-          width: 110
+          width: 110,
+          render: (h, params) => {
+            return h('div', params.row.updateTime && new Date(params.row.updateTime).format())
+          }
         },
         {
           title: "状态",

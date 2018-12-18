@@ -70,7 +70,7 @@
       <Row class="operation">
         <!-- <Button @click="delAll" icon="md-trash">批量删除</Button> -->
         <Button @click="addColumn" icon="md-add">增加一栏</Button>
-        <Button @click="submit('save')">保存</Button>
+        <Button @click="resubmit">放弃</Button>
         <Button @click="submitTrue" >提交</Button>
         <circleLoading v-if="operationLoading"/>
       </Row>
@@ -178,7 +178,7 @@ import Cookies from "js-cookie";
 import circleLoading from "../../my-components/circle-loading.vue"
 import {submitJJSQ} from '@/api/index';
 export default {
-  name: 'taxApplication',
+  name: 'huixianshujuyemian',
   data() {
     return {
       isRouterAlive: true,
@@ -426,6 +426,21 @@ export default {
     }
   },
   methods: {
+    // 放弃
+    resubmit() {
+      let params={
+        taskId:this.form.serialNumber,
+        operateApprove:0
+      }
+      this.loading = true;
+      resSubmit(params).then(res=>{
+        this.$Message.success('操作成功')
+      }).finally(()=>{
+        this.loading = false;
+      })
+
+    },
+
     // 真是提交
     submitTrue() {
       this.form.applicantName=this.userInfo.username  // 用户名
@@ -433,7 +448,7 @@ export default {
       this.form.executeType=1; // 提交
       this.form.countryName = this.dictCountrys && this.dictCountrys.filter((item)=>{return item.code==this.form.countryCode})[0].name;
       this.form.status=0;
-
+      this.form.operateApprove=1;
 
       let params = {...this.form,details:[...this.data]}
 
@@ -536,7 +551,8 @@ export default {
       this.initCompanyList()
       this.getReviewerList()
       this.getDictData()
-      this.addColumn()
+
+      // this.addColumn()
       this.addTable();
     },
     // table下面添加table
@@ -599,40 +615,29 @@ export default {
     // 获取页面数据
     initPageData() {
       let type = this.$route.params.type;
+      console.log("0000",this.$route.params.params)
       if (!type) return;
       this.routeType = type;
-      // 待提任务回显
-      if (type === 'readyCommit') {
-        this.loading = true;
-        taxDetail(this.$route.params.params.id).then(res => {
-          console.log("22222220",res)
-          // this.$Message.success(res.errMsg)
-          let data = res.data && res.data.details;
-          if(!data && res.status==0){
-            this.$Message.success("无数据")
-          }
-          data && data.map(item => {
-            item.taxPeriod.replace(/-01$/, '');
-            item.paymentTime = new Date(item.paymentTime).format('yyyy-MM-dd');
-            item.deadline = new Date(item.deadline).format('yyyy-MM-dd');
-          });
-          this.data = data || [];
-          let params = res.data && res.data;
-          if(params) {
-            this.form.id = params.id;
-            this.form.companyId = params.companyId;
-            this.form.companyName = params.companyName;
-            this.form.tin = params.tin;
-            this.form.countryCode = params.countryCode;
-            this.form.currentHandler=params.currentHandler;
-            this.form.currency = params.currency;
-            this.form.remarks = params.remarks;
-            this.form.financialReport = params.financialReport;
-            this.form.financialReportPath = params.financialReportPath;
-          }
-        }).finally(() => {
-          this.loading = false;
+      if(type=="taxReadyHandle") {
+        let params=this.$route.params.params
+        let datalist=params.details
+        datalist && datalist.map((item)=>{
+          item.taxPeriod.replace(/-01$/, '');
+          item.paymentTime = new Date(item.paymentTime).format('yyyy-MM-dd');
+          item.deadline = new Date(item.deadline).format('yyyy-MM-dd');
         })
+        this.data = datalist || [];
+        this.form.id = params.id;
+        this.form.serialNumber = params.serialNumber;
+        this.form.companyId = params.companyId;
+        this.form.companyName = params.companyName;
+        this.form.tin = params.tin;
+        this.form.countryCode = params.countryCode;
+        this.form.currentHandler=params.currentHandler;
+        this.form.currency = params.currency;
+        this.form.remarks = params.remarks;
+        this.form.financialReport = params.financialReport;
+        this.form.financialReportPath = params.financialReportPath;
       }
     },
     /* 获取公司列表 */
@@ -915,81 +920,7 @@ export default {
       this.priviewModal = true;
       return false;
     },
-    /* 提交 */
-    submit(save) {
-      console.log("1111",this.data)
-      let params = {...this.form, details: this.data};
-      params.executeType = save === 'save' ? 0 : 1;
-        if (!params.companyId) {
-          this.$Message.error('请选择公司');
-          return;
-        }
-        let flag = params.details.some((item) => {
-          if (item.applTaxPayment == '') {
-            item.applTaxPayment = parseFloat(item.payableTax) + parseFloat(item.lateFeePayable);
-          }
-          return item.applTaxPayment <= 0
-        });
-        if (flag) {
-          this.$Message.error('申请缴纳税款不能为空');
-          return;
-        }
-        // let preTaxReturnsVerity = params.details.some(item => {
-        //   return !item.preTaxReturns;
-        // });
-        // if (preTaxReturnsVerity) {
-        //   this.$Message.error('请上传预申报表');
-        //   return;
-        // }
-      let dateVerity = params.details.some(item => {
-        return !item.taxPeriod
-      })
-      if (dateVerity) {
-        this.$Message.error('请选择所属期间');
-        return;
-      }
-      // 所属期间字段显示月份，但提交后台需要精确值日
-      params.details.map(item => {
-        item.taxPeriod = item.taxPeriod && item.taxPeriod + '-01';
-      });
-      this.loading = true;
-      let fn = this.$route.params.type === 'readyCommit' ? taxEdit : taxAdd;
-      fn(params).then(res => {
-        // this.reload()
-        this.form={
-          companyId: '',
-          companyName: '',
-          tin: '',
-          countryCode: '',
-          currency: '',
-          applicantName: '',
-          remarks: '',
-          currentHandler: '',
-          financialReport: '',
-          financialReportPath: '',
-          status:0
-        }
-        this.data=[{ taxPeriod: '',
-                taxDict: '',
-                payableTax: 0,
-                lateFeePayable: 0,
-                applTaxPayment: '',
-                deadline: '',
-                taxPaid: 0,
-                overduePayment: 0,
-                paymentTime: '',
-                taxReturns: '',
-                remarks: '',
-                status:0
-              }]
-        this.$forceUpdate()
-        this.$Message.success('操作成功')
-      }).finally(() => {
-        this.loading = false;
-      })
-      // this.handleReset('form')
-      // this.data = []
-    },
+
     handleReset(formName) {
         this.$refs[formName].resetFields();
     },

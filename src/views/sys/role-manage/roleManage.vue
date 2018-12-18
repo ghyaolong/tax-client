@@ -5,7 +5,7 @@
     <div class="search">
         <Row>
             <Col>
-                <Card>     
+                <Card>
                     <Row class="operation">
                         <Button @click="addRole" type="primary" icon="md-add">添加角色</Button>
                         <Button @click="delAll" icon="md-trash">批量删除</Button>
@@ -121,7 +121,7 @@ export default {
           sortable: true,
           sortType: "desc",
           render: (h, params) => {
-            return h('div', new Date(params.row.createTime).format())
+            return h('div',params.row.createTime && new Date(params.row.createTime).format())
           }
         },
         /* {

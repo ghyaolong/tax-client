@@ -51,7 +51,7 @@
       width="400">
       <Form :model="taxReadyHandle">
         <FormItem label="操作" :label-width="80">
-          <Select v-model="taxReadyHandle.operateApprove">
+          <Select v-model="taxReadyHandle.operateApprove" >
             <Option value="0" >同意</Option>
             <Option value="1" >拒绝</Option>
           </Select>
@@ -60,11 +60,11 @@
           <Input type="textarea" v-model="taxReadyHandle.comment" placeholder="请输入审批意见"></Input>
         </FormItem>
         <Form-item label="选择审核人" prop="currentHandler" v-if="taxReadyHandle.operateApprove != '1'" :label-width="80">
-          <Select v-model="taxReadyHandle.currentHandler" style="width:200px">
+          <Select v-model="taxReadyHandle.currentHandler" >
             <Option v-for="item in reviewers" :value="item.id" :key="item.id">{{ item.realName }}</Option>
           </Select>
         </Form-item>
-        <FormItem label="拒绝原因" v-if="taxReadyHandle.handle === '1'" :label-width="80">
+        <FormItem label="拒绝原因" v-if="taxReadyHandle.operateApprove === '1'" :label-width="80">
           <Input type="textarea" v-model="taxReadyHandle.comment" placeholder="请输入拒绝原因"></Input>
         </FormItem>
       </Form>
@@ -75,11 +75,128 @@
       class-name="vertical-center-modal"
       @on-ok="handleOkliuchengtu"
       @on-cancel="handleRefuseliuchengtu"
-      width="400px"
+      width="500px"
       >
-      <div style="height:400px">
+      <div style="height:500px">
         <img :src="liuchengtuInfo" width="100%" height="100%"/>
       </div>
+    </Modal>
+    <Modal title="税金申请表单" scrollable v-model="showTaxes" :mask-closable='false' :width="1220" style="overflow-y:scroll;">
+          <main v-if="tableList.length>0">
+             <table width="1182" height="625" class="taxesTables">
+                <tbody>
+                  <tr>
+                  <td colspan="12" width="1124" style="text-align:center;font-size:22px;font-weight:bold;">税金申请表单</td>
+                </tr>
+                <tr>
+                  <td width="82">公司名称</td>
+                  <td colspan="5" width="200">{{tableList[0].companyName}}</td>
+                  <td width="100">税务识别号码</td>
+                  <td colspan="5" width="200">{{tableList[0].tin}}</td>
+                </tr>
+                <tr>
+                  <td width="82">国家</td>
+                  <td colspan="5" width="200">{{tableList[0].countryName}}</td>
+                  <td width="72">币种</td>
+                  <td colspan="5" width="200">{{tableList[0].currency}}</td>
+                </tr>
+                <tr>
+                  <td width="82">申请人</td>
+                  <td colspan="5" width="200">{{tableList[0].applicantName}}</td>
+                  <td width="72">备注</td>
+                  <td colspan="5" >{{tableList[0].remarks}}</td>
+                </tr>
+                <tr>
+                  <td width="82">所属期间</td>
+                  <td width="80">税种</td>
+                  <td width="90">应缴税额</td>
+                  <td width="72">应缴滞纳金</td>
+                  <td width="120">申请缴纳税款</td>
+                  <td width="100">缴款截止日期</td>
+                  <td width="72">实缴税额</td>
+                  <td width="72">实缴滞纳金</td>
+                  <td width="117">实际缴纳税款</td>
+                  <td width="109">实际缴纳时间</td>
+                  <td width="132">附件</td>
+                  <td width="140">备注</td>
+                </tr>
+                <tr v-for="item in tableList[0].details" :key="item.id">
+                  <td width="82">{{item.taxPeriod}}</td>
+                  <td width="118">{{item.taxDict}}</td>
+                  <td width="124">{{item.payableTax}}</td>
+                  <td width="72">{{item.lateFeePayable}}</td>
+                  <td width="72">{{item.taxPaid}}</td>
+                  <td width="72">{{`${new Date(item.deadline).format()}`}}</td>
+                  <td width="72">{{item.overduePayment}}</td>
+                  <td width="72">{{item.paymentCertificate}}</td>
+                  <td width="117">{{item.paymentCertificatePath}}</td>
+                  <td width="109">{{ `${new Date(item.paymentTime).format()}` }}</td>
+                  <td width="132">{{item.isUploadTaxReturns}}</td>
+                  <td width="140">{{item.remarks}}</td>
+                </tr>
+                <tr>
+                  <td width="82">合计</td>
+                  <td width="118"></td>
+                  <td width="124">1</td>
+                  <td width="72">0</td>
+                  <td width="72">1</td>
+                  <td width="72"></td>
+                  <td width="72">1</td>
+                  <td width="72">0</td>
+                  <td width="117">0</td>
+                  <td width="109"></td>
+                  <td width="132"></td>
+                  <td width="140"></td>
+                </tr>
+                <tr class="centerHeight">
+                  <td width="82"></td>
+                  <td width="118"></td>
+                  <td width="124"></td>
+                  <td width="72"></td>
+                  <td width="72"></td>
+                  <td width="72"></td>
+                  <td width="72"></td>
+                  <td width="72"></td>
+                  <td width="117"></td>
+                  <td width="109"></td>
+                  <td width="132"></td>
+                  <td width="140"></td>
+                </tr>
+                <tr class="center">
+                  <td width="82"></td>
+                  <td width="118">任务</td>
+                  <td width="124">角色名称</td>
+                  <td width="72">姓名</td>
+                  <td width="72">审批结果</td>
+                  <td width="72">意见</td>
+                  <td width="72">审批时间</td>
+                  <td width="72"></td>
+                  <td width="117"></td>
+                  <td width="109"></td>
+                  <td width="132"></td>
+                  <td width="140"></td>
+                </tr>
+                <tr class="center"  v-for="row in tableList[0].auditLogs" :key="row.id">
+                  <td width="82"></td>
+                  <td width="118">{{row.taskName}}</td>
+                  <td width="124">{{row.roleName}}</td>
+                  <td width="72">{{row.flowNum}}</td>
+                  <td width="72">{{row.auditResult}}</td>
+                  <td width="72">{{row.advice}}</td>
+                  <td width="72"></td>
+                  <td width="72"></td>
+                  <td width="117"></td>
+                  <td width="109"></td>
+                  <td width="132"></td>
+                  <td width="140"></td>
+                </tr>
+              </tbody>
+              </table>
+          </main>
+          <footer class="vertical-center" slot="footer">
+              <Button style="width: 100px;" disabled>打印</Button>
+              <Button type="primary" disabled style="width: 100px;margin-left:158px">导出</Button>
+          </footer>
     </Modal>
   </div>
 </template>
@@ -112,6 +229,20 @@ export default {
         {
           title: '流水号',
           key: "id",
+          render:(h,params) =>{
+            return h("span",
+                    {
+                      style:{
+                        color:'#2d8cf0',
+                        cursor: 'pointer'
+                      },
+                      on:{
+                        click:()=>{
+                          this.handleLook(params.row)
+                        }
+                      }
+                    },params.row.serialNumber)
+          }
           // width: 110
         },
         {
@@ -136,62 +267,104 @@ export default {
           width: 200,
           align: "center",
           render: (h, params) => {
-            return h("div", [
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "primary",
-                      size: "small"
-                    },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: () => {
-                        this.handle(params.row);
+            if(params.row.status==3){
+              return h("div", [
+                  h(
+                    "Button",
+                    {
+                      props: {
+                        type: "primary",
+                        size: "small"
+                      },
+                      style: {
+                        marginRight: "5px"
+                      },
+                      on: {
+                        click: () => {
+                          this.handle(params.row);
+                        }
                       }
-                    }
-                  },
-                  "处理"
-                ),
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "primary",
-                      size: "small"
                     },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: () => {
-                        this.handle(params.row);
+                    "处理"
+                  ),
+                  h(
+                    "Button",
+                    {
+                      props: {
+                        type: "primary",
+                        size: "small"
+                      },
+                      style: {
+                        marginRight: "5px"
+                      },
+                      on: {
+                        click: () => {
+                          this.edit(params.row);
+                        }
                       }
-                    }
-                  },
-                  "编辑"
-                ),
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "primary",
-                      size: "small"
                     },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: () => {
-                        this.handleLIUCHENGTU(params.row);
+                    "编辑"
+                  ),
+                  h(
+                    "Button",
+                    {
+                      props: {
+                        type: "primary",
+                        size: "small"
+                      },
+                      style: {
+                        marginRight: "5px"
+                      },
+                      on: {
+                        click: () => {
+                          this.handleLIUCHENGTU(params.row);
+                        }
                       }
-                    }
-                  },
-                  "流程图"
-                )
-              ]);
+                    },
+                    "流程图"
+                  )
+                ]);
+            }else{
+              return h("div", [
+                  h(
+                    "Button",
+                    {
+                      props: {
+                        type: "primary",
+                        size: "small"
+                      },
+                      style: {
+                        marginRight: "5px"
+                      },
+                      on: {
+                        click: () => {
+                          this.handle(params.row);
+                        }
+                      }
+                    },
+                    "处理"
+                  ),
+                  h(
+                    "Button",
+                    {
+                      props: {
+                        type: "primary",
+                        size: "small"
+                      },
+                      style: {
+                        marginRight: "5px"
+                      },
+                      on: {
+                        click: () => {
+                          this.handleLIUCHENGTU(params.row);
+                        }
+                      }
+                    },
+                    "流程图"
+                  )
+                ]);
+            }
+
           }
         }
       ],
@@ -199,6 +372,8 @@ export default {
       pageNumber: 1,
       pageSize: 10,
       total: 0,
+      showTaxes:false,
+      tableList:[],
       submitData:{
         companyName:"",
         applicantName:"",
@@ -211,26 +386,40 @@ export default {
     }
   },
   methods: {
+    // 查看详情
+    handleLook(v) {
+      // for(let i=0;i<v.taxApplicationVo.details.length;i++){
+      //
+      // }
+      console.log("v",v)
+
+
+      this.tableList.push(v.taxApplicationVo)
+      this.showTaxes=true
+    },
+    // 编辑
+    edit(v) {
+      this.$store.commit('closePage', 'resubmit')
+      this.$router.push({name: 'resubmit', params: {type: 'taxReadyHandle', params: v}});
+    },
     // 查看流程图
     handleLIUCHENGTU(v){
       let params={
         deploymentId:v.deploymentId,
         filePath:v.filePath
       }
-      //this.loading=true
-      // lookLiuchengtu(params).then(res=>{
-      //   console.log(res)
-      // }).finally(() => {
-      //   this.loading = false;
-      // })
       const that=this
       this.liuchengtu=true
       let base="/api"
       var xhr = new XMLHttpRequest();
+      xhr.responseType = "blob";
         xhr.onreadystatechange = function(){
             if( xhr.readyState == 4){
                 if( xhr.status >= 200 && xhr.status < 300 || xhr.status == 304){
-                  that.liuchengtuInfo="data:image/jpeg;base64,"+xhr.response
+                  let blob = xhr.response
+                  let imgTag = URL.createObjectURL(blob)
+                  // that.liuchengtuInfo="data:image/png;base64,"+xhr.response
+                  that.liuchengtuInfo=imgTag
                 }
             }
         };
@@ -257,19 +446,23 @@ export default {
     initPageData() {
       this.loading = true;
       let params = {
-          page: this.pageNumber,
-          size: this.pageSize,
+        pageVo: {
+          pageNumber: this.pageNumber,
+          pageSize: this.pageSize
+        },
+        searchVo: {
           userId:this.userInfo.id,
           startDate: this.startDate,
           endDate: this.endDate,
           companyName:this.submitData.companyName,
           applicantName:this.submitData.applicantName,
           serialNumber:this.submitData.serialNumber
+        }
       }
       this.loading=true
       taxReadyHandle(params).then(res => {
         this.total = res.data.totalElements;
-        this.data = res.data;
+        this.data = res.data.list;
       }).finally(() => {
         this.loading = false;
       })
@@ -300,20 +493,20 @@ export default {
     },
       // 同意
     handleOk() {
-      let params={
-        taskId:this.submitInfo.serialNumber,
-        operateApprove:this.taxReadyHandle.operateApprove,
-        comment:this.taxReadyHandle.comment,
-        userId:this.userInfo.id,
-        currentHandler:this.taxReadyHandle.currentHandler
-      }
-      dbrwAudit(params).then(res=>{
-        this.initPageData()
-        this.submitInfo={}
-        this.taxReadyHandle={}
-      }).finally(() => {
-        this.loading = false;
-      })
+        let params={
+          taskId:this.submitInfo.serialNumber,
+          operateApprove:this.taxReadyHandle.operateApprove,
+          comment:this.taxReadyHandle.comment,
+          userId:this.userInfo.id,
+          currentHandler:this.taxReadyHandle.currentHandler
+        }
+        dbrwAudit(params).then(res=>{
+          this.initPageData()
+          this.submitInfo={}
+          this.taxReadyHandle={}
+        }).finally(() => {
+          this.loading = false;
+        })
     },
     // 拒绝
     handleRefuse() {
@@ -327,6 +520,25 @@ export default {
   },
   created:function(){
     this.userInfo = JSON.parse(Cookies.get("userInfo"));
+    console.log("adad",this.userInfo)
   }
 }
 </script>
+<style scoped lang="less">
+.taxesTables {
+  border-collapse:collapse;
+  border:1px solid black;
+   tr,td {
+    text-align: center;
+    border: 1px solid black;
+  }
+  .centerHeight {
+    height: 40px;
+    td {
+      border:none;
+    }
+  }
+
+}
+
+</style>

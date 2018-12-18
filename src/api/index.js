@@ -349,7 +349,7 @@ export const taxReadyHandle = params => {
 }
 // 已办申请
 export const taxAlreadyHandle = params => {
-    return postRequest('/tax/alreadyHandle', params)
+    return postRequest('/process/done', params)
 }
 
 //查询流程详情
@@ -427,4 +427,9 @@ export const dbrwAudit=params=>{
 // 代办任务---查看流程图
 export const lookLiuchengtu=params=>{
   return postRequest('/process/image',params)
+}
+
+// 代办任务---放弃和提交
+export const resSubmit=params=>{
+  return postRequest('/process/resubmit',params)
 }

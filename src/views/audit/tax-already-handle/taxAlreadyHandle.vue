@@ -8,17 +8,16 @@
             <DatePicker type="daterange" v-model="submitData.selectDate" format="yyyy-MM-dd" clearable @on-change="selectDateRange" placeholder="选择起始时间" style="width: 200px"></DatePicker>
           </Form-item>
           <Form-item label="公司名称" prop="companyName">
-            <Input  placeholder="请输入公司名称" v-model="submitData.companyName"></Input>
+          <Input  placeholder="请输入公司名称" v-model="submitData.companyName"></Input>
           </Form-item>
-          <Form-item label="流程状态"  >
+          <Form-item label="流程状态"  prop="">
             <Select  placeholder="请选择" style="width: 200px">
-              <Option value="1">开始</Option>
-              <Option value="3">停止</Option>
-              <Option value="2">结束</Option>
+              <Option value="1">已完结</Option>
+              <Option value="0">审批中</Option>
             </Select>
           </Form-item>
-          <Form-item label="申请人" prop="applicantName">
-            <Input  placeholder="请输入申请人" v-model="submitData.applicantName"></Input>
+          <Form-item label="申请人" prop="applicationName">
+            <Input  placeholder="请输入申请人" v-model="submitData.applicationName"></Input>
           </Form-item>
           <Form-item label="流水号" prop="serialNumber">
             <Input  placeholder="请输入流水号" v-model="submitData.serialNumber"></Input>
@@ -47,7 +46,7 @@
                 <tr>
                   <td width="82">公司名称</td>
                   <td colspan="5" width="504">{{tableList[0].companyName}}</td>
-                  <td width="72">税务识别号码</td>
+                  <td width="100">税务识别号码</td>
                   <td colspan="5" width="502">{{tableList[0].tin}}</td>
                 </tr>
                 <tr>
@@ -64,11 +63,11 @@
                 </tr>
                 <tr>
                   <td width="82">所属期间</td>
-                  <td width="118">税种</td>
-                  <td width="124">应缴税额</td>
+                  <td width="80">税种</td>
+                  <td width="100">应缴税额</td>
                   <td width="72">应缴滞纳金</td>
-                  <td width="72">申请缴纳税款</td>
-                  <td width="72">缴款截止日期</td>
+                  <td width="100">申请缴纳税款</td>
+                  <td width="100">缴款截止日期</td>
                   <td width="72">实缴税额</td>
                   <td width="72">实缴滞纳金</td>
                   <td width="117">实际缴纳税款</td>
@@ -81,25 +80,25 @@
                   <td width="118">{{item.taxDict}}</td>
                   <td width="124">{{item.payableTax}}</td>
                   <td width="72">{{item.lateFeePayable}}</td>
+                  <td width="72">{{item.applTaxPayment}}</td>
+                  <td width="72">{{`${item.deadline && new Date(item.deadline).format()}`}}</td>
                   <td width="72">{{item.taxPaid}}</td>
-                  <td width="72">{{item.deadline}}</td>
                   <td width="72">{{item.overduePayment}}</td>
-                  <td width="72">{{item.paymentCertificate}}</td>
-                  <td width="117">{{item.paymentCertificatePath}}</td>
-                  <td width="109">{{item.taxesOrderTime}}</td>
-                  <td width="132">{{item.isUploadTaxReturns}}</td>
+                  <td width="117">{{item.actualTaxPayment}}</td>
+                  <td width="109">{{`${item.taxesOrderTime && new Date(item.taxesOrderTime).format()}`}}</td>
+                  <td width="132">查看</td>
                   <td width="140">{{item.remarks}}</td>
                 </tr>
                 <tr>
                   <td width="82">合计</td>
                   <td width="118"></td>
-                  <td width="124">1</td>
-                  <td width="72">0</td>
-                  <td width="72">1</td>
+                  <td width="124">{{ payableTaxAll }}</td>
+                  <td width="72">{{ lateFeePayableALL }}</td>
+                  <td width="72">{{ applTaxPaymentAll }}</td>
                   <td width="72"></td>
-                  <td width="72">1</td>
-                  <td width="72">0</td>
-                  <td width="117">0</td>
+                  <td width="72">{{ taxPaidAll }}</td>
+                  <td width="72">{{ overduePaymentAll }}</td>
+                  <td width="117">{{ actualTaxPayment }}</td>
                   <td width="109"></td>
                   <td width="132"></td>
                   <td width="140"></td>
@@ -123,7 +122,7 @@
                   <td width="118">任务</td>
                   <td width="124">角色名称</td>
                   <td width="72">姓名</td>
-                  <td width="72">结论</td>
+                  <td width="72">审批结论</td>
                   <td width="72">意见</td>
                   <td width="72">审批时间</td>
                   <td width="72"></td>
@@ -132,19 +131,19 @@
                   <td width="132"></td>
                   <td width="140"></td>
                 </tr>
-                <tr class="center"  v-for="row in tableList[0].auditLogs" :key="row.id">
+                <tr class="center"  v-for="row in infoList" >
                   <td width="82"></td>
                   <td width="118">{{row.taskName}}</td>
                   <td width="124">{{row.roleName}}</td>
-                  <td width="72">{{row.flowNum}}</td>
+                  <td width="72">{{row.name}}</td>
                   <td width="72">{{row.auditResult}}</td>
                   <td width="72">{{row.advice}}</td>
+                  <td width="72">{{`${row.auditDate && new Date(row.auditDate).format()}`}}</td>
                   <td width="72"></td>
                   <td width="72"></td>
                   <td width="117"></td>
                   <td width="109"></td>
                   <td width="132"></td>
-                  <td width="140"></td>
                 </tr>
               </tbody>
               </table>
@@ -158,83 +157,13 @@
 </template>
 
 <script>
-import { taxAlreadyHandle,getTaxAuditLog } from "@/api/index.js";
+import { taxAlreadyHandle,getTaxAuditLog,getAllUserData,getAllCompany } from "@/api/index.js";
+import Cookies from "js-cookie";
 export default {
   name: "taxAlreadyHandle",
   data() {
     return {
-      tableList:[
-        // {
-        //   taxPeriod:'2018-10',
-        //   taxes:'房产税',
-        //   payableTax:600,
-        //   lateFeePayable:10,
-        //   taxPaid:610,
-        //   deadline:'2018-12-01',
-        //   overduePayment:650,
-        //   taxesOrderDilay:50,
-        //   taxesOrderAmount:700,
-        //   taxesOrderTime:'2018-12-15',
-        //   taxesUpload:'上传/预览/删除',
-        //   remarks:'测试数据'
-        // },
-        // {
-        //   taxPeriod:'2018-10',
-        //   taxes:'房产税',
-        //   payableTax:600,
-        //   lateFeePayable:10,
-        //   taxPaid:610,
-        //   deadline:'2018-12-01',
-        //   overduePayment:650,
-        //   taxesOrderDilay:50,
-        //   taxesOrderAmount:700,
-        //   taxesOrderTime:'2018-12-15',
-        //   taxesUpload:'上传/预览/删除',
-        //   remarks:'测试数据'
-        // },
-        // {
-        //   taxPeriod:'2018-10',
-        //   taxes:'房产税',
-        //   payableTax:600,
-        //   lateFeePayable:10,
-        //   taxPaid:610,
-        //   deadline:'2018-12-01',
-        //   overduePayment:650,
-        //   taxesOrderDilay:50,
-        //   taxesOrderAmount:700,
-        //   taxesOrderTime:'2018-12-15',
-        //   taxesUpload:'上传/预览/删除',
-        //   remarks:'测试数据'
-        // },
-        // {
-        //   taxPeriod:'2018-10',
-        //   taxes:'房产税',
-        //   payableTax:600,
-        //   lateFeePayable:10,
-        //   taxPaid:610,
-        //   deadline:'2018-12-01',
-        //   overduePayment:650,
-        //   taxesOrderDilay:50,
-        //   taxesOrderAmount:700,
-        //   taxesOrderTime:'2018-12-15',
-        //   taxesUpload:'上传/预览/删除',
-        //   remarks:'测试数据'
-        // },
-        // {
-        //   taxPeriod:'2018-10',
-        //   taxes:'房产税',
-        //   payableTax:600,
-        //   lateFeePayable:10,
-        //   taxPaid:610,
-        //   deadline:'2018-12-01',
-        //   overduePayment:650,
-        //   taxesOrderDilay:50,
-        //   taxesOrderAmount:700,
-        //   taxesOrderTime:'2018-12-15',
-        //   taxesUpload:'上传/预览/删除',
-        //   remarks:'测试数据'
-        // }
-      ],
+      tableList:[],
       showTaxes:false,
       loading: false,
       columns: [
@@ -250,7 +179,7 @@ export default {
           key: "id",
           // width: 110
           render: (h, params) => {
-            let name = params.row.id;
+            let flowNum = params.row.serialNumber;
             return h(
               "div",
               {
@@ -266,10 +195,10 @@ export default {
                     props: {
                       type: "text",
                       size: "small",
-                      icon: "md-eye"
                     },
                     style: {
-                      color: "blue"
+                      color:'#2d8cf0',
+                      cursor: 'pointer'
                     },
                     on: {
                       click: () => {
@@ -277,7 +206,7 @@ export default {
                       }
                     }
                   },
-                  name
+                  flowNum
                 )
               ]
             );
@@ -290,84 +219,65 @@ export default {
         },
         {
           title: "保存时间",
-          key: "saveTime",
+          key: "createTime",
           render: (h, params) => {
             return h(
               "div",
-              params.row.saveTime && new Date(params.row.saveTime).format()
+              params.row.createTime && new Date(params.row.createTime).format()
             );
           }
           // width: 110
         },{
-          title:"处理环节"
+          title:"处理环节",
+          key:"currentLink"
         },{
-          title:"当前处理人"
+          title:"当前处理人",
+          key:"currentLink"
         }
-        /* {
-          title: '操作',
-          width: 130,
-          align: "center",
-          render: (h, params) => {
-            return h("div", [
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "primary",
-                      size: "small"
-                    },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: () => {
-
-                      }
-                    }
-                  },
-                  "编辑"
-                ),
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "error",
-                      size: "small"
-                    },
-                    on: {
-                      click: () => {
-                        // this.remove(params.row);
-                      }
-                    }
-                  },
-                  "删除"
-                )
-              ]);
-          }
-        } */
-      ],
-      data: [
         // {
-        //   id: "1ca4b097e00444278222e2818a422e57",
-        //   companyName: "元活该哈哈",
-        //   saveTime: "2018-01-08"
-        // },
-        // {
-        //   id: "240c398c12a14d23ace250a8ec91cd96",
-        //   companyName: "元活该哈哈",
-        //   saveTime: "2018-01-08"
-        // },
-        // {
-        //   id: "240c398c12a14d23ace250a8ec91cd96",
-        //   companyName: "元活该哈哈",
-        //   saveTime: "2018-01-08"
-        // },
-        // {
-        //   id: "240c398c12a14d23ace250a8ec91cd96",
-        //   companyName: "元活该哈哈",
-        //   saveTime: "2018-01-08"
+        //   title: '操作',
+        //   width: 130,
+        //   align: "center",
+        //   render: (h, params) => {
+        //     return h("div", [
+        //         h(
+        //           "Button",
+        //           {
+        //             props: {
+        //               type: "primary",
+        //               size: "small"
+        //             },
+        //             style: {
+        //               marginRight: "5px"
+        //             },
+        //             on: {
+        //               click: () => {
+        //
+        //               }
+        //             }
+        //           },
+        //           "编辑"
+        //         ),
+        //         h(
+        //           "Button",
+        //           {
+        //             props: {
+        //               type: "error",
+        //               size: "small"
+        //             },
+        //             on: {
+        //               click: () => {
+        //                 // this.remove(params.row);
+        //               }
+        //             }
+        //           },
+        //           "删除"
+        //         )
+        //       ]);
+        //   }
         // }
       ],
+      data: [],
       pageNumber: 1,
       pageSize: 10,
       total: 0,
@@ -376,7 +286,14 @@ export default {
         companyName:"",
         serialNumber:"",
         applicantName:""
-      }
+      },
+      userInfo:{},
+       payableTaxAll:0,//应缴税额合计
+       lateFeePayableALL:0,  //应缴滞纳金合计
+       applTaxPaymentAll:0,  //申请缴纳税款合计
+       taxPaidAll:0,   //实缴税额合计    taxPaid
+       overduePaymentAll:0,// 实缴滞纳金合计   overduePayment
+       actualTaxPayment:0//实际缴纳税款合计
     };
   },
   methods: {
@@ -395,7 +312,31 @@ export default {
         })
     },
     changeNo(val) {
-      this.getTaxAuditLog(val.id)
+      // this.getTaxAuditLog(val.id)
+      console.log("val",val)
+      this.tableList.push(val.taxApplicationVo)
+      var tempData=val.taxApplicationVo.details
+      var  payableTaxALL=0 // 应缴税额合计
+      var  lateFeePayable=0// 应缴滞纳金合计
+      var  applTaxPayment=0 // 申请纳税款合计
+      var  taxPaid=0 // 实缴税款合计
+      var  overduePayment=0 //实缴滞纳金合计
+      var  taxsjsk=0 // 实缴税款合计
+      for(let i=0;i<tempData.length;i++) {
+          payableTaxALL+=tempData[i].payableTax
+          lateFeePayable+=tempData[i].lateFeePayable
+          applTaxPayment=payableTaxALL+lateFeePayable
+          taxPaid+=tempData[i].taxPaid
+          overduePayment+=tempData[i].overduePayment
+          taxsjsk=taxPaid+overduePayment
+      }
+      this.payableTaxAll=payableTaxALL               //应缴税额合计
+      this.lateFeePayableALL=lateFeePayable                      //应缴滞纳金合计
+      this.applTaxPaymentAll=applTaxPayment                   //申请缴纳税款合计
+      this.taxPaidAll=taxPaid                        //实缴税额合计    taxPaid
+      this.overduePaymentAll= overduePayment                     // 实缴滞纳金合计   overduePayment
+      this.actualTaxPayment=taxsjsk               //实际缴纳税款合计
+      this.infoList=val.auditLogVoList
       this.showTaxes = true;
     },
     init() {
@@ -409,16 +350,18 @@ export default {
           pageSize: this.pageSize
         },
         searchVo: {
+          userId:this.userInfo.id,
           startDate: this.startDate,
           endDate: this.endDate,
+          flowStatus:this.submitData.flowStatus,
           companyName:this.submitData.companyName,
           serialNumber:this.submitData.serialNumber,
-          applicantName:this.submitData.applicantName
+          applicationName:this.submitData.applicationName
         }
       };
       taxAlreadyHandle(params)
         .then(res => {
-          this.total = res.data.totalElements;
+          this.total = res.data.total;
           this.data = res.data.list;
         })
         .finally(() => {
@@ -443,6 +386,9 @@ export default {
   },
   mounted() {
     this.init();
+  },
+  created:function(){
+    this.userInfo = JSON.parse(Cookies.get("userInfo"));
   }
 };
 </script>

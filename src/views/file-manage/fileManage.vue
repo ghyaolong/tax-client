@@ -174,7 +174,7 @@ export default {
         }
       }
       getFilesList(params).then(res => {
-        this.total = res.data.totalElements;
+        this.total = res.data.total;
         this.data = res.data.list;
       }).finally(() => {
         this.loading = false;

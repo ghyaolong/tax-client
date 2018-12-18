@@ -73,7 +73,8 @@ export const otherRouter = {
         { path: 'ownspace', title: '个人中心', name: 'ownspace_index', component: () => import('@/views/own-space/own-space.vue') },
         { path: 'ownspace-old', title: '个人中心(旧)', name: 'ownspace_old', component: () => import('@/views/own-space/own-space-old.vue') },
         { path: 'change-pass', title: '修改密码', name: 'change_pass', component: () => import('@/views/change-pass/change-pass.vue') },
-        { path: 'message', title: '消息中心', name: 'message_index', component: () => import('@/views/message/message.vue') }
+        { path: 'message', title: '消息中心', name: 'message_index', component: () => import('@/views/message/message.vue') },
+        { path: 'resubmit', title: '税金申请', name: 'resubmit', component: () => import('@/views/audit/tax-ready-handle/huixianshujuyemian') }
     ]
 };
 
@@ -105,5 +106,5 @@ export const routers = [
     locking,
     ...appRouter,
     page500,
-    page403
+    page403,
 ];

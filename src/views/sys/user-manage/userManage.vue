@@ -1003,7 +1003,7 @@ export default {
         this.userForm.departmentTitle = this.userForm.departments[0].name;
       }
       let selectCompanyIds = [];
-      this.userForm.companys.forEach(e => {
+      this.userForm.companys && this.userForm.companys.forEach(e => {
         selectCompanyIds.push(e.id);
       });
       // this.initCompany()
