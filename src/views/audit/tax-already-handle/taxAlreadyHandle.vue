@@ -36,8 +36,10 @@
     </Card>
     </Col>
     </Row>
+
     <Modal title="税金申请表单" scrollable v-model="showTaxes" :mask-closable='false' :width="1220" style="overflow-y:scroll;">
           <main v-if="tableList.length>0">
+            <!--startprint1-->
              <table width="1182" height="625" class="taxesTables">
                 <tbody>
                   <tr>
@@ -63,94 +65,98 @@
                 </tr>
                 <tr>
                   <td width="82">所属期间</td>
-                  <td width="80">税种</td>
-                  <td width="100">应缴税额</td>
-                  <td width="72">应缴滞纳金</td>
+                  <td width="60">税种</td>
+                  <td width="80">应缴税额</td>
+                  <td width="80">应缴滞纳金</td>
                   <td width="100">申请缴纳税款</td>
                   <td width="100">缴款截止日期</td>
-                  <td width="72">实缴税额</td>
-                  <td width="72">实缴滞纳金</td>
-                  <td width="117">实际缴纳税款</td>
-                  <td width="109">实际缴纳时间</td>
-                  <td width="132">附件</td>
-                  <td width="140">备注</td>
+                  <td width="80">实缴税额</td>
+                  <td width="80">实缴滞纳金</td>
+                  <td width="100">实际缴纳税款</td>
+                  <td width="100">实际缴纳时间</td>
+                  <td width="100">附件</td>
+                  <td width="120">备注</td>
                 </tr>
                 <tr v-for="item in tableList[0].details" :key="item.id">
-                  <td width="82">{{item.taxPeriod}}</td>
-                  <td width="118">{{item.taxDict}}</td>
-                  <td width="124">{{item.payableTax}}</td>
-                  <td width="72">{{item.lateFeePayable}}</td>
-                  <td width="72">{{item.applTaxPayment}}</td>
-                  <td width="72">{{`${item.deadline && new Date(item.deadline).format()}`}}</td>
-                  <td width="72">{{item.taxPaid}}</td>
-                  <td width="72">{{item.overduePayment}}</td>
-                  <td width="117">{{item.actualTaxPayment}}</td>
-                  <td width="109">{{`${item.taxesOrderTime && new Date(item.taxesOrderTime).format()}`}}</td>
-                  <td width="132">查看</td>
-                  <td width="140">{{item.remarks}}</td>
+                  <td >{{item.taxPeriod}}</td>
+                  <td >{{item.taxDict}}</td>
+                  <td >{{item.payableTax}}</td>
+                  <td >{{item.lateFeePayable}}</td>
+                  <td >{{item.applTaxPayment}}</td>
+                  <td >{{`${item.deadline && new Date(item.deadline).format()}`}}</td>
+                  <td >{{item.taxPaid}}</td>
+                  <td >{{item.overduePayment}}</td>
+                  <td >{{item.actualTaxPayment}}</td>
+                  <td >{{`${item.taxesOrderTime && new Date(item.taxesOrderTime).format()}`}}</td>
+                  <td >
+                    <span class="myspan" @click="handleLook(item)">查看</span>
+                    <span class="myspan" @click="handleLoad(item)">下载</span>
+                  </td>
+                  <td >{{item.remarks}}</td>
                 </tr>
                 <tr>
-                  <td width="82">合计</td>
-                  <td width="118"></td>
-                  <td width="124">{{ payableTaxAll }}</td>
-                  <td width="72">{{ lateFeePayableALL }}</td>
-                  <td width="72">{{ applTaxPaymentAll }}</td>
-                  <td width="72"></td>
-                  <td width="72">{{ taxPaidAll }}</td>
-                  <td width="72">{{ overduePaymentAll }}</td>
-                  <td width="117">{{ actualTaxPayment }}</td>
-                  <td width="109"></td>
-                  <td width="132"></td>
-                  <td width="140"></td>
+                  <td >合计</td>
+                  <td ></td>
+                  <td >{{ payableTaxAll }}</td>
+                  <td >{{ lateFeePayableALL }}</td>
+                  <td >{{ applTaxPaymentAll }}</td>
+                  <td ></td>
+                  <td >{{ taxPaidAll }}</td>
+                  <td >{{ overduePaymentAll }}</td>
+                  <td >{{ actualTaxPayment }}</td>
+                  <td ></td>
+                  <td ></td>
+                  <td></td>
                 </tr>
                 <tr class="centerHeight">
-                  <td width="82"></td>
-                  <td width="118"></td>
-                  <td width="124"></td>
-                  <td width="72"></td>
-                  <td width="72"></td>
-                  <td width="72"></td>
-                  <td width="72"></td>
-                  <td width="72"></td>
-                  <td width="117"></td>
-                  <td width="109"></td>
-                  <td width="132"></td>
-                  <td width="140"></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
                 </tr>
                 <tr class="center">
-                  <td width="82"></td>
-                  <td width="118">任务</td>
-                  <td width="124">角色名称</td>
-                  <td width="72">姓名</td>
-                  <td width="72">审批结论</td>
-                  <td width="72">意见</td>
-                  <td width="72">审批时间</td>
-                  <td width="72"></td>
-                  <td width="117"></td>
-                  <td width="109"></td>
-                  <td width="132"></td>
-                  <td width="140"></td>
+                  <td ></td>
+                  <td >任务</td>
+                  <td >角色名称</td>
+                  <td >姓名</td>
+                  <td >审批结论</td>
+                  <td >意见</td>
+                  <td >审批时间</td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
                 </tr>
                 <tr class="center"  v-for="row in infoList" >
-                  <td width="82"></td>
-                  <td width="118">{{row.taskName}}</td>
-                  <td width="124">{{row.roleName}}</td>
-                  <td width="72">{{row.name}}</td>
-                  <td width="72">{{row.auditResult}}</td>
-                  <td width="72">{{row.advice}}</td>
-                  <td width="72">{{`${row.auditDate && new Date(row.auditDate).format()}`}}</td>
-                  <td width="72"></td>
-                  <td width="72"></td>
-                  <td width="117"></td>
-                  <td width="109"></td>
-                  <td width="132"></td>
+                  <td ></td>
+                  <td>{{row.taskName}}</td>
+                  <td >{{row.roleName}}</td>
+                  <td >{{row.name}}</td>
+                  <td>{{row.auditResult}}</td>
+                  <td >{{row.advice}}</td>
+                  <td >{{`${row.auditDate && new Date(row.auditDate).format()}`}}</td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
                 </tr>
               </tbody>
               </table>
+              <!--endprint1-->
           </main>
           <footer class="vertical-center" slot="footer">
-              <Button style="width: 100px;" disabled>打印</Button>
-              <Button type="primary" disabled style="width: 100px;margin-left:158px">导出</Button>
+              <Button style="width: 100px;" @click="handleDayin">打印</Button>
+              <Button type="primary"  style="width: 100px;margin-left:158px">导出</Button>
           </footer>
     </Modal>
   </div>
@@ -297,6 +303,18 @@ export default {
     };
   },
   methods: {
+    // 打印
+    handleDayin() {
+      window.print();
+    },
+    // 查看
+    handleLook(item) {
+      console.log("item",item)
+    },
+    // 下载
+    handleLoad(item){
+
+    },
     reSet(){
       this.startDate=""
       this.endDate=""
@@ -409,6 +427,11 @@ export default {
     td {
       border:none;
     }
+  }
+  .myspan {
+    cursor: pointer;
+    color:rgb(45, 140, 240);
+    padding: 2px;
   }
 
 }

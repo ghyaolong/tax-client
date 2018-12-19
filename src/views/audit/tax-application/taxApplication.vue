@@ -25,6 +25,9 @@
         <Form ref="form" :model="form" inline :label-width="90" class="search-form">
           <Form-item label="公司名称" prop="companyId">
             <Select v-model="form.companyId" filterable style="width: 200px" @on-change="changeCompany" label-in-value>
+              <Option :value="-1">
+                请选择
+              </Option>
               <Option v-for="item in companyList" :value="item.id" :key="item.id" :label="item.name">
               </Option>
             </Select>
@@ -837,21 +840,24 @@ export default {
       })
     },
     /* 选择公司后获取对应的税种等信息 */
-    changeCompany(company={name: '', label:''}) {
+    changeCompany(company) {
+      // company={name: '', label:''}
       // debugger
-      const that=this
-      this.loading = true;
-      getCompanyByName({name: company.label})
-        .then(res => {
-          this.form.tin = res.data.tin;
-          this.form.companyName = company.label;
-          this.form.countryCode = res.data.countryCode;
-          this.form.currency = res.data.currencyCode;
-          that.addColumnByCompany(that.renderTaxDict(res.data.dicts))
-        })
-        .finally(() => {
-          this.loading = false;
-        })
+      if(company) {
+        const that=this
+        this.loading = true;
+        getCompanyByName({name: company.label})
+          .then(res => {
+            this.form.tin = res.data.tin;
+            this.form.companyName = company.label;
+            this.form.countryCode = res.data.countryCode;
+            this.form.currency = res.data.currencyCode;
+            that.addColumnByCompany(that.renderTaxDict(res.data.dicts))
+          })
+          .finally(() => {
+            this.loading = false;
+          })
+      }
     },
     // 处理选择公司后的数据，返回税种code
     renderTaxDict(arry) {
@@ -982,7 +988,7 @@ export default {
                 remarks: '',
                 status:0
               }]
-        this.$forceUpdate()
+        // this.$forceUpdate()
         this.$Message.success('操作成功')
       }).finally(() => {
         this.loading = false;

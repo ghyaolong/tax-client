@@ -28,6 +28,8 @@ Vue.use(iviewArea);
 Vue.component('icon', Icon);
 Vue.use(VueVirtualScroller)
 Vue.use(hasPermission);
+
+
 // 挂载全局使用的方法
 Vue.prototype.getRequest = getRequest;
 Vue.prototype.postRequest = postRequest;
