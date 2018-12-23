@@ -46,28 +46,31 @@
       v-model="handelModal"
       title="请处理"
       class-name="vertical-center-modal"
-      @on-ok="handleOk"
-      @on-cancel="handleRefuse"
+
       width="400">
-      <Form :model="taxReadyHandle">
-        <FormItem label="操作" :label-width="80">
+      <Form :model="taxReadyHandle" :rules="taxReadyHandleValidate" ref="taxReadyHandlefrom">
+        <FormItem label="操作" :label-width="100" prop="operateApprove">
           <Select v-model="taxReadyHandle.operateApprove" >
             <Option value="0" >同意</Option>
             <Option value="1" >拒绝</Option>
           </Select>
         </FormItem>
-        <FormItem label="审批意见" :label-width="80" v-if="taxReadyHandle.operateApprove != '1'">
+        <FormItem label="审批意见" :label-width="100" v-if="taxReadyHandle.operateApprove != '1'">
           <Input type="textarea" v-model="taxReadyHandle.comment" placeholder="请输入审批意见"></Input>
         </FormItem>
-        <Form-item label="选择审核人" prop="currentHandler" v-if="taxReadyHandle.operateApprove != '1'" :label-width="80">
+        <Form-item label="选择审核人" prop="currentHandler" v-if="taxReadyHandle.operateApprove != '1'" :label-width="100">
           <Select v-model="taxReadyHandle.currentHandler" >
             <Option v-for="item in reviewers" :value="item.id" :key="item.id">{{ item.realName }}</Option>
           </Select>
         </Form-item>
-        <FormItem label="拒绝原因" v-if="taxReadyHandle.operateApprove === '1'" :label-width="80">
+        <FormItem label="拒绝原因" v-if="taxReadyHandle.operateApprove === '1'" :label-width="100">
           <Input type="textarea" v-model="taxReadyHandle.comment" placeholder="请输入拒绝原因"></Input>
         </FormItem>
       </Form>
+      <footer class="vertical-center" slot="footer">
+          <Button style="width: 100px;" @click="handleRefuse">取消</Button>
+          <Button type="primary"  style="width: 100px;margin-left:158px" @click="handleOk">同意</Button>
+      </footer>
     </Modal>
     <Modal
       v-model="liuchengtu"
@@ -220,6 +223,10 @@ export default {
       	comment:"",
       	userId:"",
       	currentHandler:""
+      },
+      taxReadyHandleValidate: {
+        operateApprove:[{required:true,message:"请选择",trigger: 'blur'}],
+        currentHandler:[{required:true,message:"请选择",trigger: 'blur'}]
       },
       columns: [
         {
@@ -510,32 +517,44 @@ export default {
     handle(v) {
       console.log("v",v)
       this.submitInfo=v
+      const that=this;
         getReviewer().then(res => {
-          this.reviewers = res.data;
-          this.handelModal = true;
+          that.reviewers = res.data;
+          that.handelModal = true;
         })
     },
       // 同意
     handleOk() {
-        let params={
-          taskId:this.submitInfo.serialNumber,
-          operateApprove:this.taxReadyHandle.operateApprove,
-          comment:this.taxReadyHandle.comment,
-          userId:this.userInfo.id,
-          currentHandler:this.taxReadyHandle.currentHandler
+      const that = this
+      this.$refs['taxReadyHandlefrom'].validate((valid)=>{
+        if (valid) {
+          let params={
+            taskId:this.submitInfo.serialNumber,
+            operateApprove:this.taxReadyHandle.operateApprove,
+            comment:this.taxReadyHandle.comment,
+            userId:this.userInfo.id,
+            currentHandler:this.taxReadyHandle.currentHandler
+          }
+          dbrwAudit(params).then(res=>{
+            that.initPageData()
+            that.submitInfo={}
+            that.taxReadyHandle={}
+            that.handelModal=false
+          }).finally(() => {
+            // this.loading = false;
+
+          })
+        }else {
+          that.handelModal=true
         }
-        dbrwAudit(params).then(res=>{
-          this.initPageData()
-          this.submitInfo={}
-          this.taxReadyHandle={}
-        }).finally(() => {
-          this.loading = false;
-        })
+      })
     },
     // 拒绝
     handleRefuse() {
       this.submitInfo={}
       this.taxReadyHandle={}
+      this.handelModal=false
+      this.$refs['taxReadyHandlefrom'].resetFields()
     },
   },
   mounted() {

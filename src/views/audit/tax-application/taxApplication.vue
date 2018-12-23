@@ -500,7 +500,12 @@ export default {
       this.loading = true;
       console.log("params",params)
       submitJJSQ(params).then((res)=>{
-        this.$Message.success('操作成功')
+        console.log('22222222',res)
+        if(res.data == "启动流程失败") {
+          this.$Message.error("启动流程失败")
+        }else{
+          this.$Message.success('操作成功')          
+        }
         this.form={
           companyId: '',
           companyName: '',
