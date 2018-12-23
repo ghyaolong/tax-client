@@ -179,14 +179,14 @@
                   <td ></td>
                   <td ></td>
                 </tr>
-                <tr class="center"  v-for="row in this.auditLogVoList" :key="row.id">
+                <tr class="center"  v-for="row in shenpiyijian" :key="row.id">
                   <td ></td>
                   <td >{{row.taskName}}</td>
                   <td >{{row.roleName}}</td>
-                  <td >{{row.flowNum}}</td>
+                  <td >{{row.name}}</td>
                   <td >{{row.auditResult}}</td>
                   <td >{{row.advice}}</td>
-                  <td ></td>
+                  <td >{{`${row.auditDate && new Date(row.auditDate).format()}`}}</td>
                   <td ></td>
                   <td ></td>
                   <td ></td>
@@ -272,24 +272,6 @@ export default {
           render: (h, params) => {
             if(params.row.status==3){
               return h("div", [
-                  h(
-                    "Button",
-                    {
-                      props: {
-                        type: "primary",
-                        size: "small"
-                      },
-                      style: {
-                        marginRight: "5px"
-                      },
-                      on: {
-                        click: () => {
-                          this.handle(params.row);
-                        }
-                      }
-                    },
-                    "处理"
-                  ),
                   h(
                     "Button",
                     {
@@ -398,7 +380,6 @@ export default {
   methods: {
     // 查看详情
     handleLook(v) {
-      this.shenpiyijian=[]
       let tempData = v.details;
       var  payableTaxALL=0 // 应缴税额合计
       var  lateFeePayable=0// 应缴滞纳金合计
@@ -423,6 +404,8 @@ export default {
       this.tableList=[v]
       if(v.auditLogVoList) {
         this.shenpiyijian=v.auditLogVoList
+      }else{
+        this.shenpiyijian=[]
       }
       this.showTaxes=true
       console.log("v",v)

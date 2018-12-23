@@ -434,6 +434,30 @@ export default {
       }
       this.loading = true;
       resSubmit(params).then(res=>{
+        this.form={
+          companyId: '',
+          companyName: '',
+          tin: '',
+          countryCode: '',
+          currency: '',
+          applicantName: '',
+          remarks: '',
+          currentHandler: '',
+          financialReport: '',
+          financialReportPath: '',
+        }
+        this.data=[{ taxPeriod: '',
+                taxDict: '',
+                payableTax: 0,
+                lateFeePayable: 0,
+                applTaxPayment: '',
+                deadline: '',
+                taxPaid: 0,
+                overduePayment: 0,
+                paymentTime: '',
+                taxReturns: '',
+                remarks: '',
+              }]
         this.$Message.success('操作成功')
       }).finally(()=>{
         this.loading = false;
