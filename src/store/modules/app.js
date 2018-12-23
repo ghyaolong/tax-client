@@ -24,7 +24,7 @@ const app = {
                 path: '',
                 name: 'home_index'
             }
-        ], 
+        ],
         // 面包屑数组
         menuList: [],
         routers: [

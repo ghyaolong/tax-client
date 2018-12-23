@@ -3,7 +3,8 @@ import { getRequest, formPostRequest, postRequest, putRequest, deleteRequest, up
 
 // 登陆
 export const login = (params) => {
-    return formPostRequest('/login', params)
+     return formPostRequest('/login', params)
+     // return postRequest('/process/start', params)
 }
 // 获取用户登录信息
 export const userInfo = (params) => {

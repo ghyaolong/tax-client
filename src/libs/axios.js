@@ -5,7 +5,9 @@ import { Message } from 'iview';
 import Cookies from 'js-cookie';
 // 统一请求路径前缀
 // let base = '/xboot';
-let base = '/api';
+// let base = 'http://23j117x761.imwork.net';
+// let base = 'http://114.115.161.193:8080/api'
+ let base = '/api'
 // 超时设定
 // axios.defaults.timeout = 15000;
 

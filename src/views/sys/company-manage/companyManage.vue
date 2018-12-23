@@ -167,7 +167,7 @@ export default {
           sortable: true,
           width: 160,
           render: (h, params) => {
-            return h("div", new Date(params.row.establishmentTime).format());
+            return h("div", params.row.establishmentTime && new Date(params.row.establishmentTime).format());
           }
         },
         {

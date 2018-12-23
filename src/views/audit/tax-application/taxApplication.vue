@@ -874,6 +874,7 @@ export default {
       if (res && res.status == 1) {
         return this.$Message.error(res.errMsg);
       }else{
+        this.$Message("操作成功");
         this.form.financialReport = res.data.id;
         this.form.financialReportPath = res.data.fileName;
       }

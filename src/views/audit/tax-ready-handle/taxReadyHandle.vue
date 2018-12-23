@@ -75,7 +75,7 @@
       class-name="vertical-center-modal"
       @on-ok="handleOkliuchengtu"
       @on-cancel="handleRefuseliuchengtu"
-      width="500px"
+      width="600px"
       >
       <div style="height:500px">
         <img :src="liuchengtuInfo" width="100%" height="100%"/>
@@ -90,79 +90,82 @@
                 </tr>
                 <tr>
                   <td width="82">公司名称</td>
-                  <td colspan="5" width="200">{{tableList[0].companyName}}</td>
+                  <td colspan="5" width="504">{{tableList[0].companyName}}</td>
                   <td width="100">税务识别号码</td>
-                  <td colspan="5" width="200">{{tableList[0].tin}}</td>
+                  <td colspan="5" width="502">{{tableList[0].tin}}</td>
                 </tr>
                 <tr>
                   <td width="82">国家</td>
-                  <td colspan="5" width="200">{{tableList[0].countryName}}</td>
+                  <td colspan="5" width="504">{{tableList[0].countryName}}</td>
                   <td width="72">币种</td>
-                  <td colspan="5" width="200">{{tableList[0].currency}}</td>
+                  <td colspan="5" width="502">{{tableList[0].currency}}</td>
                 </tr>
                 <tr>
                   <td width="82">申请人</td>
-                  <td colspan="5" width="200">{{tableList[0].applicantName}}</td>
+                  <td colspan="5" width="504">{{tableList[0].applicantName}}</td>
                   <td width="72">备注</td>
-                  <td colspan="5" >{{tableList[0].remarks}}</td>
+                  <td colspan="5" width="502">{{tableList[0].remarks}}</td>
                 </tr>
                 <tr>
                   <td width="82">所属期间</td>
-                  <td width="80">税种</td>
-                  <td width="90">应缴税额</td>
-                  <td width="72">应缴滞纳金</td>
-                  <td width="120">申请缴纳税款</td>
+                  <td width="60">税种</td>
+                  <td width="80">应缴税额</td>
+                  <td width="80">应缴滞纳金</td>
+                  <td width="100">申请缴纳税款</td>
                   <td width="100">缴款截止日期</td>
-                  <td width="72">实缴税额</td>
-                  <td width="72">实缴滞纳金</td>
-                  <td width="117">实际缴纳税款</td>
-                  <td width="109">实际缴纳时间</td>
-                  <td width="132">附件</td>
-                  <td width="140">备注</td>
+                  <td width="80">实缴税额</td>
+                  <td width="80">实缴滞纳金</td>
+                  <td width="100">实际缴纳税款</td>
+                  <td width="100">实际缴纳时间</td>
+                  <td width="100">附件</td>
+                  <td width="120">备注</td>
                 </tr>
                 <tr v-for="item in tableList[0].details" :key="item.id">
-                  <td width="82">{{item.taxPeriod}}</td>
-                  <td width="118">{{item.taxDict}}</td>
-                  <td width="124">{{item.payableTax}}</td>
-                  <td width="72">{{item.lateFeePayable}}</td>
-                  <td width="72">{{item.taxPaid}}</td>
-                  <td width="72">{{`${new Date(item.deadline).format()}`}}</td>
-                  <td width="72">{{item.overduePayment}}</td>
-                  <td width="72">{{item.paymentCertificate}}</td>
-                  <td width="117">{{item.paymentCertificatePath}}</td>
-                  <td width="109">{{ `${new Date(item.paymentTime).format()}` }}</td>
-                  <td width="132">{{item.isUploadTaxReturns}}</td>
-                  <td width="140">{{item.remarks}}</td>
+                  <td >{{item.taxPeriod}}</td>
+                  <td >{{item.taxDict}}</td>
+                  <td >{{item.payableTax}}</td>
+                  <td >{{item.lateFeePayable}}</td>
+                  <td >{{item.applTaxPayment}}</td>
+                  <td >{{`${new Date(item.deadline).format()}`}}</td>
+                  <td >{{item.taxPaid}}</td>
+                  <td>{{item.overduePayment}}</td>
+                  <td>{{item.taxPaid + item.overduePayment}}</td>
+                  <td >{{ `${new Date(item.paymentTime).format()}` }}</td>
+                  <td >
+                    <span class="myspan" @click="handleChakan(item)">查看</span>
+                    <span class="myspan" @click="handleDown(item)">下载</span>
+                  </td>
+                  <td >{{item.remarks}}</td>
                 </tr>
                 <tr>
-                  <td width="82">合计</td>
-                  <td width="118"></td>
-                  <td width="124">1</td>
-                  <td width="72">0</td>
-                  <td width="72">1</td>
-                  <td width="72"></td>
-                  <td width="72">1</td>
-                  <td width="72">0</td>
-                  <td width="117">0</td>
-                  <td width="109"></td>
-                  <td width="132"></td>
-                  <td width="140"></td>
+                  <td >合计</td>
+                  <td ></td>
+                  <td >{{ payableTaxAll }}</td>
+                  <td >{{ lateFeePayableALL }}</td>
+                  <td >{{ applTaxPaymentAll }}</td>
+                  <td ></td>
+                  <td >{{ taxPaidAll }}</td>
+                  <td >{{ overduePaymentAll }}</td>
+                  <td >{{ actualTaxPayment }}</td>
+                  <td ></td>
+                  <td ></td>
+                  <td></td>
                 </tr>
                 <tr class="centerHeight">
-                  <td width="82"></td>
-                  <td width="118"></td>
-                  <td width="124"></td>
-                  <td width="72"></td>
-                  <td width="72"></td>
-                  <td width="72"></td>
-                  <td width="72"></td>
-                  <td width="72"></td>
-                  <td width="117"></td>
-                  <td width="109"></td>
-                  <td width="132"></td>
-                  <td width="140"></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
                 </tr>
-                <tr class="center">
+                <!-- <tr class="center">
                   <td width="82"></td>
                   <td width="118">任务</td>
                   <td width="124">角色名称</td>
@@ -189,13 +192,13 @@
                   <td width="109"></td>
                   <td width="132"></td>
                   <td width="140"></td>
-                </tr>
+                </tr> -->
               </tbody>
               </table>
           </main>
           <footer class="vertical-center" slot="footer">
-              <Button style="width: 100px;" disabled>打印</Button>
-              <Button type="primary" disabled style="width: 100px;margin-left:158px">导出</Button>
+              <!-- <Button style="width: 100px;" disabled>打印</Button> -->
+              <!-- <Button type="primary" disabled style="width: 100px;margin-left:158px">导出</Button> -->
           </footer>
     </Modal>
   </div>
@@ -383,19 +386,50 @@ export default {
       submitInfo:{},
       liuchengtu:false, // 流程图弹出窗
       liuchengtuInfo:"", // 流程图内容
+      payableTaxAll:0,//应缴税额合计
+      lateFeePayableALL:0,  //应缴滞纳金合计
+      applTaxPaymentAll:0,  //申请缴纳税款合计
+      taxPaidAll:0,   //实缴税额合计    taxPaid
+      overduePaymentAll:0,// 实缴滞纳金合计   overduePayment
+      actualTaxPayment:0//实际缴纳税款合计
     }
   },
   methods: {
     // 查看详情
     handleLook(v) {
-      // for(let i=0;i<v.taxApplicationVo.details.length;i++){
-      //
-      // }
+      let tempData = v.details;
+      var  payableTaxALL=0 // 应缴税额合计
+      var  lateFeePayable=0// 应缴滞纳金合计
+      var  applTaxPayment=0 // 申请纳税款合计
+      var  taxPaid=0 // 实缴税款合计
+      var  overduePayment=0 //实缴滞纳金合计
+      var  taxsjsk=0 // 实缴税款合计
+      for(let i=0;i<tempData.length;i++) {
+          payableTaxALL+=tempData[i].payableTax
+          lateFeePayable+=tempData[i].lateFeePayable
+          applTaxPayment=payableTaxALL+lateFeePayable
+          taxPaid+=tempData[i].taxPaid
+          overduePayment+=tempData[i].overduePayment
+          taxsjsk=taxPaid+overduePayment
+      }
+      this.payableTaxAll=payableTaxALL               //应缴税额合计
+      this.lateFeePayableALL=lateFeePayable                      //应缴滞纳金合计
+      this.applTaxPaymentAll=applTaxPayment                   //申请缴纳税款合计
+      this.taxPaidAll=taxPaid                        //实缴税额合计    taxPaid
+      this.overduePaymentAll= overduePayment                     // 实缴滞纳金合计   overduePayment
+      this.actualTaxPayment=taxsjsk               //实际缴纳税款合计
+      this.tableList=[v]
+      this.showTaxes=true
       console.log("v",v)
 
+    },
+    // 查看
+    handleChakan(item) {
 
-      this.tableList.push(v.taxApplicationVo)
-      this.showTaxes=true
+    },
+    // 下载
+    handleDown(item) {
+
     },
     // 编辑
     edit(v) {
@@ -404,28 +438,30 @@ export default {
     },
     // 查看流程图
     handleLIUCHENGTU(v){
-      let params={
-        deploymentId:v.deploymentId,
-        filePath:v.filePath
-      }
-      const that=this
+      // let params={
+      //   deploymentId:v.deploymentId,
+      //   filePath:v.filePath
+      // }
+      // const that=this
+      // let base = '/api';
       this.liuchengtu=true
-      let base="/api"
-      var xhr = new XMLHttpRequest();
-      xhr.responseType = "blob";
-        xhr.onreadystatechange = function(){
-            if( xhr.readyState == 4){
-                if( xhr.status >= 200 && xhr.status < 300 || xhr.status == 304){
-                  let blob = xhr.response
-                  let imgTag = URL.createObjectURL(blob)
-                  // that.liuchengtuInfo="data:image/png;base64,"+xhr.response
-                  that.liuchengtuInfo=imgTag
-                }
-            }
-        };
-        xhr.open("post",`${base}/process/image`,true);
-        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        xhr.send(JSON.stringify(params));
+      this.liuchengtuInfo = `/api/process/${v.filePath}`
+      // let base="/api"
+      // var xhr = new XMLHttpRequest();
+      // xhr.responseType = "blob";
+      //   xhr.onreadystatechange = function(){
+      //       if( xhr.readyState == 4){
+      //           if( xhr.status >= 200 && xhr.status < 300 || xhr.status == 304){
+      //             let blob = xhr.response
+      //             let imgTag = URL.createObjectURL(blob)
+      //             // that.liuchengtuInfo="data:image/png;base64,"+xhr.response
+      //             that.liuchengtuInfo=imgTag
+      //           }
+      //       }
+      //   };
+      //   xhr.open("post",`${base}/process/image`,true);
+      //   xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      //   xhr.send(JSON.stringify(params));
     },
     handleOkliuchengtu(){
       this.liuchengtu=false
@@ -539,6 +575,11 @@ export default {
     }
   }
 
+}
+.myspan {
+  cursor: pointer;
+  color:rgb(45, 140, 240);
+  padding: 2px;
 }
 
 </style>

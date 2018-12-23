@@ -332,7 +332,7 @@ export default {
     changeNo(val) {
       // this.getTaxAuditLog(val.id)
       console.log("val",val)
-      this.tableList.push(val.taxApplicationVo)
+      this.tableList=[val.taxApplicationVo]
       var tempData=val.taxApplicationVo.details
       var  payableTaxALL=0 // 应缴税额合计
       var  lateFeePayable=0// 应缴滞纳金合计
