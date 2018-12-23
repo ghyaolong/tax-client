@@ -25,9 +25,6 @@
         <Form ref="form" :model="form" inline :label-width="90" class="search-form">
           <Form-item label="公司名称" prop="companyId">
             <Select v-model="form.companyId" filterable style="width: 200px" @on-change="changeCompany" label-in-value>
-              <Option :value="-1">
-                请选择
-              </Option>
               <Option v-for="item in companyList" :value="item.id" :key="item.id" :label="item.name">
               </Option>
             </Select>

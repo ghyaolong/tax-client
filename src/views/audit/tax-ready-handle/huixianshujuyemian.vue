@@ -430,7 +430,7 @@ export default {
     resubmit() {
       let params={
         taskId:this.form.serialNumber,
-        operateApprove:0
+        operateApprove:"1"
       }
       this.loading = true;
       resSubmit(params).then(res=>{
@@ -447,16 +447,20 @@ export default {
       this.form.applicantId=this.userInfo.id // 用户id
       this.form.executeType=1; // 提交
       this.form.countryName = this.dictCountrys && this.dictCountrys.filter((item)=>{return item.code==this.form.countryCode})[0].name;
-      this.form.status=0;
-      this.form.operateApprove=1;
+      // this.form.status=0;
+      // this.form.operateApprove=1;
 
-      let params = {...this.form,details:[...this.data]}
+      let params = {
+        taxApplicationVo:{...this.form,details:[...this.data]},
+        taskId:this.form.serialNumber,
+        operateApprove:"0"
+      }
 
-      if (!params.companyId) {
+      if (!params.taxApplicationVo.companyId) {
         this.$Message.error('请选择公司');
         return;
       }
-      if (!params.currentHandler) {
+      if (!params.taxApplicationVo.currentHandler) {
         this.$Message.error('请选择审核人');
         return;
       }
@@ -467,18 +471,18 @@ export default {
       //   this.$Message.error('请上传财务报表');
       //   return;
       // }
-      let dateVerity = params.details.some(item => {
+      let dateVerity = params.taxApplicationVo.details.some(item => {
         return !item.taxPeriod
       })
       if (dateVerity) {
         this.$Message.error('请选择所属期间');
         return;
       }
-      params.details.map(item => {
+      params.taxApplicationVo.details.map(item => {
         item.taxPeriod = item.taxPeriod && item.taxPeriod + '-01';
       });
       // 税种
-      let shuizhong = params.details.some(item => {
+      let shuizhong = params.taxApplicationVo.details.some(item => {
         return !item.taxDict
       })
       if (shuizhong) {
@@ -486,7 +490,7 @@ export default {
         return;
       }
       //  申请缴纳税款不能为空
-      let flag = params.details.some((item) => {
+      let flag = params.taxApplicationVo.details.some((item) => {
         if (item.applTaxPayment == '') {
           item.applTaxPayment = parseFloat(item.payableTax) + parseFloat(item.lateFeePayable);
         }
@@ -497,7 +501,7 @@ export default {
         return;
       }
       //  缴款截止日期
-      let jnjzrq = params.details.some(item => {
+      let jnjzrq = params.taxApplicationVo.details.some(item => {
         return !item.deadline
       })
       if (jnjzrq) {
@@ -505,7 +509,7 @@ export default {
         return;
       }
       //实际缴纳日期
-      let sjjnrqi = params.details.some(item => {
+      let sjjnrqi = params.taxApplicationVo.details.some(item => {
         return !item.paymentTime
       })
       if (sjjnrqi) {
@@ -514,7 +518,7 @@ export default {
       }
       this.loading = true;
       console.log("params",params)
-      submitJJSQ(params).then((res)=>{
+      resSubmit(params).then((res)=>{
         this.$Message.success('操作成功')
         this.form={
           companyId: '',
@@ -527,7 +531,6 @@ export default {
           currentHandler: '',
           financialReport: '',
           financialReportPath: '',
-          status:0
         }
         this.data=[{ taxPeriod: '',
                 taxDict: '',
@@ -540,7 +543,6 @@ export default {
                 paymentTime: '',
                 taxReturns: '',
                 remarks: '',
-                status:0
               }]
       }).finally(() => {
         this.loading = false;
@@ -842,21 +844,23 @@ export default {
       })
     },
     /* 选择公司后获取对应的税种等信息 */
-    changeCompany(company={name: '', label:''}) {
+    changeCompany(company) {
       // debugger
-      const that=this
-      this.loading = true;
-      getCompanyByName({name: company.label})
-        .then(res => {
-          this.form.tin = res.data.tin;
-          this.form.companyName = company.label;
-          this.form.countryCode = res.data.countryCode;
-          this.form.currency = res.data.currencyCode;
-          that.addColumnByCompany(that.renderTaxDict(res.data.dicts))
-        })
-        .finally(() => {
-          this.loading = false;
-        })
+      if(company) {
+        const that=this
+        this.loading = true;
+        getCompanyByName({name: company.label})
+          .then(res => {
+            this.form.tin = res.data.tin;
+            this.form.companyName = company.label;
+            this.form.countryCode = res.data.countryCode;
+            this.form.currency = res.data.currencyCode;
+            that.addColumnByCompany(that.renderTaxDict(res.data.dicts))
+          })
+          .finally(() => {
+            this.loading = false;
+          })
+      }
     },
     // 处理选择公司后的数据，返回税种code
     renderTaxDict(arry) {

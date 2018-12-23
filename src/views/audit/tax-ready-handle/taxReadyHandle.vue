@@ -165,34 +165,34 @@
                   <td ></td>
                   <td ></td>
                 </tr>
-                <!-- <tr class="center">
-                  <td width="82"></td>
-                  <td width="118">任务</td>
-                  <td width="124">角色名称</td>
-                  <td width="72">姓名</td>
-                  <td width="72">审批结果</td>
-                  <td width="72">意见</td>
-                  <td width="72">审批时间</td>
-                  <td width="72"></td>
-                  <td width="117"></td>
-                  <td width="109"></td>
-                  <td width="132"></td>
-                  <td width="140"></td>
+                <tr class="center">
+                  <td ></td>
+                  <td >任务</td>
+                  <td >角色名称</td>
+                  <td >姓名</td>
+                  <td >审批结果</td>
+                  <td >意见</td>
+                  <td >审批时间</td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
                 </tr>
-                <tr class="center"  v-for="row in tableList[0].auditLogs" :key="row.id">
-                  <td width="82"></td>
-                  <td width="118">{{row.taskName}}</td>
-                  <td width="124">{{row.roleName}}</td>
-                  <td width="72">{{row.flowNum}}</td>
-                  <td width="72">{{row.auditResult}}</td>
-                  <td width="72">{{row.advice}}</td>
-                  <td width="72"></td>
-                  <td width="72"></td>
-                  <td width="117"></td>
-                  <td width="109"></td>
-                  <td width="132"></td>
-                  <td width="140"></td>
-                </tr> -->
+                <tr class="center"  v-for="row in this.auditLogVoList" :key="row.id">
+                  <td ></td>
+                  <td >{{row.taskName}}</td>
+                  <td >{{row.roleName}}</td>
+                  <td >{{row.flowNum}}</td>
+                  <td >{{row.auditResult}}</td>
+                  <td >{{row.advice}}</td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                </tr>
               </tbody>
               </table>
           </main>
@@ -391,12 +391,14 @@ export default {
       applTaxPaymentAll:0,  //申请缴纳税款合计
       taxPaidAll:0,   //实缴税额合计    taxPaid
       overduePaymentAll:0,// 实缴滞纳金合计   overduePayment
-      actualTaxPayment:0//实际缴纳税款合计
+      actualTaxPayment:0,//实际缴纳税款合计
+      shenpiyijian:[], // 审批意见
     }
   },
   methods: {
     // 查看详情
     handleLook(v) {
+      this.shenpiyijian=[]
       let tempData = v.details;
       var  payableTaxALL=0 // 应缴税额合计
       var  lateFeePayable=0// 应缴滞纳金合计
@@ -419,6 +421,9 @@ export default {
       this.overduePaymentAll= overduePayment                     // 实缴滞纳金合计   overduePayment
       this.actualTaxPayment=taxsjsk               //实际缴纳税款合计
       this.tableList=[v]
+      if(v.auditLogVoList) {
+        this.shenpiyijian=v.auditLogVoList
+      }
       this.showTaxes=true
       console.log("v",v)
 

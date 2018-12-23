@@ -38,15 +38,15 @@ export default {
           align: "center",
           fixed: "left"
         },
-        {
-          title: '流水号',
-          key: "id",
-          // width: 110
-        },
+        // {
+        //   title: '流水号',
+        //   key: "id",
+        //   // width: 110
+        // },
         {
           title: '公司名称',
           key: "companyName",
-          width: 110
+          // width: 110
         },
         {
           title: '保存时间',
