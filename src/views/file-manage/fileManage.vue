@@ -35,7 +35,7 @@
         class-name="preview-modal"
         width="700"
         footer-hide>
-      <img :src="priviewFilePath" width="100%" height="100%"/>
+      <iframe :src="priviewFilePath" width="700px" height="700px"></iframe>
     </Modal>
       <a :href="downloadPath" :download="fileName" id="download" ></a>
     </Card>
