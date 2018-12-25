@@ -35,9 +35,9 @@
         class-name="preview-modal"
         width="700"
         footer-hide>
-        <iframe style="width: 100%; height: 600px;" :src="filePath" frameborder="0"></iframe>
+      <img :src="priviewFilePath" width="100%" height="100%"/>
     </Modal>
-    <a :href="downloadPath" :download="fileName" id="download"></a>
+      <a :href="downloadPath" :download="fileName" id="download" ></a>
     </Card>
     </Col>
     </Row>
@@ -46,12 +46,15 @@
 
 <script>
 import { getFilesList, getAllCompany } from '@/api/index.js'
+import fileLoadPath from "@/api/fileload";
+import { getStore } from '@/libs/storage';
 export default {
   name: 'fileManage',
   data() {
     return {
       loading: false,
       priviewModal: false,
+      accessToken: getStore('accessToken'),
       fileName: '',
       materialTypeDicts: {
         'FINANCE_REPORT': '财务报表',
@@ -143,7 +146,8 @@ export default {
       endDate: "",
       company: '',
       materialTypeDict: '',
-      companyList: []
+      companyList: [],
+      priviewFilePath:''
     }
   },
   computed: {
@@ -151,7 +155,7 @@ export default {
       return this.fileName ? `/api/file/${this.fileName}` : '';
     },
     downloadPath() {
-      return this.fileName ? `/api/file/download/${this.fileName}` : '';
+      return this.fileName ? `/api/upload/${this.fileName}` : '';
     }
   },
   methods: {
@@ -217,14 +221,81 @@ export default {
       this.initPageData();
     },
     priviewFile(v) {
-      this.fileName = v.fileName;
-      this.priviewModal = true;
+      console.log("adasda",v)
+      const that = this;
+      let lastString = v.fileName.lastIndexOf(".")
+      let filelastName = v.fileName.substr(lastString+1)
+      // this.fileName = v.fileName;
+      if(filelastName=="png" || filelastName=="jpg" || filelastName=="jpeg") {
+        let baseurl = fileLoadPath.loadFilePath
+        // this.priviewFilePath = baseurl+v.fileName+'?view'
+        // this.priviewModal = true;
+        window.open(`${baseurl}${v.fileName}?view`)
+      }else{
+        // let params={
+        //   fileName:v.fileName
+        // }
+        let base="/api"
+        var xhr = new XMLHttpRequest();
+        xhr.responseType = "blob";
+          xhr.onreadystatechange = function(){
+              if( xhr.readyState == 4){
+                  if( xhr.status >= 200 && xhr.status < 300 || xhr.status == 304){
+                    let blob = xhr.response
+                    let imgTag = URL.createObjectURL(blob)
+                    // that.liuchengtuInfo="data:image/png;base64,"+xhr.response
+                    that.priviewFilePath=imgTag
+                    that.priviewModal = true;
+                  }
+              }
+          };
+          xhr.open("post",`${base}/previewFile`,true);
+          xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+          xhr.setRequestHeader("accessToken", this.accessToken);
+          xhr.send(JSON.stringify({fileName:v.fileName}));
+      }
+
     },
     downloadFile(v) {
-      this.fileName = v.fileName;
-      this.$nextTick(() => {
-        document.getElementById('download').click();
-      })
+      // this.fileName = v.fileName;
+      // this.fileName = v.fileName;
+      // this.$nextTick(() => {
+      //   document.getElementById('download').click();
+      // })
+      let baseurl = fileLoadPath.loadFilePath
+      window.open(baseurl+v.fileName)
+      // var form = document.createElement("form");
+      //
+      //           document.body.appendChild(form);
+      // form.method="get"
+      // form.action=`/api/file/download/${v.fileName}`
+      // form.submit()
+       // window.location.assign(`/api/file/download/${v.fileName}`)
+      //
+      // var urls = `/api/file/download/18f2f907f14c407fb576115c46437fd1.png`
+      // var url = [urls,this.getStore('accessToken')].join("?")
+      //  window.open(url)
+
+      // let base="/api"
+      // var xhr = new XMLHttpRequest();
+      // // xhr.responseType = "blob";
+      //   xhr.onreadystatechange = function(){
+      //       if( xhr.readyState == 4){
+      //           if( xhr.status >= 200 && xhr.status < 300 || xhr.status == 304){
+      //             // let blob = xhr.response
+      //             // let imgTag = URL.createObjectURL(blob)
+      //             // // that.liuchengtuInfo="data:image/png;base64,"+xhr.response
+      //             // that.liuchengtuInfo=imgTag
+      //             window.location.replace('/api/file/download/18f2f907f14c407fb576115c46437fd1.png')
+      //           }
+      //       }
+      //   };
+      //   xhr.open("get",`${base}/file/download/${v.fileName}`,true);
+      //   xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      //   xhr.setRequestHeader("accessToken", this.getStore('accessToken'));
+      //   // xhr.send(JSON.stringify(params));
+      //   // window.open()
+      //   xhr.send()
     }
   },
   mounted() {

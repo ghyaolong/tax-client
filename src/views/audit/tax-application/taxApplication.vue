@@ -504,7 +504,7 @@ export default {
         if(res.data == "启动流程失败") {
           this.$Message.error("启动流程失败")
         }else{
-          this.$Message.success('操作成功')          
+          this.$Message.success('操作成功')
         }
         this.form={
           companyId: '',
@@ -943,13 +943,13 @@ export default {
           this.$Message.error('申请缴纳税款不能为空');
           return;
         }
-        // let preTaxReturnsVerity = params.details.some(item => {
-        //   return !item.preTaxReturns;
-        // });
-        // if (preTaxReturnsVerity) {
-        //   this.$Message.error('请上传预申报表');
-        //   return;
-        // }
+        let preTaxReturnsVerity = params.details.some(item => {
+          return !item.preTaxReturns;
+        });
+        if (preTaxReturnsVerity) {
+          this.$Message.error('请上传预申报表');
+          return;
+        }
       let dateVerity = params.details.some(item => {
         return !item.taxPeriod
       })

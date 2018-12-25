@@ -8,6 +8,12 @@
     top: 0;
   }
 }
+.upload-box .ivu-upload-select {
+  width: 200px;
+}
+.uploadFile-input {
+  width: 200px;
+}
 </style>
 
 <template>
@@ -135,8 +141,7 @@
                   <td>{{item.taxPaid + item.overduePayment}}</td>
                   <td >{{ `${new Date(item.paymentTime).format()}` }}</td>
                   <td >
-                    <span class="myspan" @click="handleChakan(item)">查看</span>
-                    <span class="myspan" @click="handleDown(item)">下载</span>
+                    <span class="myspan" @click="handleupLoad(item)">上传</span>
                   </td>
                   <td >{{item.remarks}}</td>
                 </tr>
@@ -204,16 +209,54 @@
               <!-- <Button type="primary" disabled style="width: 100px;margin-left:158px">导出</Button> -->
           </footer>
     </Modal>
+    <!-- 上传modal -->
+    <Modal
+        :closable="false"
+        class-name="preview-modal-inline"
+        v-model="showUploadModal">
+        <Form label-position="left" :label-width="100" :modal="fileUploadForm">
+          <FormItem label="预申报表" prop="preTaxReturnsPath">
+            <Input type="text" readonly
+            v-model="fileUploadForm.preTaxReturnsPath" class="uploadFile-input"/>
+            <Button @click.stop="priviewFile(fileUploadForm.preTaxReturnsPath)">预览</Button>
+            <Button  @click.stop="uploadFile(fileUploadForm.otherUploadIdPath)">下载</Button>
+          </FormItem>
+          <FormItem label="申报表" prop="taxReturnsPath">
+            <Input type="text" readonly v-model="fileUploadForm.taxReturnsPath" class="uploadFile-input"/>
+            <Button  @click.stop="priviewFile(fileUploadForm.taxReturnsPath)">预览</Button>
+            <Button  @click.stop="uploadFile(fileUploadForm.otherUploadIdPath)">下载</Button>
+          </FormItem>
+          <FormItem label="完税申报表" prop="paymentCertificatePath">
+              <Input type="text" readonly v-model="fileUploadForm.paymentCertificatePath" class="uploadFile-input"/>
+              <Button  @click.stop="priviewFile(fileUploadForm.paymentCertificatePath)">预览</Button>
+              <Button  @click.stop="uploadFile(fileUploadForm.otherUploadIdPath)">下载</Button>
+            </Upload>
+          </FormItem>
+          <FormItem label="其它" prop="otherUploadIdPath">
+              <Input type="text" readonly v-model="fileUploadForm.otherUploadIdPath" class="uploadFile-input"/>
+              <Button @click.stop="priviewFile(fileUploadForm.otherUploadIdPath)">预览</Button>
+              <Button  @click.stop="uploadFile(fileUploadForm.otherUploadIdPath)">下载</Button>
+            </Upload>
+          </FormItem>
+      </Form>
+      <footer class="vertical-center" slot="footer">
+          <Button style="width: 100px;" @click="fileuploadFormCancel">取消</Button>
+        <Button type="primary" style="width: 100px;margin-left:20px" @click="fileUploadFormSubmit">确定</Button>
+      </footer>
+    </Modal>
   </div>
 </template>
 
 <script>
 import { taxReadyHandle,getReviewer,dbrwAudit,lookLiuchengtu } from '@/api/index.js'
 import Cookies from "js-cookie";
+import { getStore } from '@/libs/storage';
 export default {
   name: 'taxReadyHandle',
   data() {
     return {
+      showUploadModal:false,
+      accessToken: getStore('accessToken'),
       loading: false,
       handelModal: false,
       userInfo:{},
@@ -222,11 +265,17 @@ export default {
       	operateApprove:"",
       	comment:"",
       	userId:"",
-      	currentHandler:""
+      	currentHandler:"",
       },
       taxReadyHandleValidate: {
         operateApprove:[{required:true,message:"请选择",trigger: 'blur'}],
         currentHandler:[{required:true,message:"请选择",trigger: 'blur'}]
+      },
+      fileUploadForm:{
+        preTaxReturnsPath:"",
+        taxReturnsPath:"",
+        paymentCertificatePath:"",
+        otherUploadIdPath:""
       },
       columns: [
         {
@@ -385,6 +434,22 @@ export default {
     }
   },
   methods: {
+    // 下载取消
+    fileuploadFormCancel() {
+      this.showUploadModal = false
+    },
+    // 下载确定
+    fileUploadFormSubmit() {
+
+    },
+    // 预览
+    priviewFile() {
+
+    },
+    // 下载
+    uploadFile() {
+
+    },
     // 查看详情
     handleLook(v) {
       let tempData = v.details;
@@ -415,16 +480,10 @@ export default {
         this.shenpiyijian=[]
       }
       this.showTaxes=true
-      console.log("v",v)
-
     },
-    // 查看
-    handleChakan(item) {
-
-    },
-    // 下载
-    handleDown(item) {
-
+    // 上传
+    handleupLoad(item) {
+      this.showUploadModal = true
     },
     // 编辑
     edit(v) {
