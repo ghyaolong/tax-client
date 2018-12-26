@@ -231,6 +231,7 @@ util.fullscreenEvent = function (vm) {
 };
 
 util.initRouter = function (vm) {
+  console.log('22222222222')
     const constRoutes = [];
     const otherRoutes = [];
 

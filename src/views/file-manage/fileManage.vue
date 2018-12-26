@@ -225,16 +225,10 @@ export default {
       const that = this;
       let lastString = v.fileName.lastIndexOf(".")
       let filelastName = v.fileName.substr(lastString+1)
-      // this.fileName = v.fileName;
       if(filelastName=="png" || filelastName=="jpg" || filelastName=="jpeg") {
         let baseurl = fileLoadPath.loadFilePath
-        // this.priviewFilePath = baseurl+v.fileName+'?view'
-        // this.priviewModal = true;
         window.open(`${baseurl}${v.fileName}?view`)
       }else{
-        // let params={
-        //   fileName:v.fileName
-        // }
         let base="/api"
         var xhr = new XMLHttpRequest();
         xhr.responseType = "blob";
@@ -245,7 +239,8 @@ export default {
                     let imgTag = URL.createObjectURL(blob)
                     // that.liuchengtuInfo="data:image/png;base64,"+xhr.response
                     that.priviewFilePath=imgTag
-                    that.priviewModal = true;
+                    window.open(imgTag)
+                    // that.priviewModal = true;
                   }
               }
           };

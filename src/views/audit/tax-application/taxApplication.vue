@@ -431,7 +431,9 @@ export default {
       this.form.applicantName=this.userInfo.username  // 用户名
       this.form.applicantId=this.userInfo.id // 用户id
       this.form.executeType=1; // 提交
-      this.form.countryName = this.dictCountrys && this.dictCountrys.filter((item)=>{return item.code==this.form.countryCode})[0].name;
+      if(this.form.countryCode) {
+        this.form.countryName = this.dictCountrys && this.dictCountrys.filter((item)=>{return item.code==this.form.countryCode})[0].name;
+      }
       this.form.status=0;
 
 
@@ -501,7 +503,7 @@ export default {
       console.log("params",params)
       submitJJSQ(params).then((res)=>{
         console.log('22222222',res)
-        if(res.data == "启动流程失败") {
+        if(res.data == "流程启动失败") {
           this.$Message.error("启动流程失败")
         }else{
           this.$Message.success('操作成功')
@@ -876,7 +878,7 @@ export default {
       if (res && res.status == 1) {
         return this.$Message.error(res.errMsg);
       }else{
-        this.$Message("操作成功");
+        this.$Message.info("操作成功");
         this.form.financialReport = res.data.id;
         this.form.financialReportPath = res.data.fileName;
       }

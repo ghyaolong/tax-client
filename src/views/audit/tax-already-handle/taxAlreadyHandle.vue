@@ -87,7 +87,7 @@
                   <td >{{item.taxPaid}}</td>
                   <td >{{item.overduePayment}}</td>
                   <td >{{item.actualTaxPayment}}</td>
-                  <td >{{`${item.taxesOrderTime && new Date(item.taxesOrderTime).format()}`}}</td>
+                  <td >{{`${item.paymentTime && new Date(item.paymentTime).format()}`}}</td>
                   <td >
                     <span class="myspan" @click="handleLook(item)">查看</span>
                     <span class="myspan" @click="handleLoad(item)">下载</span>
@@ -185,7 +185,7 @@ export default {
           key: "id",
           // width: 110
           render: (h, params) => {
-            let flowNum = params.row.serialNumber;
+            let flowNum = params.row.flowNum;
             return h(
               "div",
               {

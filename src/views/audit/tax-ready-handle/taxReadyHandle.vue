@@ -129,7 +129,7 @@
                   <td width="100">附件</td>
                   <td width="120">备注</td>
                 </tr>
-                <tr v-for="item in tableList[0].details" :key="item.id">
+                <tr v-for="(item,index) in tableList[0].details" :key="item.id">
                   <td >{{item.taxPeriod}}</td>
                   <td >{{item.taxDict}}</td>
                   <td >{{item.payableTax}}</td>
@@ -141,7 +141,7 @@
                   <td>{{item.taxPaid + item.overduePayment}}</td>
                   <td >{{ `${new Date(item.paymentTime).format()}` }}</td>
                   <td >
-                    <span class="myspan" @click="handleupLoad(item)">上传</span>
+                    <span class="myspan" @click="handleupLoad(tableList[0],index)">操作</span>
                   </td>
                   <td >{{item.remarks}}</td>
                 </tr>
@@ -205,8 +205,8 @@
               </table>
           </main>
           <footer class="vertical-center" slot="footer">
-              <!-- <Button style="width: 100px;" disabled>打印</Button> -->
-              <!-- <Button type="primary" disabled style="width: 100px;margin-left:158px">导出</Button> -->
+            <Button style="width: 100px;" @click="fileuploadFormCancel">取消</Button>
+            <Button type="primary" style="width: 100px;margin-left:20px" @click="fileUploadFormSubmit">确定</Button>
           </footer>
     </Modal>
     <!-- 上传modal -->
@@ -214,34 +214,53 @@
         :closable="false"
         class-name="preview-modal-inline"
         v-model="showUploadModal">
-        <Form label-position="left" :label-width="100" :modal="fileUploadForm">
+        <Form label-position="left" :label-width="100" :modal="fileUploadForm" :rules="fileUploadFormRules" ref="showUploadRefs">
           <FormItem label="预申报表" prop="preTaxReturnsPath">
-            <Input type="text" readonly
-            v-model="fileUploadForm.preTaxReturnsPath" class="uploadFile-input"/>
-            <Button @click.stop="priviewFile(fileUploadForm.preTaxReturnsPath)">预览</Button>
-            <Button  @click.stop="uploadFile(fileUploadForm.otherUploadIdPath)">下载</Button>
+            <Input type="text" disabled v-model="fileUploadForm.preTaxReturnsPath" style="width:150px;float:left"/>
+            <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file"
+            :data="{materialTypeDict: 'PRE_TAX_REPORT'}" :show-upload-list="false"
+            :on-success="uploadSuc" style="float:left">
+              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+            </Upload>
+            <Button   @click.stop="priviewFile(fileUploadForm.preTaxReturnsPath)">预览</Button>
+            <Button   @click.stop="uploadFile(fileUploadForm.preTaxReturnsPath)">下载</Button>
           </FormItem>
           <FormItem label="申报表" prop="taxReturnsPath">
-            <Input type="text" readonly v-model="fileUploadForm.taxReturnsPath" class="uploadFile-input"/>
+            <Input type="text" disabled v-model="fileUploadForm.taxReturnsPath" style="width:150px;float:left"/>
+            <Upload action="/api/file/upload"
+            :headers="{accessToken: accessToken}" name="file"
+            :data="{materialTypeDict: 'TAX_REPORT'}" :show-upload-list="false"
+            :on-success="uploadSuc" style="float:left">
+              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+            </Upload>
             <Button  @click.stop="priviewFile(fileUploadForm.taxReturnsPath)">预览</Button>
-            <Button  @click.stop="uploadFile(fileUploadForm.otherUploadIdPath)">下载</Button>
+            <Button  @click.stop="uploadFile(fileUploadForm.taxReturnsPath)">下载</Button>
           </FormItem>
           <FormItem label="完税申报表" prop="paymentCertificatePath">
-              <Input type="text" readonly v-model="fileUploadForm.paymentCertificatePath" class="uploadFile-input"/>
-              <Button  @click.stop="priviewFile(fileUploadForm.paymentCertificatePath)">预览</Button>
-              <Button  @click.stop="uploadFile(fileUploadForm.otherUploadIdPath)">下载</Button>
+            <Input type="text" disabled v-model="fileUploadForm.paymentCertificatePath" style="width:150px;float:left"/>
+            <Upload action="/api/file/upload"
+            :headers="{accessToken: accessToken}" name="file"
+            :data="{materialTypeDict: 'DONE_TAX_REPORT'}" :show-upload-list="false"
+            :on-success="uploadSuc" style="float:left">
+              <Button icon="ios-cloud-upload-outline">上传文件</Button>
             </Upload>
+            <Button  @click.stop="priviewFile(fileUploadForm.paymentCertificatePath)">预览</Button>
+            <Button  @click.stop="uploadFile(fileUploadForm.paymentCertificatePath)">下载</Button>
           </FormItem>
           <FormItem label="其它" prop="otherUploadIdPath">
-              <Input type="text" readonly v-model="fileUploadForm.otherUploadIdPath" class="uploadFile-input"/>
-              <Button @click.stop="priviewFile(fileUploadForm.otherUploadIdPath)">预览</Button>
-              <Button  @click.stop="uploadFile(fileUploadForm.otherUploadIdPath)">下载</Button>
+            <Input type="text" disabled v-model="fileUploadForm.otherUploadIdPath" style="width:150px;float:left"/>
+            <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file"
+            :data="{materialTypeDict: 'OTHER'}" :show-upload-list="false"
+            :on-success="uploadSuc" style="float:left">
+              <Button icon="ios-cloud-upload-outline">上传文件</Button>
             </Upload>
+            <Button @click.stop="priviewFile(fileUploadForm.otherUploadIdPath)">预览</Button>
+            <Button  @click.stop="uploadFile(fileUploadForm.otherUploadIdPath)">下载</Button>
           </FormItem>
       </Form>
       <footer class="vertical-center" slot="footer">
-          <Button style="width: 100px;" @click="fileuploadFormCancel">取消</Button>
-        <Button type="primary" style="width: 100px;margin-left:20px" @click="fileUploadFormSubmit">确定</Button>
+          <Button style="width: 100px;"  @click="fileuploadFormCancel">取消</Button>
+          <Button type="primary" style="width: 100px;margin-left:20px" @click="fileuploadFormCancel">确定</Button>
       </footer>
     </Modal>
   </div>
@@ -251,6 +270,7 @@
 import { taxReadyHandle,getReviewer,dbrwAudit,lookLiuchengtu } from '@/api/index.js'
 import Cookies from "js-cookie";
 import { getStore } from '@/libs/storage';
+import fileLoadPath from '@/api/fileload';
 export default {
   name: 'taxReadyHandle',
   data() {
@@ -271,11 +291,20 @@ export default {
         operateApprove:[{required:true,message:"请选择",trigger: 'blur'}],
         currentHandler:[{required:true,message:"请选择",trigger: 'blur'}]
       },
+      fileUploadFormRules:{
+        preTaxReturnsPath:[{required:true,message:"请上传",trigger: 'blur'}],
+        taxReturnsPath:[{required:true,message:"请上传",trigger: 'blur'}],
+        paymentCertificatePath:[{required:true,message:"请上传",trigger: 'blur'}],
+      },
       fileUploadForm:{
+        preTaxReturns:"",
         preTaxReturnsPath:"",
-        taxReturnsPath:"",
+        taxReturns:"",
+        taxReturnsPath:'',
+        paymentCertificate:"",
         paymentCertificatePath:"",
-        otherUploadIdPath:""
+        otherUploadId:"",
+        otherUploadPath:"",
       },
       columns: [
         {
@@ -434,21 +463,62 @@ export default {
     }
   },
   methods: {
+    // 上传成功
+    uploadSuc(res) {
+      console.log('1231231',res)
+      let key = {
+        'PRE_TAX_REPORT': 'preTaxReturns',
+        'TAX_REPORT': 'taxReturns',
+        'DONE_TAX_REPORT': 'paymentCertificate',
+        'OTHER': 'otherUploadId'
+      }[res.data.materialTypeDict];
+      this.fileUploadForm[key] = res.data.id;
+      this.fileUploadForm[key + 'Path'] = res.data.fileName;
+    },
     // 下载取消
     fileuploadFormCancel() {
       this.showUploadModal = false
     },
     // 下载确定
     fileUploadFormSubmit() {
+      this.$refs['showUploadRefs'].validate((valid)=>{
+        if(valid) {
 
+        }
+      })
     },
     // 预览
-    priviewFile() {
-
-    },
+      priviewFile(v) {
+        const that = this;
+        let lastString = v.lastIndexOf(".")
+        let filelastName = v.substr(lastString+1)
+        if(filelastName=="png" || filelastName=="jpg" || filelastName=="jpeg") {
+          let baseurl = fileLoadPath.loadFilePath
+          window.open(`${baseurl}${v}?view`)
+        }else{
+          let base="/api"
+          var xhr = new XMLHttpRequest();
+          xhr.responseType = "blob";
+            xhr.onreadystatechange = function(){
+                if( xhr.readyState == 4){
+                    if( xhr.status >= 200 && xhr.status < 300 || xhr.status == 304){
+                      let blob = xhr.response
+                      let imgTag = URL.createObjectURL(blob)
+                      that.priviewFilePath=imgTag
+                      window.open(imgTag)
+                    }
+                }
+            };
+            xhr.open("post",`${base}/previewFile`,true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.setRequestHeader("accessToken", this.accessToken);
+            xhr.send(JSON.stringify({fileName:v}));
+        }
+      },
     // 下载
-    uploadFile() {
-
+    uploadFile(path) {
+      let baseurl = fileLoadPath.loadFilePath
+      window.open(baseurl+path)
     },
     // 查看详情
     handleLook(v) {
@@ -481,8 +551,19 @@ export default {
       }
       this.showTaxes=true
     },
-    // 上传
-    handleupLoad(item) {
+    // 操作
+    handleupLoad(item,index) {
+      console.log('item',item)
+      this.fileUploadForm = {
+        preTaxReturns:item.details[index].preTaxReturns,
+        preTaxReturnsPath:item.details[index].preTaxReturnsPath,
+        taxReturns:item.details[index].taxReturns,
+        taxReturnsPath:item.details[index].taxReturnsPath,
+        paymentCertificate:item.details[index].paymentCertificate,
+        paymentCertificatePath:item.details[index].paymentCertificatePath,
+        otherUploadId:item.details[index].otherUploadId,
+        otherUploadPath:item.details[index].otherUploadPath,
+      }
       this.showUploadModal = true
     },
     // 编辑

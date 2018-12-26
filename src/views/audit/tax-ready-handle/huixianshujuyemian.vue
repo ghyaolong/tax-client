@@ -431,7 +431,10 @@ export default {
       this.form.applicantName=this.userInfo.username  // 用户名
       this.form.applicantId=this.userInfo.id // 用户id
       this.form.executeType=1; // 提交
-      this.form.countryName = this.dictCountrys && this.dictCountrys.filter((item)=>{return item.code==this.form.countryCode})[0].name;
+      if(this.form.countryCode) {
+        this.form.countryName = this.dictCountrys && this.dictCountrys.filter((item)=>{return item.code==this.form.countryCode})[0].name;
+
+      }
       // this.form.status=0;
       // this.form.operateApprove=1;
 
@@ -449,13 +452,13 @@ export default {
         this.$Message.error('请选择审核人');
         return;
       }
-      // let preTaxReturnsVerity = params.details.some(item => {
-      //   return !item.preTaxReturns;
-      // });
-      // if (!params.financialReport) {
-      //   this.$Message.error('请上传财务报表');
-      //   return;
-      // }
+      let preTaxReturnsVerity = params.taxApplicationVo.details.some(item => {
+        return !item.preTaxReturns;
+      });
+      if (!params.taxApplicationVo.financialReport) {
+        this.$Message.error('请上传财务报表');
+        return;
+      }
       let dateVerity = params.taxApplicationVo.details.some(item => {
         return !item.taxPeriod
       })
