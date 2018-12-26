@@ -139,12 +139,15 @@ export default {
             return h('div',params.row.createTime && new Date(params.row.createTime).format())
           }
         },
-        /* {
-          title: "更新时间",
-          key: "updateTime",
+        {
+          title: "角色对应节点",
+          key: "processKey",
           width: 160,
-          sortable: true
-        }, */
+          sortable: true,
+          render: (h, params) => {
+            return h('div',this.renderCnName(params.row.processKey))
+          }
+        },
         {
           title: "是否设置为注册用户默认角色",
           key: "defaultRole",
@@ -269,6 +272,22 @@ export default {
     };
   },
   methods: {
+    // renderCnName
+    renderCnName(key) {
+      if(key) {
+        let obj = {
+          none:'无',
+          approvalProcess:'税金申报申请',
+          reviewProcess:'复核申报',
+          checkEntity:'核查公司',
+          examineEntity:'审查公司',
+          checkPay:'支付审批',
+          approvalPay:'审批支付',
+          uploadPayFile:'上传文件',
+        }
+        return obj[key]
+      }
+    },
     init() {
       this.getRoleList();
       // 获取所有菜单权限树
@@ -334,6 +353,15 @@ export default {
       this.roleModalVisible = false;
     },
     submitRole() {
+      let tempObj = {
+        code: this.roleForm.code,
+        name: this.roleForm.name,
+        processKey: this.roleForm.processKey
+      }
+      if(JSON.stringify(this.tempObj)==JSON.stringify(tempObj)) {
+        this.roleModalVisible = false;
+        return;
+      }
       this.$refs.roleForm.validate(valid => {
         if (valid) {
           this.submitLoading = true;
@@ -343,18 +371,9 @@ export default {
             this.$Message.success("操作成功");
             this.getRoleList();
             this.roleModalVisible = false;
+          }).finally(() => {
+            this.submitLoading = false;
           });
-          /* if (this.modalType === 0) {
-            // 添加
-            addRole
-          } else {
-            editRole(this.roleForm).then(res => {
-              this.submitLoading = false;
-              this.$Message.success("操作成功");
-              this.getRoleList();
-              this.roleModalVisible = false;
-            });
-          } */
         }
       });
     },
@@ -366,6 +385,11 @@ export default {
       this.roleModalVisible = true;
     },
     edit(v) {
+      this.tempObj ={
+        code: v.code,
+        name: v.name,
+        processKey: v.processKey
+      }
       this.modalType = 1;
       this.modalTitle = "编辑角色";
       // 转换null为""
