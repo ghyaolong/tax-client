@@ -369,6 +369,7 @@ export default {
         },
         searchVo: {
           userId:this.userInfo.id,
+          currentHandler:this.userInfo.id,
           startDate: this.startDate,
           endDate: this.endDate,
           flowStatus:this.submitData.flowStatus,

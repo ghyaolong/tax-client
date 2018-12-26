@@ -260,7 +260,7 @@
       </Form>
       <footer class="vertical-center" slot="footer">
           <Button style="width: 100px;"  @click="fileuploadFormCancel">取消</Button>
-          <Button type="primary" style="width: 100px;margin-left:20px" @click="fileuploadFormCancel">确定</Button>
+          <Button type="primary" style="width: 100px;margin-left:20px" @click="tempSubmitOk">确定</Button>
       </footer>
     </Modal>
   </div>
@@ -460,6 +460,7 @@ export default {
       overduePaymentAll:0,// 实缴滞纳金合计   overduePayment
       actualTaxPayment:0,//实际缴纳税款合计
       shenpiyijian:[], // 审批意见
+      tempInfoValue:{}, // 临时的详情数据
     }
   },
   methods: {
@@ -475,17 +476,13 @@ export default {
       this.fileUploadForm[key] = res.data.id;
       this.fileUploadForm[key + 'Path'] = res.data.fileName;
     },
-    // 下载取消
+    // 取消
     fileuploadFormCancel() {
       this.showUploadModal = false
     },
-    // 下载确定
+    // 确定
     fileUploadFormSubmit() {
-      this.$refs['showUploadRefs'].validate((valid)=>{
-        if(valid) {
-
-        }
-      })
+      console.log("fileUploadFormSubmit",this.tempInfoValue)
     },
     // 预览
       priviewFile(v) {
@@ -522,6 +519,7 @@ export default {
     },
     // 查看详情
     handleLook(v) {
+      this.tempInfoValue = v;
       let tempData = v.details;
       var  payableTaxALL=0 // 应缴税额合计
       var  lateFeePayable=0// 应缴滞纳金合计
@@ -555,6 +553,7 @@ export default {
     handleupLoad(item,index) {
       console.log('item',item)
       this.fileUploadForm = {
+        uploadFileIndex:index,
         preTaxReturns:item.details[index].preTaxReturns,
         preTaxReturnsPath:item.details[index].preTaxReturnsPath,
         taxReturns:item.details[index].taxReturns,
@@ -565,6 +564,18 @@ export default {
         otherUploadPath:item.details[index].otherUploadPath,
       }
       this.showUploadModal = true
+    },
+    // 临时保存路径确定
+    tempSubmitOk() {
+      let indexs = this.fileUploadForm.index;
+      this.tempInfoValue.details[indexs].preTaxReturns = this.fileUploadForm[index].preTaxReturns
+      this.tempInfoValue.details[indexs].preTaxReturnsPath = this.fileUploadForm[index].preTaxReturnsPath
+      this.tempInfoValue.details[indexs].taxReturns = this.fileUploadForm[index].taxReturns
+      this.tempInfoValue.details[indexs].taxReturnsPath = this.fileUploadForm[index].taxReturnsPath
+      this.tempInfoValue.details[indexs].paymentCertificate = this.fileUploadForm[index].paymentCertificate
+      this.tempInfoValue.details[indexs].paymentCertificatePath = this.fileUploadForm[index].paymentCertificatePath
+      this.tempInfoValue.details[indexs].otherUploadId = this.fileUploadForm[index].otherUploadId
+      this.tempInfoValue.details[indexs].otherUploadPath = this.fileUploadForm[index].otherUploadPath
     },
     // 编辑
     edit(v) {
