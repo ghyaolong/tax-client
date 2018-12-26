@@ -260,31 +260,56 @@ util.initRouter = function (vm) {
     }
     let userId = JSON.parse(Cookies.get("userInfo")).id;
     let accessToken = window.localStorage.getItem('accessToken')
-    // 加载菜单
-    axios.get("/api/permission/getMenuList/" + userId, {headers: {'accessToken': accessToken}}).then(res => {
-        let menuData = res.data;
-        if (menuData === null || menuData === "" || menuData === undefined) {
-            return;
-        }
-        util.initRouterNode(constRoutes, menuData);
-        util.initRouterNode(otherRoutes, otherRouter);
-        // 添加主界面路由
-        vm.$store.commit('updateAppRouter', constRoutes.filter(item => item.children.length > 0));
-        // 添加全局路由
-        vm.$store.commit('updateDefaultRouter', otherRoutes);
-        // 刷新界面菜单
-        vm.$store.commit('updateMenulist', constRoutes.filter(item => item.children.length > 0));
 
-        let tagsList = [];
-        vm.$store.state.app.routers.map((item) => {
-            if (item.children.length <= 1) {
-                tagsList.push(item.children[0]);
-            } else {
-                tagsList.push(...item.children);
-            }
-        });
-        vm.$store.commit('setTagsList', tagsList);
-    });
+    if(window.localStorage.getItem('menuData')) {
+      debugger;
+      let tempMenulist = JSON.parse(window.localStorage.getItem('menuData'))
+      util.initRouterNode(constRoutes, tempMenulist);
+      util.initRouterNode(otherRoutes, otherRouter);
+      // 添加主界面路由
+      vm.$store.commit('updateAppRouter', constRoutes.filter(item => item.children.length > 0));
+      // 添加全局路由
+      vm.$store.commit('updateDefaultRouter', otherRoutes);
+      // 刷新界面菜单
+      vm.$store.commit('updateMenulist', constRoutes.filter(item => item.children.length > 0));
+
+      let tagsList = [];
+      vm.$store.state.app.routers.map((item) => {
+          if (item.children.length <= 1) {
+              tagsList.push(item.children[0]);
+          } else {
+              tagsList.push(...item.children);
+          }
+      });
+      vm.$store.commit('setTagsList', tagsList);
+    }else{
+      // 加载菜单
+      axios.get("/api/permission/getMenuList/" + userId, {headers: {'accessToken': accessToken}}).then(res => {
+          let menuData = res.data;
+          if (menuData === null || menuData === "" || menuData === undefined) {
+              return;
+          }
+          window.localStorage.setItem('menuData',JSON.stringify(menuData))
+          util.initRouterNode(constRoutes, menuData);
+          util.initRouterNode(otherRoutes, otherRouter);
+          // 添加主界面路由
+          vm.$store.commit('updateAppRouter', constRoutes.filter(item => item.children.length > 0));
+          // 添加全局路由
+          vm.$store.commit('updateDefaultRouter', otherRoutes);
+          // 刷新界面菜单
+          vm.$store.commit('updateMenulist', constRoutes.filter(item => item.children.length > 0));
+
+          let tagsList = [];
+          vm.$store.state.app.routers.map((item) => {
+              if (item.children.length <= 1) {
+                  tagsList.push(item.children[0]);
+              } else {
+                  tagsList.push(...item.children);
+              }
+          });
+          vm.$store.commit('setTagsList', tagsList);
+      });
+    }
 };
 
 // 生成路由节点

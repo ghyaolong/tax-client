@@ -35,6 +35,18 @@
             <FormItem label="角色编码" prop="code">
               <Input v-model="roleForm.code"/>
             </FormItem>
+            <FormItem label="角色对应节点" prop="processKey" :label-width="100">
+              <Select v-model="roleForm.processKey" >
+                <Option value="none" key="none">无</Option>
+                <Option value="approvalProcess" key="approvalProcess">税金申报申请</Option>
+                <Option value="reviewProcess" key="reviewProcess">复核申报</Option>
+                <Option value="checkEntity" key="checkEntity">核查公司</Option>
+                <Option value="examineEntity" key="examineEntity">审查公司</Option>
+                <Option value="checkPay" key="checkPay">支付审批</Option>
+                <Option value="approvalPay" key="approvalPay">审批支付</Option>
+                <Option value="uploadPayFile" key="uploadPayFile">上传文件</Option>
+              </Select>
+            </FormItem>
           </Form>
           <div slot="footer">
             <Button type="text" @click="cancelRole">取消</Button>
@@ -82,11 +94,14 @@ export default {
       permModalVisible: false,
       modalTitle: "",
       roleForm: {
-        code: ""
+        code: "",
+        name: "",
+        processKey: "none"
       },
       roleFormValidate: {
         name: [{ required: true, message: "角色名称不能为空", trigger: "blur" }],
-        code: [{ required: true, message: "角色编码不能为空", trigger: "blur" }]
+        code: [{ required: true, message: "角色编码不能为空", trigger: "blur" }],
+        processKey: [{ required: true, message: "流程KEY不能为空", trigger: "blur" }]
       },
       submitLoading: false,
       selectList: [],

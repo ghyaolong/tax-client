@@ -147,7 +147,7 @@
                   <td>{{item.taxPaid + item.overduePayment}}</td>
                   <td >{{ `${new Date(item.paymentTime).format()}` }}</td>
                   <td >
-                    <span class="myspan" @click="handleupLoad(tableList[0],index)">预览</span>
+                    <span class="myspan" @click="handleupLoad(tableList[0],index)">资料补全</span>
                   </td>
                   <td >{{item.remarks}}</td>
                 </tr>
@@ -224,11 +224,11 @@
         <Form label-position="left" :label-width="100" :modal="fileUploadForm" :rules="fileUploadFormRules" ref="showUploadRefs">
           <FormItem label="预申报表" prop="preTaxReturnsPath">
             <Input type="text" disabled v-model="fileUploadForm.preTaxReturnsPath" style="width:150px;float:left"/>
-            <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file"
+            <!-- <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file"
             :data="{materialTypeDict: 'PRE_TAX_REPORT'}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
               <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
-            </Upload>
+            </Upload> -->
             <Button   @click.stop="priviewFile(fileUploadForm.preTaxReturnsPath)">预览</Button>
             <Button   @click.stop="uploadFile(fileUploadForm.preTaxReturnsPath)">下载</Button>
           </FormItem>
@@ -267,7 +267,7 @@
       </Form>
       <footer class="vertical-center" slot="footer">
           <Button style="width: 100px;"  @click="fileuploadFormCancel">取消</Button>
-          <Button type="primary" style="width: 100px;margin-left:20px" @click="tempSubmitOk" v-if="currentLinkType=='uploadPayFile'">补全资料</Button>
+          <Button type="primary" style="width: 100px;margin-left:20px" @click="tempSubmitOk" v-if="currentLinkType=='uploadPayFile'">确定</Button>
           <Button type="primary" style="width: 100px;margin-left:20px" @click="fileuploadFormCancel" v-if="currentLinkType!='uploadPayFile'">确定</Button>
       </footer>
     </Modal>
@@ -350,7 +350,7 @@ export default {
           title: '保存时间',
           key: "saveTime",
           render: (h, params) => {
-            return h('div', params.row.creatTime && new Date(params.row.creatTime).format())
+            return h('div', params.row.createTime && new Date(params.row.createTime).format())
           }
           // width: 110
         },
@@ -535,6 +535,18 @@ export default {
     // 确定
     fileUploadFormSubmit() {
       console.log("fileUploadFormSubmit",this.tempInfoValue)
+      let tempObj = this.tempInfoValue.details
+      for(let i=0;i<tempObj.length;i++) {
+        if(!tempObj[i].taxReturns || !tempObj[i].paymentCertificate || !tempObj[i].preTaxReturns) {
+          this.$Message.error(`税种 ${tempObj[i].taxDict} 资料未补全`);
+          return
+        }
+      }
+
+
+
+
+      console.log("090909")
     },
     // 预览
       priviewFile(v) {
@@ -622,14 +634,14 @@ export default {
     // 临时保存路径确定
     tempSubmitOk() {
       let indexs = this.fileUploadForm.uploadFileIndex;
-      this.tempInfoValue.details[indexs].preTaxReturns = this.fileUploadForm[indexs].preTaxReturns
-      this.tempInfoValue.details[indexs].preTaxReturnsPath = this.fileUploadForm[indexs].preTaxReturnsPath
-      this.tempInfoValue.details[indexs].taxReturns = this.fileUploadForm[indexs].taxReturns
-      this.tempInfoValue.details[indexs].taxReturnsPath = this.fileUploadForm[indexs].taxReturnsPath
-      this.tempInfoValue.details[indexs].paymentCertificate = this.fileUploadForm[indexs].paymentCertificate
-      this.tempInfoValue.details[indexs].paymentCertificatePath = this.fileUploadForm[indexs].paymentCertificatePath
-      this.tempInfoValue.details[indexs].otherUploadId = this.fileUploadForm[indexs].otherUploadId
-      this.tempInfoValue.details[indexs].otherUploadPath = this.fileUploadForm[indexs].otherUploadPath
+      this.tempInfoValue.details[indexs].preTaxReturns = this.fileUploadForm.preTaxReturns
+      this.tempInfoValue.details[indexs].preTaxReturnsPath = this.fileUploadForm.preTaxReturnsPath
+      this.tempInfoValue.details[indexs].taxReturns = this.fileUploadForm.taxReturns
+      this.tempInfoValue.details[indexs].taxReturnsPath = this.fileUploadForm.taxReturnsPath
+      this.tempInfoValue.details[indexs].paymentCertificate = this.fileUploadForm.paymentCertificate
+      this.tempInfoValue.details[indexs].paymentCertificatePath = this.fileUploadForm.paymentCertificatePath
+      this.tempInfoValue.details[indexs].otherUploadId = this.fileUploadForm.otherUploadId
+      this.tempInfoValue.details[indexs].otherUploadPath = this.fileUploadForm.otherUploadPath
       this.showUploadModal=false
     },
     // 编辑
