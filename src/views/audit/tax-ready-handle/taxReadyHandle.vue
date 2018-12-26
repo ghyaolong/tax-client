@@ -567,7 +567,7 @@ export default {
         }
       }
       let params = {
-        operateApprove:0,
+        operateApprove:'0',
         comment:"同意，补全资料",
         taskId:this.tempInfoValue.serialNumber,
         userId:this.userInfo.id,
