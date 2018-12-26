@@ -356,7 +356,10 @@ export default {
         },
         {
           title:"当前环节",
-          key:"currentLink"
+          key:"currentLink",
+          render:(h,params) => {
+            return h('div', this.renderCnName(params.row.currentLink))
+          }
         },
         {
           title: '操作',
@@ -512,6 +515,21 @@ export default {
     }
   },
   methods: {
+    renderCnName(key) {
+      if(key) {
+        let obj = {
+          none:'无',
+          approvalProcess:'税金申报申请',
+          reviewProcess:'复核申报',
+          checkEntity:'核查公司',
+          examineEntity:'审查公司',
+          checkPay:'支付审批',
+          approvalPay:'审批支付',
+          uploadPayFile:'上传文件',
+        }
+        return obj[key]
+      }
+    },
     // 详情页面关闭
     fileInfoFormCancel() {
       this.showTaxes=false
@@ -542,11 +560,39 @@ export default {
           return
         }
       }
-
-
-
-
-      console.log("090909")
+      let params = {
+        bean:{
+            details:this.tempInfoValue.details,
+            applicantId: this.tempInfoValue.applicantId,
+            applicantName: this.tempInfoValue.applicantName,
+            companyId: this.tempInfoValue.companyId,
+            companyName: this.tempInfoValue.companyName,
+            countryCode: this.tempInfoValue.countryCode,
+            countryName: this.tempInfoValue.countryName,
+            currency: this.tempInfoValue.currency,
+            currentHandler: this.tempInfoValue.currentHandler,
+            currentLink: this.tempInfoValue.currentLink,
+            deploymentId: this.tempInfoValue.deploymentId,
+            executeType: this.tempInfoValue.executeType,
+            filePath:this.tempInfoValue.filePath,
+            financialReport: this.tempInfoValue.financialReport,
+            financialReportPath:this.tempInfoValue.financialReportPath,
+            id: this.tempInfoValue.id,
+            remarks: this.tempInfoValue.remarks,
+            serialNumber: this.tempInfoValue.serialNumber,
+            status: this.tempInfoValue.status,
+            tin: this.tempInfoValue.tin
+        }
+      }
+      console.log('params',params)
+      const that = this
+      dbrwAudit(params).then(res=>{
+        that.$Message.success("操作成功")
+        that.initPageData()
+        that.showTaxes=false
+      }).finally(() => {
+        // this.loading = false;
+      })
     },
     // 预览
       priviewFile(v) {
