@@ -447,13 +447,13 @@ export default {
         this.$Message.error('请选择审核人');
         return;
       }
-      // let preTaxReturnsVerity = params.details.some(item => {
-      //   return !item.preTaxReturns;
-      // });
-      // if (!params.financialReport) {
-      //   this.$Message.error('请上传财务报表');
-      //   return;
-      // }
+      let preTaxReturnsVerity = params.details.some(item => {
+        return !item.preTaxReturns;
+      });
+      if (!params.financialReport) {
+        this.$Message.error('请上传财务报表');
+        return;
+      }
       let dateVerity = params.details.some(item => {
         return !item.taxPeriod
       })

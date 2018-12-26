@@ -212,7 +212,7 @@
           </main>
           <footer class="vertical-center" slot="footer">
             <Button style="width: 100px;" @click="fileInfoFormCancel">取消</Button>
-            <Button type="primary" style="width: 100px;margin-left:20px" @click="fileUploadFormSubmit" v-if="currentLinkType=='uploadPayFile'">补全资料</Button>
+            <Button type="primary" style="width: 100px;margin-left:20px" @click="fileUploadFormSubmit" v-if="currentLinkType=='uploadPayFile'">提交</Button>
             <Button type="primary" style="width: 100px;margin-left:20px" @click="fileInfoFormCancel" v-if="currentLinkType!='uploadPayFile'">确定</Button>
           </footer>
     </Modal>
@@ -254,15 +254,16 @@
             <Button  @click.stop="priviewFile(fileUploadForm.paymentCertificatePath)">预览</Button>
             <Button  @click.stop="uploadFile(fileUploadForm.paymentCertificatePath)">下载</Button>
           </FormItem>
-          <FormItem label="其它" prop="otherUploadIdPath">
-            <Input type="text" disabled v-model="fileUploadForm.otherUploadIdPath" style="width:150px;float:left"/>
-            <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file"
+          <FormItem label="其它" prop="otherUploadId">
+            <Input type="text" disabled  v-model="fileUploadForm.otherUploadId"  style="width:150px;float:left"/>
+            <Upload action="/api/file/upload"
+            :headers="{accessToken: accessToken}" name="file"
             :data="{materialTypeDict: 'OTHER'}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
               <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
             </Upload>
-            <Button @click.stop="priviewFile(fileUploadForm.otherUploadIdPath)">预览</Button>
-            <Button  @click.stop="uploadFile(fileUploadForm.otherUploadIdPath)">下载</Button>
+            <Button @click.stop="priviewFile(fileUploadForm.otherUploadId)">预览</Button>
+            <Button  @click.stop="uploadFile(fileUploadForm.otherUploadId)">下载</Button>
           </FormItem>
       </Form>
       <footer class="vertical-center" slot="footer">
@@ -311,8 +312,8 @@ export default {
         taxReturnsPath:'',
         paymentCertificate:"",
         paymentCertificatePath:"",
+        otherUpload:"",
         otherUploadId:"",
-        otherUploadPath:"",
       },
       columns: [
         {
@@ -462,7 +463,7 @@ export default {
                         }
                       }
                     },
-                    "补全数据"
+                    "资料补全"
                   ),
                   h(
                     "Button",
@@ -543,8 +544,13 @@ export default {
         'DONE_TAX_REPORT': 'paymentCertificate',
         'OTHER': 'otherUploadId'
       }[res.data.materialTypeDict];
-      this.fileUploadForm[key] = res.data.id;
-      this.fileUploadForm[key + 'Path'] = res.data.fileName;
+      if(res.data.materialTypeDict=="OTHER") {
+        this.fileUploadForm[key] = res.data.id;
+        this.fileUploadForm[key + 'Id'] = res.data.fileName;
+      }else{
+        this.fileUploadForm[key] = res.data.id;
+        this.fileUploadForm[key + 'Path'] = res.data.fileName;
+      }
     },
     // 取消
     fileuploadFormCancel() {
@@ -561,6 +567,11 @@ export default {
         }
       }
       let params = {
+        operateApprove:0,
+        comment:"同意，补全资料",
+        taskId:this.tempInfoValue.serialNumber,
+        userId:this.userInfo.id,
+        currentHandler:'',
         bean:{
             details:this.tempInfoValue.details,
             applicantId: this.tempInfoValue.applicantId,
@@ -672,8 +683,8 @@ export default {
         taxReturnsPath:item.details[index].taxReturnsPath,
         paymentCertificate:item.details[index].paymentCertificate,
         paymentCertificatePath:item.details[index].paymentCertificatePath,
+        otherUpload:item.details[index].otherUpload,
         otherUploadId:item.details[index].otherUploadId,
-        otherUploadPath:item.details[index].otherUploadPath,
       }
       this.showUploadModal = true
     },
@@ -686,8 +697,8 @@ export default {
       this.tempInfoValue.details[indexs].taxReturnsPath = this.fileUploadForm.taxReturnsPath
       this.tempInfoValue.details[indexs].paymentCertificate = this.fileUploadForm.paymentCertificate
       this.tempInfoValue.details[indexs].paymentCertificatePath = this.fileUploadForm.paymentCertificatePath
+      this.tempInfoValue.details[indexs].otherUpload = this.fileUploadForm.otherUpload
       this.tempInfoValue.details[indexs].otherUploadId = this.fileUploadForm.otherUploadId
-      this.tempInfoValue.details[indexs].otherUploadPath = this.fileUploadForm.otherUploadPath
       this.showUploadModal=false
     },
     // 编辑
