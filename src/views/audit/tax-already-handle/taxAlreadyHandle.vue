@@ -36,7 +36,6 @@
     </Card>
     </Col>
     </Row>
-
     <Modal title="税金申请表单" scrollable v-model="showTaxes" :mask-closable='false' :width="1220" style="overflow-y:scroll;">
           <main v-if="tableList.length>0">
             <!--startprint1-->
@@ -64,6 +63,12 @@
                   <td colspan="5" width="502">{{tableList[0].remarks}}</td>
                 </tr>
                 <tr>
+                  <td width="82" >财务报表</td>
+                  <td colspan="5" style="border-right-color:#fff">{{tableList[0].financialReportPath}}</td>
+                  <td style="border-right-color:#fff" class="myspan" @click="priviewFile(tableList[0].financialReportPath)">预览</td>
+                  <td class="myspan" @click="uploadFile(tableList[0].financialReportPath)">下载</td>
+                </tr>
+                <tr>
                   <td width="82">所属期间</td>
                   <td width="60">税种</td>
                   <td width="80">应缴税额</td>
@@ -77,7 +82,7 @@
                   <td width="100">附件</td>
                   <td width="120">备注</td>
                 </tr>
-                <tr v-for="item in tableList[0].details" :key="item.id">
+                <tr v-for="(item,index) in tableList[0].details" :key="item.id">
                   <td >{{item.taxPeriod}}</td>
                   <td >{{item.taxDict}}</td>
                   <td >{{item.payableTax}}</td>
@@ -89,8 +94,7 @@
                   <td >{{item.actualTaxPayment}}</td>
                   <td >{{`${item.paymentTime && new Date(item.paymentTime).format()}`}}</td>
                   <td >
-                    <span class="myspan" @click="handleLook(item)">查看</span>
-                    <span class="myspan" @click="handleLoad(item)">下载</span>
+                    <span class="myspan" @click="handleLook(item,index)">操作</span>
                   </td>
                   <td >{{item.remarks}}</td>
                 </tr>
@@ -159,16 +163,69 @@
               <Button type="primary"  style="width: 100px;margin-left:158px">导出</Button>
           </footer>
     </Modal>
+    <Modal
+        :closable="false"
+        class-name="preview-modal-inline"
+        v-model="showUploadModal">
+        <Form label-position="left" :label-width="100" :modal="fileUploadForm"  ref="showUploadRefs">
+          <FormItem label="预申报表" prop="preTaxReturnsPath">
+            <Input type="text" disabled v-model="fileUploadForm.preTaxReturnsPath" style="width:150px;float:left"/>
+            <!-- <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file"
+            :data="{materialTypeDict: 'PRE_TAX_REPORT'}" :show-upload-list="false"
+            :on-success="uploadSuc" style="float:left">
+              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+            </Upload> -->
+            <Button   @click.stop="priviewFile(fileUploadForm.preTaxReturnsPath)">预览</Button>
+            <Button   @click.stop="uploadFile(fileUploadForm.preTaxReturnsPath)">下载</Button>
+          </FormItem>
+          <FormItem label="申报表" prop="taxReturnsPath">
+            <Input type="text" disabled v-model="fileUploadForm.taxReturnsPath" style="width:150px;float:left"/>
+            <!-- <Upload action="/api/file/upload"
+            :headers="{accessToken: accessToken}" name="file"
+            :data="{materialTypeDict: 'TAX_REPORT'}" :show-upload-list="false"
+            :on-success="uploadSuc" style="float:left">
+              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+            </Upload> -->
+            <Button  @click.stop="priviewFile(fileUploadForm.taxReturnsPath)">预览</Button>
+            <Button  @click.stop="uploadFile(fileUploadForm.taxReturnsPath)">下载</Button>
+          </FormItem>
+          <FormItem label="完税申报表" prop="paymentCertificatePath">
+            <Input type="text" disabled v-model="fileUploadForm.paymentCertificatePath" style="width:150px;float:left"/>
+            <!-- <Upload action="/api/file/upload"
+            :headers="{accessToken: accessToken}" name="file"
+            :data="{materialTypeDict: 'DONE_TAX_REPORT'}" :show-upload-list="false"
+            :on-success="uploadSuc" style="float:left">
+              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+            </Upload> -->
+            <Button  @click.stop="priviewFile(fileUploadForm.paymentCertificatePath)">预览</Button>
+            <Button  @click.stop="uploadFile(fileUploadForm.paymentCertificatePath)">下载</Button>
+          </FormItem>
+          <FormItem label="其它" prop="otherUploadIdPath">
+            <Input type="text" disabled v-model="fileUploadForm.otherUploadIdPath" style="width:150px;float:left"/>
+            <!-- <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file"
+            :data="{materialTypeDict: 'OTHER'}" :show-upload-list="false"
+            :on-success="uploadSuc" style="float:left">
+              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+            </Upload> -->
+            <Button @click.stop="priviewFile(fileUploadForm.otherUploadIdPath)">预览</Button>
+            <Button  @click.stop="uploadFile(fileUploadForm.otherUploadIdPath)">下载</Button>
+          </FormItem>
+      </Form>
+    </Modal>
   </div>
 </template>
 
 <script>
 import { taxAlreadyHandle,getTaxAuditLog,getAllUserData,getAllCompany } from "@/api/index.js";
 import Cookies from "js-cookie";
+import fileLoadPath from '@/api/fileload';
+import { getStore } from '@/libs/storage';
 export default {
   name: "taxAlreadyHandle",
   data() {
     return {
+      accessToken: getStore('accessToken'),
+      showUploadModal:false,
       tableList:[],
       showTaxes:false,
       loading: false,
@@ -299,17 +356,74 @@ export default {
        applTaxPaymentAll:0,  //申请缴纳税款合计
        taxPaidAll:0,   //实缴税额合计    taxPaid
        overduePaymentAll:0,// 实缴滞纳金合计   overduePayment
-       actualTaxPayment:0//实际缴纳税款合计
+       actualTaxPayment:0,//实际缴纳税款合计
+       fileUploadForm :{
+         uploadFileIndex:null,
+         preTaxReturns:"",
+         preTaxReturnsPath:"",
+         taxReturns:"",
+         taxReturnsPath:"",
+         paymentCertificate:"",
+         paymentCertificatePath:"",
+         otherUploadId:"",
+         otherUploadPath:""
+       }
     };
   },
   methods: {
+    // 预览
+      priviewFile(v) {
+        console.log("预览",v)
+        const that = this;
+        let lastString = v.lastIndexOf(".")
+        let filelastName = v.substr(lastString+1)
+        if(filelastName=="png" || filelastName=="jpg" || filelastName=="jpeg") {
+          let baseurl = fileLoadPath.loadFilePath
+          window.open(`${baseurl}${v}?view`)
+        }else{
+          let base="/api"
+          var xhr = new XMLHttpRequest();
+          xhr.responseType = "blob";
+            xhr.onreadystatechange = function(){
+                if( xhr.readyState == 4){
+                    if( xhr.status >= 200 && xhr.status < 300 || xhr.status == 304){
+                      let blob = xhr.response
+                      let imgTag = URL.createObjectURL(blob)
+                      that.priviewFilePath=imgTag
+                      window.open(imgTag)
+                    }
+                }
+            };
+            xhr.open("post",`${base}/previewFile`,true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.setRequestHeader("accessToken", this.accessToken);
+            xhr.send(JSON.stringify({fileName:v}));
+        }
+      },
+    // 下载
+    uploadFile(path) {
+      let baseurl = fileLoadPath.loadFilePath
+      window.open(baseurl+path)
+    },
+    // 操作
+    handleLook(item,index) {
+      console.log('item',item)
+      this.fileUploadForm = {
+        uploadFileIndex:index,
+        preTaxReturns:item.preTaxReturns,
+        preTaxReturnsPath:item.preTaxReturnsPath,
+        taxReturns:item.taxReturns,
+        taxReturnsPath:item.taxReturnsPath,
+        paymentCertificate:item.paymentCertificate,
+        paymentCertificatePath:item.paymentCertificatePath,
+        otherUploadId:item.otherUploadId,
+        otherUploadPath:item.otherUploadPath,
+      }
+      this.showUploadModal = true
+    },
     // 打印
     handleDayin() {
       window.print();
-    },
-    // 查看
-    handleLook(item) {
-      console.log("item",item)
     },
     // 下载
     handleLoad(item){

@@ -116,6 +116,12 @@
                   <td colspan="5" width="502">{{tableList[0].remarks}}</td>
                 </tr>
                 <tr>
+                  <td width="82" >财务报表</td>
+                  <td colspan="5" style="border-right-color:#fff">{{tableList[0].financialReportPath}}</td>
+                  <td style="border-right-color:#fff" class="myspan" @click="priviewFile(tableList[0].financialReportPath)">预览</td>
+                  <td class="myspan" @click="uploadFile(tableList[0].financialReportPath)">下载</td>
+                </tr>
+                <tr>
                   <td width="82">所属期间</td>
                   <td width="60">税种</td>
                   <td width="80">应缴税额</td>
@@ -141,7 +147,7 @@
                   <td>{{item.taxPaid + item.overduePayment}}</td>
                   <td >{{ `${new Date(item.paymentTime).format()}` }}</td>
                   <td >
-                    <span class="myspan" @click="handleupLoad(tableList[0],index)">操作</span>
+                    <span class="myspan" @click="handleupLoad(tableList[0],index)">预览</span>
                   </td>
                   <td >{{item.remarks}}</td>
                 </tr>
@@ -205,8 +211,9 @@
               </table>
           </main>
           <footer class="vertical-center" slot="footer">
-            <Button style="width: 100px;" @click="fileuploadFormCancel">取消</Button>
-            <Button type="primary" style="width: 100px;margin-left:20px" @click="fileUploadFormSubmit">确定</Button>
+            <Button style="width: 100px;" @click="fileInfoFormCancel">取消</Button>
+            <Button type="primary" style="width: 100px;margin-left:20px" @click="fileUploadFormSubmit" v-if="currentLinkType=='uploadPayFile'">补全资料</Button>
+            <Button type="primary" style="width: 100px;margin-left:20px" @click="fileInfoFormCancel" v-if="currentLinkType!='uploadPayFile'">确定</Button>
           </footer>
     </Modal>
     <!-- 上传modal -->
@@ -220,7 +227,7 @@
             <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file"
             :data="{materialTypeDict: 'PRE_TAX_REPORT'}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
-              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
             </Upload>
             <Button   @click.stop="priviewFile(fileUploadForm.preTaxReturnsPath)">预览</Button>
             <Button   @click.stop="uploadFile(fileUploadForm.preTaxReturnsPath)">下载</Button>
@@ -231,7 +238,7 @@
             :headers="{accessToken: accessToken}" name="file"
             :data="{materialTypeDict: 'TAX_REPORT'}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
-              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
             </Upload>
             <Button  @click.stop="priviewFile(fileUploadForm.taxReturnsPath)">预览</Button>
             <Button  @click.stop="uploadFile(fileUploadForm.taxReturnsPath)">下载</Button>
@@ -242,7 +249,7 @@
             :headers="{accessToken: accessToken}" name="file"
             :data="{materialTypeDict: 'DONE_TAX_REPORT'}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
-              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
             </Upload>
             <Button  @click.stop="priviewFile(fileUploadForm.paymentCertificatePath)">预览</Button>
             <Button  @click.stop="uploadFile(fileUploadForm.paymentCertificatePath)">下载</Button>
@@ -252,7 +259,7 @@
             <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file"
             :data="{materialTypeDict: 'OTHER'}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
-              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
             </Upload>
             <Button @click.stop="priviewFile(fileUploadForm.otherUploadIdPath)">预览</Button>
             <Button  @click.stop="uploadFile(fileUploadForm.otherUploadIdPath)">下载</Button>
@@ -260,7 +267,8 @@
       </Form>
       <footer class="vertical-center" slot="footer">
           <Button style="width: 100px;"  @click="fileuploadFormCancel">取消</Button>
-          <Button type="primary" style="width: 100px;margin-left:20px" @click="tempSubmitOk">确定</Button>
+          <Button type="primary" style="width: 100px;margin-left:20px" @click="tempSubmitOk" v-if="currentLinkType=='uploadPayFile'">补全资料</Button>
+          <Button type="primary" style="width: 100px;margin-left:20px" @click="fileuploadFormCancel" v-if="currentLinkType!='uploadPayFile'">确定</Button>
       </footer>
     </Modal>
   </div>
@@ -394,7 +402,7 @@ export default {
                     "流程图"
                   )
                 ]);
-            }else{
+            }else if(params.row.status!=3 && params.row.currentLink != "uploadPayFile"){
               return h("div", [
                   h(
                     "Button",
@@ -413,6 +421,45 @@ export default {
                       }
                     },
                     "处理"
+                  ),
+                  h(
+                    "Button",
+                    {
+                      props: {
+                        type: "primary",
+                        size: "small"
+                      },
+                      style: {
+                        marginRight: "5px"
+                      },
+                      on: {
+                        click: () => {
+                          this.handleLIUCHENGTU(params.row);
+                        }
+                      }
+                    },
+                    "流程图"
+                  )
+                ]);
+            }else if (params.row.currentLink=="uploadPayFile") {
+              return h("div", [
+                  h(
+                    "Button",
+                    {
+                      props: {
+                        type: "primary",
+                        size: "small"
+                      },
+                      style: {
+                        marginRight: "5px"
+                      },
+                      on: {
+                        click: () => {
+                          this.handleLook(params.row);
+                        }
+                      }
+                    },
+                    "补全数据"
                   ),
                   h(
                     "Button",
@@ -461,9 +508,14 @@ export default {
       actualTaxPayment:0,//实际缴纳税款合计
       shenpiyijian:[], // 审批意见
       tempInfoValue:{}, // 临时的详情数据
+      currentLinkType:""
     }
   },
   methods: {
+    // 详情页面关闭
+    fileInfoFormCancel() {
+      this.showTaxes=false
+    },
     // 上传成功
     uploadSuc(res) {
       console.log('1231231',res)
@@ -519,6 +571,7 @@ export default {
     },
     // 查看详情
     handleLook(v) {
+      this.currentLinkType = v.currentLinkType;
       this.tempInfoValue = v;
       let tempData = v.details;
       var  payableTaxALL=0 // 应缴税额合计
@@ -567,15 +620,16 @@ export default {
     },
     // 临时保存路径确定
     tempSubmitOk() {
-      let indexs = this.fileUploadForm.index;
-      this.tempInfoValue.details[indexs].preTaxReturns = this.fileUploadForm[index].preTaxReturns
-      this.tempInfoValue.details[indexs].preTaxReturnsPath = this.fileUploadForm[index].preTaxReturnsPath
-      this.tempInfoValue.details[indexs].taxReturns = this.fileUploadForm[index].taxReturns
-      this.tempInfoValue.details[indexs].taxReturnsPath = this.fileUploadForm[index].taxReturnsPath
-      this.tempInfoValue.details[indexs].paymentCertificate = this.fileUploadForm[index].paymentCertificate
-      this.tempInfoValue.details[indexs].paymentCertificatePath = this.fileUploadForm[index].paymentCertificatePath
-      this.tempInfoValue.details[indexs].otherUploadId = this.fileUploadForm[index].otherUploadId
-      this.tempInfoValue.details[indexs].otherUploadPath = this.fileUploadForm[index].otherUploadPath
+      let indexs = this.fileUploadForm.uploadFileIndex;
+      this.tempInfoValue.details[indexs].preTaxReturns = this.fileUploadForm[indexs].preTaxReturns
+      this.tempInfoValue.details[indexs].preTaxReturnsPath = this.fileUploadForm[indexs].preTaxReturnsPath
+      this.tempInfoValue.details[indexs].taxReturns = this.fileUploadForm[indexs].taxReturns
+      this.tempInfoValue.details[indexs].taxReturnsPath = this.fileUploadForm[indexs].taxReturnsPath
+      this.tempInfoValue.details[indexs].paymentCertificate = this.fileUploadForm[indexs].paymentCertificate
+      this.tempInfoValue.details[indexs].paymentCertificatePath = this.fileUploadForm[indexs].paymentCertificatePath
+      this.tempInfoValue.details[indexs].otherUploadId = this.fileUploadForm[indexs].otherUploadId
+      this.tempInfoValue.details[indexs].otherUploadPath = this.fileUploadForm[indexs].otherUploadPath
+      this.showUploadModal=false
     },
     // 编辑
     edit(v) {
