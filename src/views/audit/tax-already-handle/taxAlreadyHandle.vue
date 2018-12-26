@@ -295,7 +295,7 @@ export default {
           key:"currentLink"
         },{
           title:"当前处理人",
-          key:"currentLink"
+          key:"currentHandler"
         }
         // {
         //   title: '操作',

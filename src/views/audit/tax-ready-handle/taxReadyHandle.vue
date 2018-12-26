@@ -571,7 +571,7 @@ export default {
     },
     // 查看详情
     handleLook(v) {
-      this.currentLinkType = v.currentLinkType;
+      console.log("1212",v)
       this.tempInfoValue = v;
       let tempData = v.details;
       var  payableTaxALL=0 // 应缴税额合计
@@ -600,6 +600,7 @@ export default {
       }else{
         this.shenpiyijian=[]
       }
+      this.currentLinkType = v.currentLink;
       this.showTaxes=true
     },
     // 操作
