@@ -540,12 +540,12 @@ export default {
                 taxDict: '',
                 payableTax: 0,
                 lateFeePayable: 0,
-                applTaxPayment: '',
+                applTaxPayment: 0,
                 deadline: '',
                 taxPaid: 0,
                 overduePayment: 0,
                 paymentTime: '',
-                taxReturns: '',
+                taxReturns: "",
                 remarks: '',
                 status:0
               }]
@@ -733,12 +733,12 @@ export default {
         taxDict: '',
         payableTax: 0,
         lateFeePayable: 0,
-        applTaxPayment: '',
+        applTaxPayment: 0,
         deadline: '',
         taxPaid: 0,
         overduePayment: 0,
         paymentTime: '',
-        taxReturns: '',
+        taxReturns: "",
         remarks: '',
         status:0
       });
@@ -751,7 +751,7 @@ export default {
           taxDict: dataList[i].taxDict && dataList[i].taxDict || "",
           payableTax: dataList[i].payableTax && dataList[i].payableTax || 0,
           lateFeePayable:dataList[i].lateFeePayable && dataList[i].lateFeePayable || 0,
-          applTaxPayment: dataList[i].applTaxPayment && dataList[i].applTaxPayment || "",
+          applTaxPayment: dataList[i].applTaxPayment && dataList[i].applTaxPayment || 0,
           deadline: dataList[i].deadline && dataList[i].deadline || "",
           taxPaid: dataList[i].taxPaid && dataList[i].taxPaid || 0,
           overduePayment: dataList[i].overduePayment && dataList[i].overduePayment || 0,
@@ -1036,12 +1036,12 @@ export default {
                 taxDict: '',
                 payableTax: 0,
                 lateFeePayable: 0,
-                applTaxPayment: '',
+                applTaxPayment: 0,
                 deadline: '',
                 taxPaid: 0,
                 overduePayment: 0,
                 paymentTime: '',
-                taxReturns: '',
+                taxReturns: "",
                 remarks: '',
                 status:0
               }]

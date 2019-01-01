@@ -106,8 +106,8 @@
                 </FormItem>
                 <FormItem label="性别" prop="sex">
                   <RadioGroup v-model="userForm.sex">
-                    <Radio :label="0">男</Radio>
-                    <Radio :label="1">女</Radio>
+                    <Radio label="0" >男</Radio>
+                    <Radio label="1" >女</Radio>
                   </RadioGroup>
                 </FormItem>
                 <!-- <Form-item label="头像" prop="avatar">
@@ -263,6 +263,7 @@ export default {
         realName: '',
         password: '',
         workNumber: null,
+        sex:"0",
         /* sex: 1,
         type: 0,
         avatar: "https://s1.ax1x.com/2018/05/19/CcdVQP.png", */

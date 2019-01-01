@@ -87,11 +87,11 @@
                   <td >{{item.taxDict}}</td>
                   <td >{{item.payableTax}}</td>
                   <td >{{item.lateFeePayable}}</td>
-                  <td >{{item.applTaxPayment}}</td>
+                  <td >{{item.payableTax + item.lateFeePayable}}</td>
                   <td >{{`${item.deadline && new Date(item.deadline).format()}`}}</td>
                   <td >{{item.taxPaid}}</td>
                   <td >{{item.overduePayment}}</td>
-                  <td >{{item.actualTaxPayment}}</td>
+                  <td >{{item.taxPaid + item.overduePayment}}</td>
                   <td >{{`${item.paymentTime && new Date(item.paymentTime).format()}`}}</td>
                   <td >
                     <span class="myspan" @click="handleLook(item,index)">操作</span>
@@ -160,7 +160,7 @@
           </main>
           <footer class="vertical-center" slot="footer">
               <Button style="width: 100px;" @click="handleDayin">打印</Button>
-              <Button type="primary"  style="width: 100px;margin-left:158px">导出</Button>
+              <!-- <Button type="primary"  style="width: 100px;margin-left:158px">导出</Button> -->
           </footer>
     </Modal>
     <Modal

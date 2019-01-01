@@ -61,7 +61,7 @@
             <Option value="1" >拒绝</Option>
           </Select>
         </FormItem>
-        <FormItem label="审批意见" :label-width="100" v-if="taxReadyHandle.operateApprove != '1'">
+        <FormItem label="审批意见" :label-width="100" v-if="taxReadyHandle.operateApprove != '1'" >
           <Input type="textarea" v-model="taxReadyHandle.comment" placeholder="请输入审批意见"></Input>
         </FormItem>
         <Form-item label="选择审核人" prop="currentHandler" v-if="taxReadyHandle.operateApprove != '1'" :label-width="100">
@@ -140,7 +140,7 @@
                   <td >{{item.taxDict}}</td>
                   <td >{{item.payableTax}}</td>
                   <td >{{item.lateFeePayable}}</td>
-                  <td >{{item.applTaxPayment}}</td>
+                  <td >{{item.payableTax+item.lateFeePayable}}</td>
                   <td >{{`${new Date(item.deadline).format()}`}}</td>
                   <td >{{item.taxPaid}}</td>
                   <td>{{item.overduePayment}}</td>
@@ -542,7 +542,7 @@ export default {
         'PRE_TAX_REPORT': 'preTaxReturns',
         'TAX_REPORT': 'taxReturns',
         'DONE_TAX_REPORT': 'paymentCertificate',
-        'OTHER': 'otherUploadId'
+        'OTHER': 'otherUpload'
       }[res.data.materialTypeDict];
       if(res.data.materialTypeDict=="OTHER") {
         this.fileUploadForm[key] = res.data.id;
@@ -568,7 +568,7 @@ export default {
       }
       let params = {
         operateApprove:'0',
-        comment:"同意，补全资料",
+        comment:"补全资料",
         taskId:this.tempInfoValue.serialNumber,
         userId:this.userInfo.id,
         currentHandler:'',
