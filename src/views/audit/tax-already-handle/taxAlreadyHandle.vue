@@ -10,7 +10,7 @@
           <Form-item label="公司名称" prop="companyName">
           <Input  placeholder="请输入公司名称" v-model="submitData.companyName"></Input>
           </Form-item>
-          <Form-item label="流程状态"  prop="">
+          <Form-item label="流程状态"  prop="flowStatus">
             <Select  placeholder="请选择" style="width: 200px">
               <Option value="1">已完结</Option>
               <Option value="0">审批中</Option>
