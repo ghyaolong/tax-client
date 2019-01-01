@@ -116,7 +116,7 @@
           </FormItem>
           <FormItem label="其它" v-if="routeType === 'taxReplenishment'">
             <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'OTHER'}" :show-upload-list="false" :on-success="uploadSuc">
-              <Input type="text" readonly v-model="fileUploadForm.otherUploadIdPath" />
+              <Input type="text" readonly v-model="fileUploadForm.otherUploadId" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
               <!-- <div v-if="fileUploadForm.otherUploadId"><Button @click.stop="filePriview(fileUploadForm.otherUploadIdPath)">预览</Button></div> -->
             </Upload>
@@ -143,8 +143,8 @@
             </Upload>
           </FormItem>
           <FormItem label="其它">
-              <Input type="text" readonly v-model="fileUploadForm.otherUploadIdPath" />
-              <Button v-if="fileUploadForm.otherUploadId" @click.stop="filePriview(fileUploadForm.otherUploadIdPath)">预览</Button>
+              <Input type="text" readonly v-model="fileUploadForm.otherUploadId" />
+              <Button v-if="fileUploadForm.otherUploadId" @click.stop="filePriview(fileUploadForm.otherUploadId)">预览</Button>
             </Upload>
           </FormItem>
       </Form>
@@ -258,12 +258,18 @@ export default {
           key: "applTaxPayment",
           align: 'center',
           width: 120,
-          render: this.renderInput
-          /* render: (h, params) => {
-            let item = this.data[params.index];
-            item[params.column.key] = parseFloat(item.payableTax) + parseFloat(item.lateFeePayable);
-            return h('div', item[params.column.key])
-          } */
+          // render: this.renderInput
+          render: (h, params) => {
+            return h('div', {
+              domProps: {
+                innerText: parseFloat(params.row.payableTax) + parseFloat(params.row.lateFeePayable)
+              }
+            })
+            return h('div', parseFloat(this.data[params.index].payableTax) + parseFloat(this.data[params.index].lateFeePayable))
+            // let item = this.data[params.index];
+            // item[params.column.key] = parseFloat(item.payableTax) + parseFloat(item.lateFeePayable);
+            // return h('div', item[params.column.key])
+          }
         },
         {
           title: '缴款截止日期',
@@ -336,7 +342,7 @@ export default {
                           paymentCertificate,
                           paymentCertificatePath,
                           otherUploadId,
-                          otherUploadPath: otherUpload
+                          otherUpload: otherUpload
                         }
                         this.showUploadModal = true;
                       }
@@ -435,25 +441,23 @@ export default {
         this.form.countryName = this.dictCountrys && this.dictCountrys.filter((item)=>{return item.code==this.form.countryCode})[0].name;
       }
       this.form.status=0;
-
-
       let params = {...this.form,details:[...this.data]}
-
+      // 公司
       if (!params.companyId) {
         this.$Message.error('请选择公司');
         return;
       }
+      // 审核人
       if (!params.currentHandler) {
         this.$Message.error('请选择审核人');
         return;
       }
-      let preTaxReturnsVerity = params.details.some(item => {
-        return !item.preTaxReturns;
-      });
+      // 财务报表
       if (!params.financialReport) {
         this.$Message.error('请上传财务报表');
         return;
       }
+      // 所属期间
       let dateVerity = params.details.some(item => {
         return !item.taxPeriod
       })
@@ -462,7 +466,12 @@ export default {
         return;
       }
       params.details.map(item => {
-        item.taxPeriod = item.taxPeriod && item.taxPeriod + '-01';
+        if(item.taxPeriod.indexOf('-01-01') > 1){
+
+        }else{
+          item.taxPeriod = item.taxPeriod && item.taxPeriod + '-01';
+        }
+        // item.taxPeriod = item.taxPeriod && item.taxPeriod + '-01';
       });
       // 税种
       let shuizhong = params.details.some(item => {
@@ -473,16 +482,16 @@ export default {
         return;
       }
       //  申请缴纳税款不能为空
-      let flag = params.details.some((item) => {
-        if (item.applTaxPayment == '') {
-          item.applTaxPayment = parseFloat(item.payableTax) + parseFloat(item.lateFeePayable);
-        }
-        return item.applTaxPayment <= 0
-      });
-      if (flag) {
-        this.$Message.error('申请缴纳税款不能为空');
-        return;
-      }
+      // let flag = params.details.some((item) => {
+      //   if (item.applTaxPayment == '') {
+      //     item.applTaxPayment = parseFloat(item.payableTax) + parseFloat(item.lateFeePayable);
+      //   }
+      //   return item.applTaxPayment <= 0
+      // });
+      // if (flag) {
+      //   this.$Message.error('申请缴纳税款不能为空,请输入应缴税额或应缴滞纳金');
+      //   return;
+      // }
       //  缴款截止日期
       let jnjzrq = params.details.some(item => {
         return !item.deadline
@@ -499,10 +508,16 @@ export default {
         this.$Message.error('请选择缴款截止日期');
         return;
       }
+      // 税种与申报表
+      let preTaxReturnsVerity = params.details.some(item => {
+        return !item.preTaxReturns;
+      });
+      if (preTaxReturnsVerity) {
+        this.$Message.error('请上传每个税种的预申报表');
+        return;
+      }
       this.loading = true;
-      console.log("params",params)
       submitJJSQ(params).then((res)=>{
-        console.log('22222222',res)
         if(res.data == "流程启动失败") {
           this.$Message.error("启动流程失败")
         }else{
@@ -890,10 +905,15 @@ export default {
         'PRE_TAX_REPORT': 'preTaxReturns',
         'TAX_REPORT': 'taxReturns',
         'DONE_TAX_REPORT': 'paymentCertificate',
-        'OTHER': 'otherUploadId'
+        'OTHER': 'otherUpload'
       }[res.data.materialTypeDict];
-      this.fileUploadForm[key] = res.data.id;
-      this.fileUploadForm[key + 'Path'] = res.data.fileName;
+      if(res.data.materialTypeDict=="OTHER") {
+        this.fileUploadForm[key] = res.data.id;
+        this.fileUploadForm[key + 'Id'] = res.data.fileName;
+      }else {
+        this.fileUploadForm[key] = res.data.id;
+        this.fileUploadForm[key + 'Path'] = res.data.fileName;
+      }
     },
     uploadModalOk() {
       let uploadColomunIndex = this.fileUploadForm.uploadColomunIndex;
@@ -904,7 +924,7 @@ export default {
       this.data[uploadColomunIndex].paymentCertificate = this.fileUploadForm.paymentCertificate;
       this.data[uploadColomunIndex].paymentCertificatePath = this.fileUploadForm.paymentCertificatePath;
       this.data[uploadColomunIndex].otherUploadId = this.fileUploadForm.otherUploadId;
-      this.data[uploadColomunIndex].otherUpload = this.fileUploadForm.otherUploadIdPath;
+      this.data[uploadColomunIndex].otherUpload = this.fileUploadForm.otherUpload;
       this.showUploadModal = false;
     },
     uploadModalCancel() {
@@ -931,38 +951,70 @@ export default {
       console.log("1111",this.data)
       let params = {...this.form, details: this.data};
       params.executeType = save === 'save' ? 0 : 1;
+      // 公司
         if (!params.companyId) {
           this.$Message.error('请选择公司');
           return;
         }
-        let flag = params.details.some((item) => {
-          if (item.applTaxPayment == '') {
-            item.applTaxPayment = parseFloat(item.payableTax) + parseFloat(item.lateFeePayable);
-          }
-          return item.applTaxPayment <= 0
-        });
-        if (flag) {
-          this.$Message.error('申请缴纳税款不能为空');
+        // 审核人
+        if (!params.currentHandler) {
+          this.$Message.error('请选择审核人');
           return;
         }
-        let preTaxReturnsVerity = params.details.some(item => {
-          return !item.preTaxReturns;
-        });
-        if (preTaxReturnsVerity) {
-          this.$Message.error('请上传预申报表');
-          return;
-        }
-      let dateVerity = params.details.some(item => {
-        return !item.taxPeriod
-      })
-      if (dateVerity) {
-        this.$Message.error('请选择所属期间');
+      // 请上传财务报表
+      if (!params.financialReport) {
+        this.$Message.error('请上传财务报表');
         return;
       }
-      // 所属期间字段显示月份，但提交后台需要精确值日
-      params.details.map(item => {
-        item.taxPeriod = item.taxPeriod && item.taxPeriod + '-01';
+        // 所属期间字段显示月份，但提交后台需要精确值日
+        let dateVerity = params.details.some(item => {
+          return !item.taxPeriod
+        })
+        if (dateVerity) {
+          this.$Message.error('请选择所属期间');
+          return;
+        }
+        params.details.map(item => {
+          if(item.taxPeriod.indexOf('-01-01') > 1){
+
+          }else{
+            item.taxPeriod = item.taxPeriod && item.taxPeriod + '-01';
+          }
+        });
+        // 税种
+        let shuizhong = params.details.some(item => {
+          return !item.taxDict
+        })
+        if (shuizhong) {
+          this.$Message.error('请选择税种');
+          return;
+        }
+
+      //  缴款截止日期
+      let jnjzrq = params.details.some(item => {
+        return !item.deadline
+      })
+      if (jnjzrq) {
+        this.$Message.error('请选择缴款截止日期');
+        return;
+      }
+      //实际缴纳日期
+      let sjjnrqi = params.details.some(item => {
+        return !item.paymentTime
+      })
+      if (sjjnrqi) {
+        this.$Message.error('请选择缴款截止日期');
+        return;
+      }
+      // 税种预审报表
+      let preTaxReturnsVerity = params.details.some(item => {
+        return !item.preTaxReturns;
       });
+      if (preTaxReturnsVerity) {
+        this.$Message.error('请上传每个税种的预申报表');
+        return;
+      }
+
       this.loading = true;
       let fn = this.$route.params.type === 'readyCommit' ? taxEdit : taxAdd;
       fn(params).then(res => {

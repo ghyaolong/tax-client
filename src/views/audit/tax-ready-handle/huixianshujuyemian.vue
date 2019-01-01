@@ -258,12 +258,18 @@ export default {
           key: "applTaxPayment",
           align: 'center',
           width: 120,
-          render: this.renderInput
-          /* render: (h, params) => {
-            let item = this.data[params.index];
-            item[params.column.key] = parseFloat(item.payableTax) + parseFloat(item.lateFeePayable);
-            return h('div', item[params.column.key])
-          } */
+          // render: this.renderInput
+         render: (h, params) => {
+           return h('div', {
+             domProps: {
+               innerText: parseFloat(params.row.payableTax) + parseFloat(params.row.lateFeePayable)
+             }
+           })
+           return h('div', parseFloat(this.data[params.index].payableTax) + parseFloat(this.data[params.index].lateFeePayable))
+         }
+            // let item = this.data[params.index];
+            // item[params.column.key] = parseFloat(item.payableTax) + parseFloat(item.lateFeePayable);
+            // return h('div', item[params.column.key])
         },
         {
           title: '缴款截止日期',
@@ -452,9 +458,7 @@ export default {
         this.$Message.error('请选择审核人');
         return;
       }
-      let preTaxReturnsVerity = params.taxApplicationVo.details.some(item => {
-        return !item.preTaxReturns;
-      });
+      // 财务报表
       if (!params.taxApplicationVo.financialReport) {
         this.$Message.error('请上传财务报表');
         return;
@@ -467,7 +471,12 @@ export default {
         return;
       }
       params.taxApplicationVo.details.map(item => {
-        item.taxPeriod = item.taxPeriod && item.taxPeriod + '-01';
+        if(item.taxPeriod.indexOf('-01-01') > 1){
+
+        }else{
+          item.taxPeriod = item.taxPeriod && item.taxPeriod + '-01';
+        }
+        // item.taxPeriod = item.taxPeriod && item.taxPeriod + '-01';
       });
       // 税种
       let shuizhong = params.taxApplicationVo.details.some(item => {
@@ -478,16 +487,16 @@ export default {
         return;
       }
       //  申请缴纳税款不能为空
-      let flag = params.taxApplicationVo.details.some((item) => {
-        if (item.applTaxPayment == '') {
-          item.applTaxPayment = parseFloat(item.payableTax) + parseFloat(item.lateFeePayable);
-        }
-        return item.applTaxPayment <= 0
-      });
-      if (flag) {
-        this.$Message.error('申请缴纳税款不能为空');
-        return;
-      }
+      // let flag = params.taxApplicationVo.details.some((item) => {
+      //   if (item.applTaxPayment == '') {
+      //     item.applTaxPayment = parseFloat(item.payableTax) + parseFloat(item.lateFeePayable);
+      //   }
+      //   return item.applTaxPayment <= 0
+      // });
+      // if (flag) {
+      //   this.$Message.error('申请缴纳税款不能为空');
+      //   return;
+      // }
       //  缴款截止日期
       let jnjzrq = params.taxApplicationVo.details.some(item => {
         return !item.deadline
@@ -502,6 +511,14 @@ export default {
       })
       if (sjjnrqi) {
         this.$Message.error('请选择缴款截止日期');
+        return;
+      }
+      // 税种与申报表
+      let preTaxReturnsVerity = params.taxApplicationVo.details.some(item => {
+        return !item.preTaxReturns;
+      });
+      if (preTaxReturnsVerity) {
+        this.$Message.error('请上传每个税种的预申报表');
         return;
       }
       this.loading = true;
@@ -551,22 +568,21 @@ export default {
         taskId:this.form.serialNumber,
         operateApprove:"0"
       }
-
+      //公司
       if (!params.taxApplicationVo.companyId) {
         this.$Message.error('请选择公司');
         return;
       }
+      // 审核人
       if (!params.taxApplicationVo.currentHandler) {
         this.$Message.error('请选择审核人');
         return;
       }
-      // let preTaxReturnsVerity = params.details.some(item => {
-      //   return !item.preTaxReturns;
-      // });
-      // if (!params.financialReport) {
-      //   this.$Message.error('请上传财务报表');
-      //   return;
-      // }
+      // 财务报表
+      if (!params.taxApplicationVo.financialReport) {
+        this.$Message.error('请上传财务报表');
+        return;
+      }
       let dateVerity = params.taxApplicationVo.details.some(item => {
         return !item.taxPeriod
       })
@@ -575,7 +591,12 @@ export default {
         return;
       }
       params.taxApplicationVo.details.map(item => {
-        item.taxPeriod = item.taxPeriod && item.taxPeriod + '-01';
+        if(item.taxPeriod.indexOf('-01-01') > 1){
+
+        }else{
+          item.taxPeriod = item.taxPeriod && item.taxPeriod + '-01';
+        }
+        // item.taxPeriod = item.taxPeriod && item.taxPeriod + '-01';
       });
       // 税种
       let shuizhong = params.taxApplicationVo.details.some(item => {
@@ -585,17 +606,17 @@ export default {
         this.$Message.error('请选择税种');
         return;
       }
-      //  申请缴纳税款不能为空
-      let flag = params.taxApplicationVo.details.some((item) => {
-        if (item.applTaxPayment == '') {
-          item.applTaxPayment = parseFloat(item.payableTax) + parseFloat(item.lateFeePayable);
-        }
-        return item.applTaxPayment <= 0
-      });
-      if (flag) {
-        this.$Message.error('申请缴纳税款不能为空');
-        return;
-      }
+      // //  申请缴纳税款不能为空
+      // let flag = params.taxApplicationVo.details.some((item) => {
+      //   if (item.applTaxPayment == '') {
+      //     item.applTaxPayment = parseFloat(item.payableTax) + parseFloat(item.lateFeePayable);
+      //   }
+      //   return item.applTaxPayment <= 0
+      // });
+      // if (flag) {
+      //   this.$Message.error('申请缴纳税款不能为空');
+      //   return;
+      // }
       //  缴款截止日期
       let jnjzrq = params.taxApplicationVo.details.some(item => {
         return !item.deadline
@@ -610,6 +631,14 @@ export default {
       })
       if (sjjnrqi) {
         this.$Message.error('请选择缴款截止日期');
+        return;
+      }
+      // 税种与申报表
+      let preTaxReturnsVerity = params.taxApplicationVo.details.some(item => {
+        return !item.preTaxReturns;
+      });
+      if (preTaxReturnsVerity) {
+        this.$Message.error('请上传每个税种的预申报表');
         return;
       }
       this.loading = true;
