@@ -1067,6 +1067,7 @@ export default {
   mounted() {
     this.init();
     this.userInfo = JSON.parse(Cookies.get("userInfo"));
+    console.log("1212",this.$route)
   },
   updated:function() {
     // console.log("update",this.data)

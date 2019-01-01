@@ -292,7 +292,10 @@ export default {
           // width: 110
         },{
           title:"处理环节",
-          key:"currentLink"
+          key:"currentLink",
+          render:(h,params) => {
+            return h('div', this.renderCnName(params.row.currentLink))
+          }
         },{
           title:"当前处理人",
           key:"currentHandler"
@@ -371,6 +374,21 @@ export default {
     };
   },
   methods: {
+    renderCnName(key) {
+      if(key) {
+        let obj = {
+          none:'无',
+          approvalProcess:'税金申报申请',
+          reviewProcess:'复核申报',
+          checkEntity:'核查公司',
+          examineEntity:'审查公司',
+          checkPay:'支付审批',
+          approvalPay:'审批支付',
+          uploadPayFile:'上传文件',
+        }
+        return obj[key]
+      }
+    },
     // 预览
       priviewFile(v) {
         console.log("预览",v)
