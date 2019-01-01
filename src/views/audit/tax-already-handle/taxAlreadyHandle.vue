@@ -201,14 +201,14 @@
             <Button  @click.stop="uploadFile(fileUploadForm.paymentCertificatePath)">下载</Button>
           </FormItem>
           <FormItem label="其它" prop="otherUploadIdPath">
-            <Input type="text" disabled v-model="fileUploadForm.otherUploadIdPath" style="width:150px;float:left"/>
+            <Input type="text" disabled v-model="fileUploadForm.otherUploadId" style="width:150px;float:left"/>
             <!-- <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file"
             :data="{materialTypeDict: 'OTHER'}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
             </Upload> -->
-            <Button @click.stop="priviewFile(fileUploadForm.otherUploadIdPath)">预览</Button>
-            <Button  @click.stop="uploadFile(fileUploadForm.otherUploadIdPath)">下载</Button>
+            <Button @click.stop="priviewFile(fileUploadForm.otherUploadId)">预览</Button>
+            <Button  @click.stop="uploadFile(fileUploadForm.otherUploadId)">下载</Button>
           </FormItem>
       </Form>
     </Modal>
@@ -368,8 +368,8 @@ export default {
          taxReturnsPath:"",
          paymentCertificate:"",
          paymentCertificatePath:"",
-         otherUploadId:"",
-         otherUploadPath:""
+         otherUpload:"",
+         otherUploadId:""
        }
     };
   },
@@ -385,6 +385,7 @@ export default {
           checkPay:'支付审批',
           approvalPay:'审批支付',
           uploadPayFile:'上传文件',
+          over:"已完结"
         }
         return obj[key]
       }
