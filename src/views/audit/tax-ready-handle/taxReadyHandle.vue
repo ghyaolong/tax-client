@@ -804,8 +804,8 @@ export default {
           endDate: this.endDate,
           companyName:this.submitData.companyName,
           applicantName:this.submitData.applicantName,
-          companyNameId:this.submitData.companyName && this.renderIdByName(this.companyList,this.submitData.companyName),
-          applicantNameId:this.submitData.applicantName && this.renderUserIdByName(this.userList,this.submitData.applicantName),
+          companyId:this.submitData.companyName && this.renderIdByName(this.companyList,this.submitData.companyName),
+          applicationId:this.submitData.applicantName && this.renderUserIdByName(this.userList,this.submitData.applicantName),
           serialNumber:this.submitData.serialNumber
         }
       }
