@@ -410,7 +410,7 @@ export default {
     renderUserIdByName(dataList,name) {
       var submitID = ""
       dataList.map((item,index)=>{
-        if(item.username==name) {
+        if(item.realName==name) {
           submitID = item.id
         }
       })
@@ -617,7 +617,7 @@ export default {
     getUserListData(params).then(res =>{
       var tempArry = []
       res.data.list.map((item)=>{
-        tempArry.push(item.username)
+        tempArry.push(item.realName)
       })
       this.userList = res.data.list
       this.userListName = tempArry
