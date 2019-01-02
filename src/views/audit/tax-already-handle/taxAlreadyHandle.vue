@@ -234,6 +234,7 @@ import { taxAlreadyHandle,getTaxAuditLog,getAllCompany,getUserListData,exportObj
 import Cookies from "js-cookie";
 import fileLoadPath from '@/api/fileload';
 import { getStore } from '@/libs/storage';
+import { Base64 } from 'js-base64';
 export default {
   name: "taxAlreadyHandle",
   data() {
@@ -413,8 +414,9 @@ export default {
         auditLogVoList:tempInfo
       }
       // exportObj(params)
-      var stating = `api/process/exportExcel?companyName=${params.companyName}&tin=${params.tin}&countryCode=${params.countryCode}&applicantName=${params.applicantName}&remarks=${params.remarks}&currency=${params.currency}&details=${params.details}&auditLogVoList=${params.auditLogVoList}`
-      window.location.href =encodeURI(stating)
+      // var stating = `/api/process/exportExcel?companyName=${params.companyName}&tin=${params.tin}&countryCode=${params.countryCode}&applicantName=${params.applicantName}&remarks=${params.remarks}&currency=${params.currency}&details=${params.details}&auditLogVoList=${params.auditLogVoList}`
+      var string = JSON.stringify(params);
+      window.location.href = `/api/process/exportExcel/${Base64.encode(string)}`
     },
     filterMethod (value, option) {
           return option.toUpperCase().indexOf(value.toUpperCase()) !== -1;
