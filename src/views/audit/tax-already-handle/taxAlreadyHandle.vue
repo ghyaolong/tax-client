@@ -174,7 +174,7 @@
           </main>
           <footer class="vertical-center" slot="footer">
               <Button style="width: 100px;" @click="handleDayin">打印</Button>
-              <!-- <Button type="primary"  style="width: 100px;margin-left:158px">导出</Button> -->
+              <Button type="primary"  style="width: 100px;margin-left:158px" @click="handleExport">导出</Button>
           </footer>
     </Modal>
     <Modal
@@ -230,7 +230,7 @@
 </template>
 
 <script>
-import { taxAlreadyHandle,getTaxAuditLog,getAllCompany,getUserListData } from "@/api/index.js";
+import { taxAlreadyHandle,getTaxAuditLog,getAllCompany,getUserListData,exportObj } from "@/api/index.js";
 import Cookies from "js-cookie";
 import fileLoadPath from '@/api/fileload';
 import { getStore } from '@/libs/storage';
@@ -390,9 +390,32 @@ export default {
        companyListName:[],
        userList:[],
        userListName:[],
+       exportObj:{}
     };
   },
   methods: {
+    handleExport() {
+      console.log(this.exportObj)
+      let tempObj = this.exportObj.taxApplicationVo
+      let tempInfo = this.exportObj.auditLogVoList
+      tempObj.details.map((item,index)=>{
+          item.applTaxPayment = item.payableTax + item.lateFeePayable
+          item.actualTaxPayment = item.taxPaid + item.overduePayment
+      })
+      let params ={
+        companyName: tempObj.companyName,
+        tin: tempObj.tin,
+        countryCode: tempObj.countryCode,
+        countryName: tempObj.countryName,
+        applicantName: tempObj.applicantName,
+        remarks: tempObj.remarks,
+        currency: tempObj.currency,
+        details:tempObj.details,
+        auditLogVoList:tempInfo
+      }
+      console.log("adada",params)
+      exportObj(params)
+    },
     filterMethod (value, option) {
           return option.toUpperCase().indexOf(value.toUpperCase()) !== -1;
     },
@@ -507,6 +530,7 @@ export default {
     changeNo(val) {
       // this.getTaxAuditLog(val.id)
       console.log("val",val)
+      this.exportObj = val;
       this.tableList=[val.taxApplicationVo]
       var tempData=val.taxApplicationVo.details
       var  payableTaxALL=0 // 应缴税额合计

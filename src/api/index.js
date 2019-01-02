@@ -434,3 +434,7 @@ export const lookLiuchengtu=params=>{
 export const resSubmit=params=>{
   return postRequest('/process/resubmit',params)
 }
+// 已办任务--导出
+export const exportObj=params=>{
+  return postRequest('/process/exportExcel',params)
+}
