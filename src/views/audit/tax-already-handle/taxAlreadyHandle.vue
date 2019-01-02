@@ -8,7 +8,14 @@
             <DatePicker type="daterange" v-model="submitData.selectDate" format="yyyy-MM-dd" clearable @on-change="selectDateRange" placeholder="选择起始时间" style="width: 200px"></DatePicker>
           </Form-item>
           <Form-item label="公司名称" prop="companyName">
-          <Input  placeholder="请输入公司名称" v-model="submitData.companyName"></Input>
+            <AutoComplete
+                v-model="submitData.companyName"
+                :data="companyListName"
+                :filter-method="filterMethod"
+                placeholder="请输入公司名称"
+                style="width:200px">
+            </AutoComplete>
+          <!-- <Input  placeholder="请输入公司名称" v-model="submitData.companyName"></Input> -->
           </Form-item>
           <Form-item label="流程状态"  prop="flowStatus">
             <Select  placeholder="请选择" style="width: 200px" v-model="submitData.flowStatus">
@@ -16,8 +23,15 @@
               <Option value="0">审批中</Option>
             </Select>
           </Form-item>
-          <Form-item label="申请人" prop="applicationName">
-            <Input  placeholder="请输入申请人" v-model="submitData.applicationName"></Input>
+          <Form-item label="申请人" prop="applicantName">
+            <AutoComplete
+                v-model="submitData.applicantName"
+                :data="userListName"
+                :filter-method="filterMethod"
+                placeholder="请输入申请人"
+                style="width:200px">
+            </AutoComplete>
+            <!-- <Input  placeholder="请输入申请人" v-model="submitData.applicationName"></Input> -->
           </Form-item>
           <Form-item label="流水号" prop="serialNumber">
             <Input  placeholder="请输入流水号" v-model="submitData.serialNumber"></Input>
@@ -216,7 +230,7 @@
 </template>
 
 <script>
-import { taxAlreadyHandle,getTaxAuditLog,getAllUserData,getAllCompany } from "@/api/index.js";
+import { taxAlreadyHandle,getTaxAuditLog,getAllCompany,getUserListData } from "@/api/index.js";
 import Cookies from "js-cookie";
 import fileLoadPath from '@/api/fileload';
 import { getStore } from '@/libs/storage';
@@ -351,7 +365,8 @@ export default {
         selectDate:"",
         companyName:"",
         serialNumber:"",
-        applicantName:""
+        applicantName:"",
+        flowStatus:""
       },
       userInfo:{},
        payableTaxAll:0,//应缴税额合计
@@ -370,10 +385,37 @@ export default {
          paymentCertificatePath:"",
          otherUpload:"",
          otherUploadId:""
-       }
+       },
+       companyList:[],
+       companyListName:[],
+       userList:[],
+       userListName:[],
     };
   },
   methods: {
+    filterMethod (value, option) {
+          return option.toUpperCase().indexOf(value.toUpperCase()) !== -1;
+    },
+    // 根据名称获取id
+    renderIdByName(dataList,name) {
+      var submitID = ""
+      dataList.map((item,index)=>{
+        if(item.name==name) {
+          submitID = item.id
+        }
+      })
+      return submitID
+    },
+    // 根据用户名称获取用户id
+    renderUserIdByName(dataList,name) {
+      var submitID = ""
+      dataList.map((item,index)=>{
+        if(item.username==name) {
+          submitID = item.id
+        }
+      })
+      return submitID
+    },
     renderCnName(key) {
       if(key) {
         let obj = {
@@ -508,7 +550,9 @@ export default {
           flowStatus:this.submitData.flowStatus,
           companyName:this.submitData.companyName,
           serialNumber:this.submitData.serialNumber,
-          applicationName:this.submitData.applicationName
+          applicantName:this.submitData.applicantName,
+          companyNameId:this.submitData.companyName && this.renderIdByName(this.companyList,this.submitData.companyName),
+          applicantNameId:this.submitData.applicantName && this.renderUserIdByName(this.userList,this.submitData.applicantName),
         }
       };
       taxAlreadyHandle(params)
@@ -541,6 +585,43 @@ export default {
   },
   created:function(){
     this.userInfo = JSON.parse(Cookies.get("userInfo"));
+    // 获取全部公司
+    getAllCompany()
+      .then(res => {
+        var tempArry = []
+        res.data.map((item)=>{
+          tempArry.push(item.name)
+        })
+        this.companyListName=tempArry
+        this.companyList = res.data;
+      })
+    // 获取全部用户
+    let params = {
+      pageVo: {
+        pageNumber: 1,
+        pageSize: 99999
+      },
+      userVo: {
+        username: '',
+        sex: '',
+        tel: '',
+        email: '',
+        realName: '',
+        workNumber: ''
+      },
+      searchVo: {
+        startDate: '',
+        endDate: ''
+      }
+    }
+    getUserListData(params).then(res =>{
+      var tempArry = []
+      res.data.list.map((item)=>{
+        tempArry.push(item.username)
+      })
+      this.userList = res.data.list
+      this.userListName = tempArry
+    })
   }
 };
 </script>

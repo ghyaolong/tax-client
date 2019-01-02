@@ -26,10 +26,24 @@
             <DatePicker type="daterange" v-model="submitData.selectDate" format="yyyy-MM-dd" clearable @on-change="selectDateRange" placeholder="选择起始时间" style="width: 200px"></DatePicker>
           </Form-item>
           <Form-item label="公司名称" prop="companyName">
-            <Input v-model="submitData.companyName" placeholder="请输入公司名称"></Input>
+            <AutoComplete
+                v-model="submitData.companyName"
+                :data="companyListName"
+                :filter-method="filterMethod"
+                placeholder="请输入公司名称"
+                style="width:200px">
+            </AutoComplete>
+            <!-- <Input v-model="submitData.companyName" placeholder="请输入公司名称"></Input> -->
           </Form-item>
           <Form-item label="申请人" prop="applicantName">
-            <Input v-model="submitData.applicantName" placeholder="请输入申请人"></Input>
+            <AutoComplete
+                v-model="submitData.applicantName"
+                :data="userListName"
+                :filter-method="filterMethod"
+                placeholder="请输入申请人"
+                style="width:200px">
+            </AutoComplete>
+            <!-- <Input v-model="submitData.applicantName" placeholder="请输入申请人"></Input> -->
           </Form-item>
           <Form-item label="流水号" prop="serialNumber">
             <Input v-model="submitData.serialNumber" placeholder="请输入流水号"></Input>
@@ -276,7 +290,7 @@
 </template>
 
 <script>
-import { taxReadyHandle,getReviewer,dbrwAudit,lookLiuchengtu } from '@/api/index.js'
+import { taxReadyHandle,getReviewer,dbrwAudit,lookLiuchengtu,getAllCompany,getUserListData } from '@/api/index.js'
 import Cookies from "js-cookie";
 import { getStore } from '@/libs/storage';
 import fileLoadPath from '@/api/fileload';
@@ -512,10 +526,17 @@ export default {
       actualTaxPayment:0,//实际缴纳税款合计
       shenpiyijian:[], // 审批意见
       tempInfoValue:{}, // 临时的详情数据
-      currentLinkType:""
+      currentLinkType:"",
+      companyList:[],
+      companyListName:[],
+      userList:[],
+      userListName:[],
     }
   },
   methods: {
+    filterMethod (value, option) {
+          return option.toUpperCase().indexOf(value.toUpperCase()) !== -1;
+    },
     renderCnName(key) {
       if(key) {
         let obj = {
@@ -749,7 +770,28 @@ export default {
     init() {
       this.initPageData();
     },
+    // 根据名称获取id
+    renderIdByName(dataList,name) {
+      var submitID = ""
+      dataList.map((item,index)=>{
+        if(item.name==name) {
+          submitID = item.id
+        }
+      })
+      return submitID
+    },
+    // 根据用户名称获取用户id
+    renderUserIdByName(dataList,name) {
+      var submitID = ""
+      dataList.map((item,index)=>{
+        if(item.username==name) {
+          submitID = item.id
+        }
+      })
+      return submitID
+    },
     initPageData() {
+      console.log('this.submitData',this.submitData)
       this.loading = true;
       let params = {
         pageVo: {
@@ -762,6 +804,8 @@ export default {
           endDate: this.endDate,
           companyName:this.submitData.companyName,
           applicantName:this.submitData.applicantName,
+          companyNameId:this.submitData.companyName && this.renderIdByName(this.companyList,this.submitData.companyName),
+          applicantNameId:this.submitData.applicantName && this.renderUserIdByName(this.userList,this.submitData.applicantName),
           serialNumber:this.submitData.serialNumber
         }
       }
@@ -834,11 +878,46 @@ export default {
   },
   mounted() {
     this.init();
-
   },
   created:function(){
     this.userInfo = JSON.parse(Cookies.get("userInfo"));
-    console.log("adad",this.userInfo)
+    // 获取全部公司
+    getAllCompany()
+      .then(res => {
+        var tempArry = []
+        res.data.map((item)=>{
+          tempArry.push(item.name)
+        })
+        this.companyListName=tempArry
+        this.companyList = res.data;
+      })
+    // 获取全部用户
+    let params = {
+      pageVo: {
+        pageNumber: 1,
+        pageSize: 99999
+      },
+      userVo: {
+        username: '',
+        sex: '',
+        tel: '',
+        email: '',
+        realName: '',
+        workNumber: ''
+      },
+      searchVo: {
+        startDate: '',
+        endDate: ''
+      }
+    }
+    getUserListData(params).then(res =>{
+      var tempArry = []
+      res.data.list.map((item)=>{
+        tempArry.push(item.username)
+      })
+      this.userList = res.data.list
+      this.userListName = tempArry
+    })
   }
 }
 </script>
