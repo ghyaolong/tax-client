@@ -413,8 +413,8 @@ export default {
         auditLogVoList:tempInfo
       }
       // exportObj(params)
-      var stating = `/process/exportExcel&companyName=${params.companyName}?tin=${params.tin}?countryCode=${params.countryCode}?applicantName=${params.applicantName}?remarks=${params.remarks}?currency=${params.currency}?details=${params.details}?auditLogVoList=${params.auditLogVoList}`
-      window.location.href=encodeURI(stating)
+      var stating = `api/process/exportExcel?companyName=${params.companyName}&tin=${params.tin}&countryCode=${params.countryCode}&applicantName=${params.applicantName}&remarks=${params.remarks}&currency=${params.currency}&details=${params.details}&auditLogVoList=${params.auditLogVoList}`
+      window.location.href =encodeURI(stating)
     },
     filterMethod (value, option) {
           return option.toUpperCase().indexOf(value.toUpperCase()) !== -1;
