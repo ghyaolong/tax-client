@@ -400,6 +400,8 @@ export default {
       let tempObj = this.exportObj.taxApplicationVo
       let tempInfo = this.exportObj.auditLogVoList
       tempObj.details.map((item,index)=>{
+          item.deadline = item.deadline && new Date(item.deadline).format()
+          item.paymentTime = item.paymentTime && new Date(item.paymentTime).format()
           item.applTaxPayment = item.payableTax + item.lateFeePayable
           item.actualTaxPayment = item.taxPaid + item.overduePayment
       })
@@ -415,6 +417,7 @@ export default {
       }
       // exportObj(params)
       // var stating = `/api/process/exportExcel?companyName=${params.companyName}&tin=${params.tin}&countryCode=${params.countryCode}&applicantName=${params.applicantName}&remarks=${params.remarks}&currency=${params.currency}&details=${params.details}&auditLogVoList=${params.auditLogVoList}`
+      // console.log(JSON.stringify(params))
       var string = JSON.stringify(params);
       window.location.href = `/api/process/exportExcel/${Base64.encode(string)}`
     },
