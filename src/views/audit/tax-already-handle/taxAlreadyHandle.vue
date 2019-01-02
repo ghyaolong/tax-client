@@ -406,15 +406,15 @@ export default {
         companyName: tempObj.companyName,
         tin: tempObj.tin,
         countryCode: tempObj.countryCode,
-        countryName: tempObj.countryName,
         applicantName: tempObj.applicantName,
         remarks: tempObj.remarks,
         currency: tempObj.currency,
         details:tempObj.details,
         auditLogVoList:tempInfo
       }
-      console.log("adada",params)
-      exportObj(params)
+      // exportObj(params)
+      var stating = `/process/exportExcel&companyName=${params.companyName}?tin=${params.tin}?countryCode=${params.countryCode}?applicantName=${params.applicantName}?remarks=${params.remarks}?currency=${params.currency}?details=${params.details}?auditLogVoList=${params.auditLogVoList}`
+      window.location.href=encodeURI(stating)
     },
     filterMethod (value, option) {
           return option.toUpperCase().indexOf(value.toUpperCase()) !== -1;
