@@ -399,6 +399,9 @@ export default {
       console.log(this.exportObj)
       let tempObj = this.exportObj.taxApplicationVo
       let tempInfo = this.exportObj.auditLogVoList
+      tempInfo.map((item,index)=>{
+        item.auditDate = item.auditDate && new Date(item.auditDate).format()
+      })
       tempObj.details.map((item,index)=>{
           item.deadline = item.deadline && new Date(item.deadline).format()
           item.paymentTime = item.paymentTime && new Date(item.paymentTime).format()
