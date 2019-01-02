@@ -36,7 +36,7 @@
               <Input v-model="roleForm.code"/>
             </FormItem>
             <FormItem label="角色对应节点" prop="processKey" :label-width="100">
-              <Select v-model="roleForm.processKey" >
+              <Select v-model="roleForm.processKey" multiple >
                 <Option value="none" key="none">无</Option>
                 <Option value="approvalProcess" key="approvalProcess">税金申报申请</Option>
                 <Option value="reviewProcess" key="reviewProcess">复核申报</Option>
@@ -82,6 +82,16 @@ export default {
     circleLoading
   },
   data() {
+    const validateProcessKey = (rule, value, callback) => {
+          if (value === '') {
+              callback(new Error('请选择'));
+          } else {
+              if (value.length==0) {
+                  callback(new Error('请选择'));
+              }
+              callback();
+          }
+      };
     return {
       loading: true,
       treeLoading: true,
@@ -96,12 +106,12 @@ export default {
       roleForm: {
         code: "",
         name: "",
-        processKey: "none"
+        processKey: []
       },
       roleFormValidate: {
         name: [{ required: true, message: "角色名称不能为空", trigger: "blur" }],
         code: [{ required: true, message: "角色编码不能为空", trigger: "blur" }],
-        processKey: [{ required: true, message: "流程KEY不能为空", trigger: "blur" }]
+        processKey: [{ required: true, validator: validateProcessKey, trigger: "blur" }]
       },
       submitLoading: false,
       selectList: [],
@@ -275,6 +285,8 @@ export default {
     // renderCnName
     renderCnName(key) {
       if(key) {
+        let tempKeys = key.split(",")
+        let string=""
         let obj = {
           none:'无',
           approvalProcess:'税金申报申请',
@@ -285,7 +297,10 @@ export default {
           approvalPay:'审批支付',
           uploadPayFile:'上传文件',
         }
-        return obj[key]
+        tempKeys.map((item,index)=>{
+          string += `${obj[item]}/`
+        })
+        return string
       }
     },
     init() {
@@ -356,26 +371,28 @@ export default {
       let tempObj = {
         code: this.roleForm.code,
         name: this.roleForm.name,
-        processKey: this.roleForm.processKey
+        processKey: this.roleForm.processKey.join(",")
       }
       if(JSON.stringify(this.tempObj)==JSON.stringify(tempObj)) {
         this.roleModalVisible = false;
         return;
+      }else{
+        this.$refs.roleForm.validate(valid => {
+          if (valid) {
+            this.submitLoading = true;
+            let roleFn = this.modalType === 0 ? addRole : editRole;
+            this.roleForm.processKey=this.roleForm.processKey.join(",")
+            roleFn(this.roleForm).then(res => {
+              this.submitLoading = false;
+              this.$Message.success("操作成功");
+              this.getRoleList();
+              this.roleModalVisible = false;
+            }).finally(() => {
+              this.submitLoading = false;
+            });
+          }
+        });
       }
-      this.$refs.roleForm.validate(valid => {
-        if (valid) {
-          this.submitLoading = true;
-          let roleFn = this.modalType === 0 ? addRole : editRole;
-          roleFn(this.roleForm).then(res => {
-            this.submitLoading = false;
-            this.$Message.success("操作成功");
-            this.getRoleList();
-            this.roleModalVisible = false;
-          }).finally(() => {
-            this.submitLoading = false;
-          });
-        }
-      });
     },
     addRole() {
       this.modalType = 0;
@@ -400,7 +417,8 @@ export default {
       }
       let str = JSON.stringify(v);
       let roleInfo = JSON.parse(str);
-      this.roleForm = roleInfo;
+      roleInfo.processKey = roleInfo.processKey.split(",")
+      this.roleForm = roleInfo
       this.roleModalVisible = true;
     },
     remove(v) {
