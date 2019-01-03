@@ -270,7 +270,7 @@ export const deleteAllLog = (params) => {
 
 // 分页获取定时任务数据
 export const getQuartzListData = (params) => {
-    return getRequest('/quartzJob/getAllByPage', params)
+    return postRequest('/quartzJob/getAllByPage', params)
 }
 // 添加定时任务
 export const addQuartz = (params) => {

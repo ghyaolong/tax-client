@@ -5,7 +5,7 @@
     <div class="search">
         <Row>
             <Col>
-                <Card>     
+                <Card>
                     <Row class="operation">
                         <Button @click="addRole" type="primary" icon="md-add">安排新任务</Button>
                         <Button @click="delAll" icon="md-trash">批量删除</Button>
@@ -30,20 +30,20 @@
         <Modal :title="modalTitle" v-model="modalVisible" :mask-closable='false' :width="500">
           <Form ref="form" :model="form" :label-width="80" :rules="formValidate">
             <FormItem label="任务类名" prop="jobClassName">
-              <Input v-model="form.jobClassName" placeholder="例如 cn.exrick.xboot.quartz.jobs.Job" clearable/>
+              <Input v-model="form.jobClassName" placeholder="例如 cn.exrick.xboot.quartz.jobs.Job" clearable :maxlength='20'/>
             </FormItem>
             <FormItem label="cron表达式" prop="cronExpression" style="margin-bottom: 5px;">
               <Input v-model="form.cronExpression" clearable/>
               <a target="_blank" href="http://cron.qqe2.com/">
-                <Icon type="md-arrow-dropright-circle" size="16" style="margin:0 3px 3px 0;"/> 
+                <Icon type="md-arrow-dropright-circle" size="16" style="margin:0 3px 3px 0;"/>
                 在线cron表达式生成
               </a>
             </FormItem>
             <FormItem label="参数" prop="parameter">
-              <Input v-model="form.parameter"/>
+              <Input v-model="form.parameter" :maxlength='20'/>
             </FormItem>
             <FormItem label="备注" prop="description">
-              <Input v-model="form.description"/>
+              <Input v-model="form.description" :maxlength='20'/>
             </FormItem>
           </Form>
           <div slot="footer">

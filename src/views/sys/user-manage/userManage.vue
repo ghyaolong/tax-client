@@ -852,7 +852,7 @@ export default {
       userInfo.sex=userInfo.sex+""
       this.userForm = userInfo;
       let selectRolesId = [];
-      this.userForm.roles.forEach(function(e) {
+      this.userForm.roles && this.userForm.roles.forEach(function(e) {
         selectRolesId.push(e.id);
       });
       this.userForm.roles = selectRolesId;
