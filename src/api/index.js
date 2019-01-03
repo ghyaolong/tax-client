@@ -270,27 +270,27 @@ export const deleteAllLog = (params) => {
 
 // 分页获取定时任务数据
 export const getQuartzListData = (params) => {
-    return postRequest('/quartzJob/getAllByPage', params)
+    return postRequest('/schedual/getAllByPage', params)
 }
 // 添加定时任务
 export const addQuartz = (params) => {
-    return postRequest('/quartzJob/add', params)
+    return postRequest('/schedual/add', params)
 }
 // 编辑定时任务
 export const editQuartz = (params) => {
-    return postRequest('/quartzJob/edit', params)
+    return postRequest('/schedual/edit', params)
 }
 // 暂停定时任务
 export const pauseQuartz = (params) => {
-    return postRequest('/quartzJob/pause', params)
+    return postRequest('/schedual/pause', params)
 }
 // 恢复定时任务
 export const resumeQuartz = (params) => {
-    return postRequest('/quartzJob/resume', params)
+    return postRequest('/schedual/resume', params)
 }
 // 删除定时任务
 export const deleteQuartz = (ids, params) => {
-    return deleteRequest(`/quartzJob/delByIds/${ids}`, params)
+    return deleteRequest(`/schedual/delByIds/${ids}`, params)
 }
 
 

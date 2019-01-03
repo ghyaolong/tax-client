@@ -339,8 +339,8 @@ export default {
       getQuartzListData(params).then(res => {
         this.loading = false;
         if (res.success === true) {
-          this.data = res.result.content;
-          this.total = res.result.totalElements;
+          this.data = res.data.list;
+          this.total = res.data.totalElements;
         }
       });
     },
@@ -354,23 +354,23 @@ export default {
             // 添加
             this.submitLoading = true;
             addQuartz(this.form).then(res => {
-              this.submitLoading = false;
               if (res.success === true) {
                 this.$Message.success("操作成功");
                 this.getQuartzList();
                 this.modalVisible = false;
               }
             });
+            this.submitLoading = false;
           } else {
             this.submitLoading = true;
             editQuartz(this.form).then(res => {
-              this.submitLoading = false;
               if (res.success === true) {
                 this.$Message.success("操作成功");
                 this.getQuartzList();
                 this.modalVisible = false;
               }
             });
+            this.submitLoading = false;
           }
         }
       });
