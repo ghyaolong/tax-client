@@ -34,7 +34,7 @@
             <!-- <Input  placeholder="请输入申请人" v-model="submitData.applicationName"></Input> -->
           </Form-item>
           <Form-item label="流水号" prop="serialNumber">
-            <Input  placeholder="请输入流水号" v-model="submitData.serialNumber" maxlength="30"></Input>
+            <Input  placeholder="请输入流水号" v-model="submitData.serialNumber" :maxlength="30"></Input>
           </Form-item>
           <Form-item style="margin-left:-35px;" class="br">
             <Button @click="initPageData" type="primary" icon="ios-search">搜索</Button>

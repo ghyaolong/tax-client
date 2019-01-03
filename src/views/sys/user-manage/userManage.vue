@@ -48,12 +48,12 @@
 
                                 </Select>
                               </Form-item>
-                              <Form-item label="用户状态" prop="status">
+                              <!-- <Form-item label="用户状态" prop="status">
                                 <Select v-model="searchForm.status" placeholder="请选择" clearable style="width: 200px">
                                   <Option value="0">正常</Option>
                                   <Option value="-1">禁用</Option>
                                 </Select>
-                              </Form-item>
+                              </Form-item> -->
                               <Form-item label="创建时间">
                                 <DatePicker v-model="selectDate" type="daterange" format="yyyy-MM-dd" clearable @on-change="selectDateRange" placeholder="选择起始时间" style="width: 200px"></DatePicker>
                               </Form-item>
@@ -125,28 +125,6 @@
                     <Radio label="1" >女</Radio>
                   </RadioGroup>
                 </FormItem>
-                <!-- <Form-item label="头像" prop="avatar">
-                  <Poptip trigger="hover" title="图片预览" placement="right" width="350">
-                      <Input v-model="userForm.avatar" placeholder="可直接填入网络图片链接" clearable/>
-                      <div slot="content">
-                        <img :src="userForm.avatar" alt="无效的图片链接" style="width: 100%;margin: 0 auto;display: block;">
-                        <a @click="viewPic()" style="margin-top:5px;text-align:right;display:block">查看原图</a>
-                      </div>
-                  </Poptip>
-                  <Upload action="/xboot/upload/file"
-                          :headers="accessToken"
-                          :on-success="handleSuccess"
-                          :on-error="handleError"
-                          :format="['jpg','jpeg','png','gif']"
-                          :max-size="5120"
-                          :on-format-error="handleFormatError"
-                          :on-exceeded-size="handleMaxSize"
-                          :before-upload="beforeUpload"
-                          ref="up"
-                          class="upload">
-                    <Button icon="ios-cloud-upload-outline">上传图片</Button>
-                  </Upload>
-                </Form-item> -->
                 <FormItem label="所属公司" prop="companys">
                   <Select v-model="userForm.companys" multiple filterable>
                       <Option v-for="item in companyList" :value="item.id" :key="item.id" :label="item.name">
@@ -278,11 +256,10 @@ export default {
         username: '',
         realName: '',
         password: '',
-        workNumber: null,
+        workNumber: "",
         sex:"",
-        /* sex: 1,
-        type: 0,
-        avatar: "https://s1.ax1x.com/2018/05/19/CcdVQP.png", */
+        email:"",
+        tel:"",
         roles: [],
         companys: [],
         departmentId: "",
@@ -804,7 +781,6 @@ export default {
       }
     },
     selectDepartmentTree(v) {
-      debugger;
       if (v.length > 0) {
         // 转换null为""
         for (let attr in v[0]) {

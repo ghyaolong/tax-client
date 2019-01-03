@@ -30,10 +30,10 @@
         <Modal :title="modalTitle" v-model="roleModalVisible" :mask-closable='false' :width="500">
           <Form ref="roleForm" :model="roleForm" :label-width="80" :rules="roleFormValidate">
             <FormItem label="角色名称" prop="name">
-              <Input v-model="roleForm.name" placeholder="请输入" maxlength="20"/>
+              <Input v-model="roleForm.name" placeholder="请输入" :maxlength="20"/>
             </FormItem>
             <FormItem label="角色编码" prop="code">
-              <Input v-model="roleForm.code" placeholder="请输入" maxlength="20"/>
+              <Input v-model="roleForm.code" placeholder="请输入" :maxlength="20"/>
             </FormItem>
             <FormItem label="角色对应节点" prop="processKey" :label-width="100">
               <Select v-model="roleForm.processKey" multiple >
