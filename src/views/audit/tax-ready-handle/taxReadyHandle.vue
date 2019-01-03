@@ -847,6 +847,7 @@ export default {
               that.reviewers = res.data;
               that.handelModal = true;
             })
+            return;
         }else if(item==v.currentLink && index == 4) {
           this.isApprovalPay = true
           this.handelModal = true;
@@ -857,6 +858,7 @@ export default {
               that.reviewers = res.data;
               that.handelModal = true;
             })
+            return;
         }
       })
       console.log("adad",tempString)
