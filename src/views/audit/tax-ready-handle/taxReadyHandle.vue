@@ -78,7 +78,7 @@
         <FormItem label="审批意见" :label-width="100" v-if="taxReadyHandle.operateApprove != '1'" >
           <Input type="textarea" v-model="taxReadyHandle.comment" placeholder="请输入审批意见"></Input>
         </FormItem>
-        <Form-item label="选择审核人" prop="currentHandler" v-if="taxReadyHandle.operateApprove != '1'" :label-width="100">
+        <Form-item label="选择审核人" prop="currentHandler" v-if="taxReadyHandle.operateApprove != '1' && !isApprovalPay" :label-width="100">
           <Select v-model="taxReadyHandle.currentHandler" >
             <Option v-for="item in reviewers" :value="item.id" :key="item.id">{{ item.realName }}</Option>
           </Select>
@@ -304,6 +304,7 @@ export default {
       handelModal: false,
       userInfo:{},
       reviewers:[],
+      isApprovalPay:false,
       taxReadyHandle: {
       	operateApprove:"",
       	comment:"",
@@ -835,12 +836,30 @@ export default {
     /* 处理申请 */
     handle(v) {
       console.log("v",v)
-      this.submitInfo=v
       const that=this;
-        getReviewer().then(res => {
-          that.reviewers = res.data;
-          that.handelModal = true;
-        })
+      this.submitInfo=v
+      var temp = ['reviewProcess','checkEntity','examineEntity','checkPay','approvalPay']
+      var tempString = ""
+      temp.map((item,index)=>{
+        if(item==v.currentLink && index != 4) {
+          tempString=temp[index+1]
+            getReviewer(tempString).then(res => {
+              that.reviewers = res.data;
+              that.handelModal = true;
+            })
+        }else if(item==v.currentLink && index == 4) {
+          this.isApprovalPay = true
+          this.handelModal = true;
+          return
+        }else if(v.currentLink=="approvalProcess") {
+          tempString="reviewProcess"
+            getReviewer(tempString).then(res => {
+              that.reviewers = res.data;
+              that.handelModal = true;
+            })
+        }
+      })
+      console.log("adad",tempString)
     },
       // 同意
     handleOk() {
@@ -852,7 +871,7 @@ export default {
             operateApprove:this.taxReadyHandle.operateApprove,
             comment:this.taxReadyHandle.comment,
             userId:this.userInfo.id,
-            currentHandler:this.taxReadyHandle.currentHandler
+            currentHandler:this.isApprovalPay?this.submitInfo.applicantId:this.taxReadyHandle.currentHandler
           }
           dbrwAudit(params).then(res=>{
             that.initPageData()

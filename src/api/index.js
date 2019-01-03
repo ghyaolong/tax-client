@@ -364,7 +364,7 @@ export const taxReplenishment = params => {
 }
 // 获取当前登录用户的上级审核人
 export const getReviewer = params => {
-    return getRequest('/user/getReviewer', params)
+    return getRequest(`/user/getUser/${params}`)
 }
 
 // 上传文件

@@ -833,6 +833,7 @@ export default {
     },
     edit(v) {
       // this.initCompany()
+      this.tempUserObk = v
       this.modalType = 1;
       this.modalTitle = "编辑用户";
       this.$refs.userForm.resetFields();
