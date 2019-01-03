@@ -5,10 +5,10 @@
     <div class="search">
         <Row>
             <Col>
-                <Card>     
+                <Card>
                     <Form inline :label-width="70" class="search-form">
                       <Form-item label="搜索日志">
-                        <Input type="text" v-model="searchKey" clearable placeholder="请输入搜索关键词" style="width: 200px"/>
+                        <Input type="text" v-model="searchKey" clearable placeholder="请输入搜索关键词" style="width: 200px" />
                       </Form-item>
                       <Form-item label="创建时间">
                         <DatePicker type="daterange" v-model="selectDate" format="yyyy-MM-dd" clearable @on-change="selectDateRange" placeholder="选择起始时间" style="width: 200px"></DatePicker>
@@ -34,14 +34,14 @@
                         <Table :loading="loading" border :columns="columns" :data="data" ref="table" sortable="custom" @on-sort-change="changeSort" @on-selection-change="changeSelect"></Table>
                     </Row>
                     <Row type="flex" justify="end" class="page">
-                        <Page 
-                        :current="pageNumber" 
-                        :total="total" 
-                        :page-size="pageSize" 
-                        @on-change="changePage" 
-                        @on-page-size-change="changePageSize" 
-                        :page-size-opts="[10,20,50]" 
-                        size="small" 
+                        <Page
+                        :current="pageNumber"
+                        :total="total"
+                        :page-size="pageSize"
+                        @on-change="changePage"
+                        @on-page-size-change="changePageSize"
+                        :page-size-opts="[10,20,50]"
+                        size="small"
                         show-total show-elevator show-sizer></Page>
                     </Row>
                 </Card>
@@ -275,19 +275,23 @@ export default {
         });
       } else {
         params = {
-          key: this.searchKey,
-          pageNumber: this.pageNumber,
-          pageSize: this.pageSize,
-          sort: this.sortColumn,
-          order: this.sortType,
-          startDate: this.startDate,
-          endDate: this.endDate
+          pageVo: {
+            pageNumber: this.pageNumber,
+            pageSize: this.pageSize
+          },
+          logInfoVo:{
+            method: this.searchKey,
+          },
+          searchVo:{
+            startDate: this.startDate,
+            endDate: this.endDate
+          }
         };
-        getSearchLogData(params).then(res => {
+        getLogListData(params).then(res => {
           this.loading = false;
           if (res.success === true) {
-            this.data = res.result.content;
-            this.total = res.result.totalElements;
+            this.data = res.data.list;
+            this.total = res.data.totalElements;
           }
         });
       }

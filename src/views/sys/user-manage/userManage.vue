@@ -127,7 +127,7 @@
                 </FormItem>
                 <FormItem label="所属公司" prop="companys">
                   <Select v-model="userForm.companys" multiple filterable>
-                      <Option v-for="item in companyList" :value="item.id" :key="item.id" :label="item.name">
+                      <Option v-for="item in allCompanys" :value="item.id" :key="item.id" :label="item.name">
                       </Option>
                   </Select>
                 </FormItem>
@@ -152,10 +152,6 @@
                 <FormItem label="角色分配" prop="roles">
                   <Select v-model="userForm.roles" multiple>
                       <Option v-for="item in roleList" :value="item.id" :key="item.id" :label="item.name">
-                        <!-- <div style="display:flex;flex-direction:column"> -->
-                        <!-- <span style="margin-right:10px;">{{ item.name }}</span>
-                        <span style="color:#ccc;">{{ item.description }}</span> -->
-                        <!-- </div> -->
                       </Option>
                   </Select>
                 </FormItem>
@@ -193,7 +189,8 @@ import {
   enableUser,
   disableUser,
   deleteUser,
-  getAllUserData
+  getAllUserData,
+  getAllCompany
 } from "@/api/index";
 import circleLoading from "../../my-components/circle-loading.vue";
 export default {
@@ -232,6 +229,7 @@ export default {
       department: [],
       selectDep: [],
       dataDep: [],
+      allCompanys:[],
       searchForm: {
         username: "",
         departmentId: "",
@@ -257,7 +255,7 @@ export default {
         realName: '',
         password: '',
         workNumber: "",
-        sex:"",
+        sex:"0",
         email:"",
         tel:"",
         roles: [],
@@ -289,6 +287,9 @@ export default {
         ],
         sex:[
             { required: true, message: "请选择性别", trigger: "blur" },
+        ],
+        password:[
+            { required: true, message: "请输入密码", trigger: "blur" },
         ]
       },
       submitLoading: false,
@@ -316,21 +317,7 @@ export default {
           title: "用户名",
           key: "username",
           width: 145,
-          // sortable: true
         },
-        /*{
-          title: "头像",
-          key: "avatar",
-          width: 80,
-          align: "center",
-          render: (h, params) => {
-            return h("Avatar", {
-              props: {
-                src: params.row.avatar
-              }
-            });
-          }
-        },*/
         {
           title: "工号",
           key: "workNumber",
@@ -352,13 +339,6 @@ export default {
           key: "tel",
           width: 115,
           sortable: true,
-          /* render: (h, params) => {
-            if (this.getStore("roles").includes("ROLE_ADMIN")) {
-              return h("span", params.row.tel);
-            } else{
-              return h("span", "您无权查看该数据");
-            }
-          } */
         },
         {
           title: "邮箱",
@@ -381,75 +361,6 @@ export default {
             return h("div", re);
           }
         },
-        /* {
-          title: "用户类型",
-          key: "type",
-          align: "center",
-          width: 100,
-          render: (h, params) => {
-            let re = "";
-            if (params.row.type === 1) {
-              re = "管理员";
-            } else if (params.row.type === 0) {
-              re = "普通用户";
-            }
-            return h("div", re);
-          }
-        },
-        {
-          title: "状态",
-          key: "status",
-          align: "center",
-          width: 140,
-          render: (h, params) => {
-            let re = "";
-            if (params.row.status === 0) {
-              return h("div", [
-                h(
-                  "Tag",
-                  {
-                    props: {
-                      type: "dot",
-                      color: "success"
-                    }
-                  },
-                  "正常启用"
-                )
-              ]);
-            } else if (params.row.status === -1) {
-              return h("div", [
-                h(
-                  "Tag",
-                  {
-                    props: {
-                      type: "dot",
-                      color: "error"
-                    }
-                  },
-                  "禁用"
-                )
-              ]);
-            }
-          },
-          filters: [
-            {
-              label: "正常启用",
-              value: 0
-            },
-            {
-              label: "禁用",
-              value: -1
-            }
-          ],
-          filterMultiple: false,
-          filterMethod(value, row) {
-            if (value === 0) {
-              return row.status === 0;
-            } else if (value === -1) {
-              return row.status === -1;
-            }
-          }
-        }, */
         {
           title: "创建时间",
           key: "createTime",
@@ -467,7 +378,6 @@ export default {
           align: "center",
           fixed: "right",
           render: (h, params) => {
-            /* if (params.row.status === 0) {
               return h("div", [
                 h(
                   "Button",
@@ -487,77 +397,6 @@ export default {
                   },
                   "编辑"
                 ),
-                h(
-                  "Button",
-                  {
-                    props: {
-                      size: "small"
-                    },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: () => {
-                        this.disable(params.row);
-                      }
-                    }
-                  },
-                  "禁用"
-                ),
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "error",
-                      size: "small"
-                    },
-                    on: {
-                      click: () => {
-                        this.remove(params.row);
-                      }
-                    }
-                  },
-                  "删除"
-                )
-              ]);
-            } else { */
-              return h("div", [
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "primary",
-                      size: "small"
-                    },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: () => {
-                        this.edit(params.row);
-                      }
-                    }
-                  },
-                  "编辑"
-                ),
-                /* h(
-                  "Button",
-                  {
-                    props: {
-                      type: "success",
-                      size: "small"
-                    },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: () => {
-                        this.enable(params.row);
-                      }
-                    }
-                  },
-                  "启用"
-                ), */
                 h(
                   "Button",
                   {
@@ -641,7 +480,8 @@ export default {
       this.initDepartmentData();
       this.getUserList();
       this.initDepartmentTreeData();
-      // this.initCompany();
+      this.initCompany();
+      this.getAllCompanyFN();
     },
     initCompany() {
       getUnAssignCompany().then(res => {
@@ -778,6 +618,7 @@ export default {
         let data = JSON.parse(str);
         this.userForm.departmentId = data.id;
         this.userForm.departmentTitle = data.title;
+        this.$forceUpdate();
       }
     },
     selectDepartmentTree(v) {
@@ -792,21 +633,13 @@ export default {
         let data = JSON.parse(str);
         this.searchForm.departmentId = data.id;
         this.searchForm.departmentTitle = data.title;
+        this.$forceUpdate();
       }
     },
     clearSelectDep() {
       this.userForm.departmentId = "";
       this.userForm.departmentTitle = "";
-    },
-    handleChangeDep(value, selectedData) {
-      console.log('value',value)
-      console.log('selectedData',selectedData)
-      // 获取最后一个值
-      // if (value && value.length > 0) {
-      //   this.searchForm.departmentId = value[value.length - 1];
-      // } else {
-      //   this.searchForm.departmentId = "";
-      // }
+      this.$forceUpdate();
     },
     // handleChangeUserFormDep(value, selectedData) {
     //   // 获取最后一个值
@@ -891,6 +724,11 @@ export default {
       getAllRoleList().then(res => {
         this.roleList = res.data;
       });
+    },
+    getAllCompanyFN() {
+      getAllCompany().then(res => {
+        this.allCompanys = res.data
+      })
     },
     handleDropdown(name) {
       if (name === "refresh") {
@@ -987,39 +825,6 @@ export default {
     viewPic() {
       this.viewImage = true;
     },
-    handleFormatError(file) {
-      this.$Notice.warning({
-        title: "不支持的文件格式",
-        desc:
-          "所选文件‘ " +
-          file.name +
-          " ’格式不正确, 请选择 .jpg .jpeg .png .gif格式文件"
-      });
-    },
-    handleMaxSize(file) {
-      this.$Notice.warning({
-        title: "文件大小过大",
-        desc: "所选文件‘ " + file.name + " ’大小过大, 不得超过 5M."
-      });
-    },
-    beforeUpload() {
-      /* if (!this.$route.meta.permTypes.includes("upload")) {
-        this.$Message.error("此处您没有上传权限(为演示功能，该按钮未配置隐藏)");
-        return false;
-      }
-      return true; */
-    },
-    handleSuccess(res, file) {
-      if (res.success === true) {
-        file.url = res.result;
-        this.userForm.avatar = res.result;
-      } else {
-        this.$Message.error(res.message);
-      }
-    },
-    handleError(error, file, fileList) {
-      this.$Message.error(error.toString());
-    },
     add() {
       this.modalType = 0;
       this.modalTitle = "添加用户";
@@ -1027,21 +832,20 @@ export default {
       this.userModalVisible = true;
     },
     edit(v) {
-      console.log("v",v)
-      this.initCompany()
+      // this.initCompany()
       this.modalType = 1;
       this.modalTitle = "编辑用户";
       this.$refs.userForm.resetFields();
-      // 转换null为""
-      for (let attr in v) {
-        if (v[attr] === null) {
-          if (attr === 'roles' || attr === 'departments' || attr === 'companys') {
-            v[attr] = [];
-          } else {
-            v[attr] = "";
-          }
-        }
-      }
+      // // 转换null为""
+      // for (let attr in v) {
+      //   if (v[attr] === null) {
+      //     if (attr === 'roles' || attr === 'departments' || attr === 'companys') {
+      //       v[attr] = [];
+      //     } else {
+      //       v[attr] = "";
+      //     }
+      //   }
+      // }
       let str = JSON.stringify(v);
       let userInfo = JSON.parse(str);
       userInfo.sex=userInfo.sex+""
@@ -1056,7 +860,7 @@ export default {
         this.userForm.departmentTitle = this.userForm.departments[0].name;
       }
       let selectCompanyIds = [];
-      this.userForm.companys && this.userForm.companys.forEach(e => {
+      v.companys && v.companys.forEach(e => {
         selectCompanyIds.push(e.id);
       });
       // this.initCompany()
