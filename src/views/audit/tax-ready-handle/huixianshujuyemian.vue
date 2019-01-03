@@ -776,7 +776,7 @@ export default {
         })
     },
     getReviewerList() {
-      getReviewer().then(res => {
+      getReviewer("reviewProcess").then(res => {
         this.reviewers = res.data;
       })
     },
