@@ -9,7 +9,7 @@
                     <Row>
                         <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form">
                             <Form-item label="用户名" prop="username">
-                              <Input type="text" v-model="searchForm.username" clearable placeholder="请输入用户名" style="width: 200px" maxlength="20"/>
+                              <Input type="text" v-model="searchForm.username" clearable placeholder="请输入用户名" style="width: 200px" :maxlength="20"/>
                             </Form-item>
                             <Form-item label="部门" prop="department">
                               <Poptip trigger="click" placement="right" title="选择部门" width="200px">
@@ -26,10 +26,10 @@
                             </Form-item>
                             <span v-if="drop">
                             <Form-item label="手机号" prop="tel">
-                              <Input type="text" v-model="searchForm.tel" clearable placeholder="请输入手机号" style="width: 200px" maxlength="20"/>
+                              <Input type="text" v-model="searchForm.tel" clearable placeholder="请输入手机号" style="width: 200px" :maxlength="20"/>
                             </Form-item>
                               <Form-item label="邮箱" prop="email">
-                                <Input type="text" v-model="searchForm.email" clearable placeholder="请输入邮箱" style="width: 200px" maxlength="30"/>
+                                <Input type="text" v-model="searchForm.email" clearable placeholder="请输入邮箱" style="width: 200px" :maxlength="20"/>
                               </Form-item>
                               <Form-item label="性别" prop="sex">
                                 <Select v-model="searchForm.sex" placeholder="请选择" clearable style="width: 200px">
@@ -102,22 +102,22 @@
         <Modal :title="modalTitle" v-model="userModalVisible" :mask-closable='false' :width="500" :styles="{top: '30px'}">
             <Form ref="userForm" :model="userForm" :label-width="70" :rules="userFormValidate">
                 <FormItem label="姓名" prop="realName">
-                    <Input v-model="userForm.realName" :maxlength="15" autocomplete="off" maxlength="20"/>
+                    <Input v-model="userForm.realName" :maxlength="15" autocomplete="off" />
                 </FormItem>
                 <FormItem label="用户名" prop="username">
-                    <Input v-model="userForm.username" autocomplete="off" maxlength="20"/>
+                    <Input v-model="userForm.username" autocomplete="off" :maxlength="20"/>
                 </FormItem>
                 <FormItem label="密码" prop="password" v-if="modalType===0" :error="errorPass">
-                    <Input type="password" v-model="userForm.password" autocomplete="off" maxlength="20"/>
+                    <Input type="password" v-model="userForm.password" autocomplete="off" :maxlength="20"/>
                 </FormItem>
                 <FormItem label="工号" prop="workNumber">
-                    <Input v-model="userForm.workNumber" maxlength="20"/>
+                    <Input v-model="userForm.workNumber" :maxlength="20"/>
                 </FormItem>
                 <FormItem label="邮箱" prop="email">
-                    <Input v-model="userForm.email" maxlength="30"/>
+                    <Input v-model="userForm.email" :maxlength="20"/>
                 </FormItem>
                 <FormItem label="手机号" prop="tel">
-                    <Input v-model="userForm.tel" maxlength="20"/>
+                    <Input v-model="userForm.tel" :maxlength="20"/>
                 </FormItem>
                 <FormItem label="性别" prop="sex">
                   <RadioGroup v-model="userForm.sex">
@@ -279,7 +279,7 @@ export default {
         realName: '',
         password: '',
         workNumber: null,
-        sex:"0",
+        sex:"",
         /* sex: 1,
         type: 0,
         avatar: "https://s1.ax1x.com/2018/05/19/CcdVQP.png", */
@@ -301,8 +301,8 @@ export default {
           { validator: validateMobile, trigger: "blur" }
         ],
         email: [
-          { required: true, message: "请输入邮箱地址" },
-          { type: "email", message: "邮箱格式不正确" }
+          { required: true, message: "请输入邮箱地址",trigger: "blur" },
+          { type: "email", message: "邮箱格式不正确",trigger: "blur" }
         ],
         realName:[
           { required: true, message: "请输入姓名", trigger: "blur" },
@@ -872,7 +872,7 @@ export default {
           realName: this.searchForm.realName,
           workNumber: this.searchForm.workNumber,
           roleIds:this.searchForm.roleIds,
-          departmentId:this.searchForm.departmentId
+          departmentIds:this.searchForm.departmentId
         },
         searchVo: {
           startDate: this.searchForm.startDate,
@@ -1051,6 +1051,7 @@ export default {
       this.userModalVisible = true;
     },
     edit(v) {
+      console.log("v",v)
       this.initCompany()
       this.modalType = 1;
       this.modalTitle = "编辑用户";
@@ -1067,13 +1068,14 @@ export default {
       }
       let str = JSON.stringify(v);
       let userInfo = JSON.parse(str);
+      userInfo.sex=userInfo.sex+""
       this.userForm = userInfo;
       let selectRolesId = [];
       this.userForm.roles.forEach(function(e) {
         selectRolesId.push(e.id);
       });
       this.userForm.roles = selectRolesId;
-      if (this.userForm.departments.length > 0) {
+      if (this.userForm.departments && this.userForm.departments.length > 0) {
         this.userForm.departmentId = this.userForm.departments[0].id;
         this.userForm.departmentTitle = this.userForm.departments[0].name;
       }
