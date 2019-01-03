@@ -88,12 +88,12 @@
                   <InputNumber :max="1000" :min="0" v-model="menuForm.sortOrder"></InputNumber>
                   <span style="margin-left:5px">值越小越靠前，支持小数</span>
                 </FormItem>
-                <FormItem label="是否启用" prop="status">
+                <!-- <FormItem label="是否启用" prop="status">
                   <i-switch size="large" v-model="editStatus" @on-change="changeEditSwitch">
                     <span slot="open">启用</span>
                     <span slot="close">禁用</span>
                   </i-switch>
-                </FormItem>
+                </FormItem> -->
                 <Form-item>
                   <Button style="margin-right:5px" @click="submitEdit" :loading="submitLoading" type="primary" icon="ios-create-outline">修改并保存</Button>
                   <Button @click="handleReset" >重置</Button>
@@ -166,12 +166,12 @@
               <InputNumber :max="1000" :min="0" v-model="menuFormAdd.sortOrder"></InputNumber>
               <span style="margin-left:5px">值越小越靠前，支持小数</span>
             </FormItem>
-            <FormItem label="是否启用" prop="status">
+            <!-- <FormItem label="是否启用" prop="status">
               <i-switch size="large" v-model="addStatus" @on-change="changeAddSwitch">
                 <span slot="open">启用</span>
                 <span slot="close">禁用</span>
               </i-switch>
-            </FormItem>
+            </FormItem> -->
           </Form>
           <div slot="footer">
             <Button type="text" @click="cancelAdd">取消</Button>

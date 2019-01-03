@@ -47,20 +47,20 @@
                     style="width:450px"
                 >
                     <FormItem label="调度类名称" prop="jobClassName">
-                        <Input  v-model="formCustom.jobClassName" placeholder="请输入调度类名称" maxlength="20"/>
+                        <Input  v-model="formCustom.jobClassName" placeholder="请输入调度类名称" :maxlength="20"/>
                     </FormItem>
                     <FormItem label="备注" prop="description">
-                        <Input  v-model="formCustom.description" placeholder="请输入备注" maxlength="40"/>
+                        <Input  v-model="formCustom.description" placeholder="请输入备注" :maxlength="40"/>
                     </FormItem>
                     <FormItem label="corn表达式" prop="cronExpression">
-                        <Input  v-model="formCustom.cronExpression" placeholder="请输入corn表达式" maxlength="20"/>
+                        <Input  v-model="formCustom.cronExpression" placeholder="请输入corn表达式" :maxlength="20"/>
                     </FormItem>
-                    <FormItem label="状态" prop="status">
+                    <!-- <FormItem label="状态" prop="status">
                       <i-switch size="large" v-model="addStatus" @on-change="changeEditSwitch">
                         <span slot="open">启用</span>
                         <span slot="close">禁用</span>
                       </i-switch>
-                    </FormItem>
+                    </FormItem> -->
                 </Form>
                 <div slot="footer">
                 <Button type="text" @click="handleReset">取消</Button>
