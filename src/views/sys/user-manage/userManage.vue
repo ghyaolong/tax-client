@@ -12,9 +12,9 @@
                               <Input type="text" v-model="searchForm.username" clearable placeholder="请输入用户名" style="width: 200px" maxlength="20"/>
                             </Form-item>
                             <Form-item label="部门" prop="department">
-                              <Poptip trigger="click" placement="right" title="选择部门" width="250">
+                              <Poptip trigger="click" placement="right" title="选择部门" width="200px">
                                 <div style="display:flex;">
-                                  <Input v-model="searchForm.departmentTitle" readonly style="margin-right:10px;"/>
+                                  <Input v-model="searchForm.departmentTitle" readonly style="margin-right:10px;width:200px"/>
                                 </div>
                                 <div slot="content">
                                   <Tree :data="department" :load-data="loadData" @on-select-change="selectDepartmentTree"></Tree>
@@ -39,8 +39,13 @@
                               </Form-item>
                               <Form-item label="用户类型" prop="roleIds">
                                 <Select v-model="searchForm.roleIds" placeholder="请选择" clearable style="width: 200px">
-                                  <Option value="0">普通用户</Option>
-                                  <Option value="1">管理员</Option>
+                                  <Option v-for="(item,index) in roleList"
+                                  :label="item.name"
+                                  :value="item.id"
+                                  :key="index"
+                                  >
+                                  </Option>
+
                                 </Select>
                               </Form-item>
                               <Form-item label="用户状态" prop="status">
