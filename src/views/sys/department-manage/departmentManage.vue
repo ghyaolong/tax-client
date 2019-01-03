@@ -66,12 +66,12 @@
               <InputNumber :max="1000" :min="0" v-model="formAdd.sortOrder"></InputNumber>
               <span style="margin-left:5px">值越小越靠前，支持小数</span>
             </FormItem>
-            <FormItem label="是否启用" prop="status">
+            <!-- <FormItem label="是否启用" prop="status">
               <i-switch size="large" v-model="addStatus" @on-change="changeAddSwitch">
                 <span slot="open">启用</span>
                 <span slot="close">禁用</span>
               </i-switch>
-            </FormItem>
+            </FormItem> -->
           </Form>
           <div slot="footer">
             <Button type="text" @click="cancelAdd">取消</Button>
@@ -126,9 +126,15 @@ export default {
       this.getParentListEdit();
     },
     initData(data) {
+      debugger;
       data.forEach(e => {
-        e.title = e.name;
-        e.isParent = e.parentId === '0';
+        if(e.child.length>0) {
+          e.title = e.name;
+          e.isParent = true;
+        }else{
+          e.title = e.name;
+          e.isParent = e.parentId === '0';
+        }
       })
     },
     getParentList() {
@@ -166,6 +172,7 @@ export default {
       });
     },
     loadData(item, callback) {
+      debugger;
       loadDepartment(item.id).then(res => {
         this.initData(res.data);
         res.data.forEach(function(e) {

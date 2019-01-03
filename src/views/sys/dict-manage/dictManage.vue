@@ -14,7 +14,7 @@
             <Form-item label="字典编码" prop="code">
               <Input type="text" v-model="searchForm.code" clearable placeholder="请输入字典编码" style="width: 200px" :maxlength="20"/>
             </Form-item>
-            <Form-item label="类型" prop="typeId">
+            <Form-item label="类型" prop="type">
               <Select v-model="searchForm.type" style="width:200px">
                 <Option v-for="item in typeIds" :value="item.value" :key="item.value">{{ item.label }}</Option>
               </Select>
@@ -238,18 +238,18 @@ export default {
     },
     getDictList() {
       this.loading = true
-      if (this.searchForm.type) {
-        getDictListDataByType(this.searchForm.type)
-          .then(res => {
-            this.loading = false
-            this.data = res.data
-            this.total = res.data.length
-          })
-          .catch(() => {
-            this.loading = false
-          })
-        return;
-      }
+      // if (this.searchForm.type) {
+      //   getDictListDataByType(this.searchForm.type)
+      //     .then(res => {
+      //       this.loading = false
+      //       this.data = res.data
+      //       this.total = res.data.length
+      //     })
+      //     .catch(() => {
+      //       this.loading = false
+      //     })
+      //   return;
+      // }
       let params = {
         pageVo: {
           pageNumber: this.searchForm.pageNumber,
@@ -257,7 +257,8 @@ export default {
         },
         dictVo: {
           name: this.searchForm.name,
-          code: this.searchForm.code
+          code: this.searchForm.code,
+          type: this.searchForm.type
         }
       }
       getDictListData(params)
