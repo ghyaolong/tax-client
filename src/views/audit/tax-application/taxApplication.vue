@@ -46,7 +46,7 @@
             <Input type="text" v-model="form.applicantName" clearable placeholder="请输入申请人姓名" style="width: 200px" />
           </Form-item> -->
           <Form-item label="备注" prop="remarks">
-            <Input type="text" v-model="form.remarks" :maxlength="200" clearable placeholder="请输入备注" style="width: 200px" />
+            <Input type="text" v-model="form.remarks" maxlength="40" clearable placeholder="请输入备注" style="width: 200px" />
           </Form-item>
           <Form-item label="选择审核人" prop="currentHandler">
             <Select v-model="form.currentHandler" style="width:200px">
@@ -773,7 +773,7 @@ export default {
         return h('Input', {
           props: {
             type: 'text',
-            maxlength: 100,
+            maxlength: 40,
             value: params.row[params.column.key]
           },
           on: {

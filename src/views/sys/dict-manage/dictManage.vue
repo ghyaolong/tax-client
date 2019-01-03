@@ -9,10 +9,10 @@
         <Row>
           <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form">
             <Form-item label="字典名称" prop="name">
-              <Input type="text" v-model="searchForm.name" clearable placeholder="请输入字典名称" style="width: 200px" />
+              <Input type="text" v-model="searchForm.name" clearable placeholder="请输入字典名称" style="width: 200px" maxlength="20"/>
             </Form-item>
             <Form-item label="字典编码" prop="code">
-              <Input type="text" v-model="searchForm.code" clearable placeholder="请输入字典编码" style="width: 200px" />
+              <Input type="text" v-model="searchForm.code" clearable placeholder="请输入字典编码" style="width: 200px" maxlength="20"/>
             </Form-item>
             <Form-item label="类型" prop="typeId">
               <Select v-model="searchForm.type" style="width:200px">
@@ -49,10 +49,10 @@
     <Modal :title="modalTitle" v-model="modalVisible" :mask-closable='false' :width="500">
       <Form ref="form" :model="form" :label-width="120" :rules="formValidate">
         <FormItem label="字典名称" prop="name">
-          <Input v-model="form.name" placeholder="请输入字典名称" clearable />
+          <Input v-model="form.name" placeholder="请输入字典名称" clearable maxlength="20"/>
         </FormItem>
         <FormItem label="字典代码" prop="code">
-          <Input v-model="form.code" clearable />
+          <Input v-model="form.code" clearable maxlength="20"/>
         </FormItem>
         <FormItem label="字典类型" prop="type">
           <Select v-model="form.type" style="width:200px">
@@ -60,7 +60,7 @@
               </Select>
         </FormItem>
         <FormItem label="备注" prop="remarks">
-          <Input v-model="form.remarks" />
+          <Input v-model="form.remarks" maxlength="40"/>
         </FormItem>
       </Form>
       <div slot="footer">

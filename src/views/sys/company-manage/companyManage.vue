@@ -34,10 +34,10 @@
         <Modal :title="modalTitle" v-model="modalVisible" :mask-closable='false' :width="500">
           <Form ref="form" :model="form" :label-width="120" :rules="formValidate">
             <FormItem label="公司名称" prop="name">
-              <Input v-model="form.name" placeholder="请输入公司名称" clearable/>
+              <Input v-model="form.name" placeholder="请输入公司名称" clearable maxlength="20"/>
             </FormItem>
             <FormItem label="税务识别号码" prop="tin">
-              <Input v-model="form.tin" clearable/>
+              <Input v-model="form.tin" clearable maxlength="20"/>
             </FormItem>
             <FormItem label="所属国家" prop="countryCode">
               <Select v-model="form.countryCode" style="width:200px">
@@ -50,7 +50,7 @@
               </Select>
             </FormItem>
             <FormItem label="备注" prop="remarks">
-              <Input v-model="form.remarks"/>
+              <Input v-model="form.remarks" maxlength="40"/>
             </FormItem>
           </Form>
           <div slot="footer">

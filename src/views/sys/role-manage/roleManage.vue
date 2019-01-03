@@ -30,10 +30,10 @@
         <Modal :title="modalTitle" v-model="roleModalVisible" :mask-closable='false' :width="500">
           <Form ref="roleForm" :model="roleForm" :label-width="80" :rules="roleFormValidate">
             <FormItem label="角色名称" prop="name">
-              <Input v-model="roleForm.name" placeholder=""/>
+              <Input v-model="roleForm.name" placeholder="请输入" maxlength="20"/>
             </FormItem>
             <FormItem label="角色编码" prop="code">
-              <Input v-model="roleForm.code"/>
+              <Input v-model="roleForm.code" placeholder="请输入" maxlength="20"/>
             </FormItem>
             <FormItem label="角色对应节点" prop="processKey" :label-width="100">
               <Select v-model="roleForm.processKey" multiple >
@@ -158,57 +158,57 @@ export default {
             return h('div',this.renderCnName(params.row.processKey))
           }
         },
-        {
-          title: "是否设置为注册用户默认角色",
-          key: "defaultRole",
-          align: "center",
-          width: 180,
-          render: (h, params) => {
-            if (params.row.defaultRole) {
-              return h("div", [
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "success",
-                      size: "small"
-                    },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: () => {
-                        this.cancelDefault(params.row);
-                      }
-                    }
-                  },
-                  "取消默认"
-                )
-              ]);
-            } else {
-              return h("div", [
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "info",
-                      size: "small"
-                    },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: () => {
-                        this.setDefault(params.row);
-                      }
-                    }
-                  },
-                  "设为默认"
-                )
-              ]);
-            }
-          }
-        },
+        // {
+        //   title: "是否设置为注册用户默认角色",
+        //   key: "defaultRole",
+        //   align: "center",
+        //   width: 180,
+        //   render: (h, params) => {
+        //     if (params.row.defaultRole) {
+        //       return h("div", [
+        //         h(
+        //           "Button",
+        //           {
+        //             props: {
+        //               type: "success",
+        //               size: "small"
+        //             },
+        //             style: {
+        //               marginRight: "5px"
+        //             },
+        //             on: {
+        //               click: () => {
+        //                 this.cancelDefault(params.row);
+        //               }
+        //             }
+        //           },
+        //           "取消默认"
+        //         )
+        //       ]);
+        //     } else {
+        //       return h("div", [
+        //         h(
+        //           "Button",
+        //           {
+        //             props: {
+        //               type: "info",
+        //               size: "small"
+        //             },
+        //             style: {
+        //               marginRight: "5px"
+        //             },
+        //             on: {
+        //               click: () => {
+        //                 this.setDefault(params.row);
+        //               }
+        //             }
+        //           },
+        //           "设为默认"
+        //         )
+        //       ]);
+        //     }
+        //   }
+        // },
         {
           title: "操作",
           key: "action",

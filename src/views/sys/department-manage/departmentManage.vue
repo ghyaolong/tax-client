@@ -60,7 +60,7 @@
               </FormItem>
             </div>
             <FormItem label="部门名称" prop="title">
-              <Input v-model="formAdd.title"/>
+              <Input v-model="formAdd.title" maxlength="20"/>
             </FormItem>
             <FormItem label="排序值" prop="sortOrder">
               <InputNumber :max="1000" :min="0" v-model="formAdd.sortOrder"></InputNumber>

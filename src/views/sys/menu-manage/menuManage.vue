@@ -45,15 +45,15 @@
                   </RadioGroup>
                 </FormItem>
                 <FormItem label="名称" prop="title" v-if="menuForm.type===0">
-                  <Input v-model="menuForm.title"/>
+                  <Input v-model="menuForm.title" maxlength="20"/>
                 </FormItem>
                 <FormItem label="名称" prop="title" v-if="menuForm.type===1">
                   <Poptip trigger="focus" placement="right" width="230" word-wrap title="提示" content="操作按钮名称不得重复">
-                    <Input v-model="menuForm.title"/>
+                    <Input v-model="menuForm.title" />
                   </Poptip>
                 </FormItem>
                 <FormItem label="路径" prop="path" v-if="menuForm.type===0">
-                  <Input v-model="menuForm.path"/>
+                  <Input v-model="menuForm.path" maxlength="20"/>
                 </FormItem>
                 <FormItem label="请求路径" prop="path" v-if="menuForm.type===1">
                   <Poptip trigger="focus" placement="right" width="230" word-wrap title="提示" content="填写后台请求URL，后台将作权限拦截，若无可填写'无'或其他">
@@ -67,7 +67,7 @@
                 </FormItem>
                 <div v-if="menuForm.type===0">
                   <FormItem label="英文名" prop="name">
-                    <Input v-model="menuForm.name"/>
+                    <Input v-model="menuForm.name" maxlength="20"/>
                   </FormItem>
                   <FormItem label="图标" prop="icon" style="margin-bottom: 5px;">
                     <Input :icon="menuForm.icon" v-model="menuForm.icon"/>
@@ -76,7 +76,7 @@
                     </span>
                   </FormItem>
                   <FormItem label="前端组件" prop="component">
-                    <Input v-model="menuForm.component"/>
+                    <Input v-model="menuForm.component" maxlength="20"/>
                   </FormItem>
                   <FormItem label="跳转网页链接" prop="url">
                     <Poptip trigger="focus" placement="right" width="230" word-wrap title="提示" content="前端组件需为 sys/monitor/monitor 时生效">
@@ -123,7 +123,7 @@
               </RadioGroup>
             </FormItem>
             <FormItem label="名称" prop="title" v-if="menuFormAdd.type===0">
-              <Input v-model="menuFormAdd.title"/>
+              <Input v-model="menuFormAdd.title" maxlength="20"/>
             </FormItem>
             <FormItem label="名称" prop="title" v-if="menuFormAdd.type===1">
               <Poptip trigger="focus" placement="right" width="230" word-wrap title="提示" content="操作按钮名称不得重复">
@@ -131,7 +131,7 @@
               </Poptip>
             </FormItem>
             <FormItem label="路径" prop="path" v-if="menuFormAdd.type===0">
-              <Input v-model="menuFormAdd.path"/>
+              <Input v-model="menuFormAdd.path" maxlength="20"/>
             </FormItem>
             <FormItem label="请求路径" prop="path" v-if="menuFormAdd.type===1">
               <Poptip trigger="focus" placement="right" width="230" word-wrap title="提示" content="填写后台请求URL，后台将作权限拦截，若无可填写'无'或其他">
@@ -145,7 +145,7 @@
             </FormItem>
             <div v-if="menuFormAdd.type===0">
               <FormItem label="英文名" prop="name">
-                <Input v-model="menuFormAdd.name"/>
+                <Input v-model="menuFormAdd.name" maxlength="20"/>
               </FormItem>
               <FormItem label="图标" prop="icon"  style="margin-bottom: 5px;">
                 <Input :icon="menuFormAdd.icon" v-model="menuFormAdd.icon"/>
@@ -154,7 +154,7 @@
                 </span>
               </FormItem>
               <FormItem label="前端组件" prop="component">
-                <Input v-model="menuFormAdd.component"/>
+                <Input v-model="menuFormAdd.component" maxlength="20"/>
               </FormItem>
               <FormItem label="跳转网页链接" prop="url">
                 <Poptip trigger="focus" placement="right" width="230" word-wrap title="提示" content="前端组件需为 sys/monitor/monitor 时生效">

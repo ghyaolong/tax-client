@@ -9,17 +9,27 @@
                     <Row>
                         <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form">
                             <Form-item label="用户名" prop="username">
-                              <Input type="text" v-model="searchForm.username" clearable placeholder="请输入用户名" style="width: 200px"/>
+                              <Input type="text" v-model="searchForm.username" clearable placeholder="请输入用户名" style="width: 200px" maxlength="20"/>
                             </Form-item>
                             <Form-item label="部门" prop="department">
-                              <Cascader v-model="selectDep" :data="department" :load-data="loadData" @on-change="handleChangeDep" change-on-select filterable placeholder="请选择或输入搜索部门" style="width: 200px"></Cascader>
+                              <Poptip trigger="click" placement="right" title="选择部门" width="250">
+                                <div style="display:flex;">
+                                  <Input v-model="searchForm.departmentTitle" readonly style="margin-right:10px;"/>
+                                </div>
+                                <div slot="content">
+                                  <Tree :data="department" :load-data="loadData" @on-select-change="selectDepartmentTree"></Tree>
+                                </div>
+                              </Poptip>
+                              <!-- @on-change="handleChangeDep" :load-data="loadData" filterable-->
+                              <!-- <Cascader :data="department" change-on-select @on-change="handleChangeDep"></Cascader> -->
+                              <!-- <Cascader v-model="selectDep" :data="department"  :load-data="loadData"  change-on-select @on-change="handleChangeDep" placeholder="请选择或输入搜索部门" style="width: 200px"></Cascader> -->
                             </Form-item>
                             <span v-if="drop">
                             <Form-item label="手机号" prop="tel">
-                              <Input type="text" v-model="searchForm.tel" clearable placeholder="请输入手机号" style="width: 200px"/>
+                              <Input type="text" v-model="searchForm.tel" clearable placeholder="请输入手机号" style="width: 200px" maxlength="20"/>
                             </Form-item>
                               <Form-item label="邮箱" prop="email">
-                                <Input type="text" v-model="searchForm.email" clearable placeholder="请输入邮箱" style="width: 200px"/>
+                                <Input type="text" v-model="searchForm.email" clearable placeholder="请输入邮箱" style="width: 200px" maxlength="30"/>
                               </Form-item>
                               <Form-item label="性别" prop="sex">
                                 <Select v-model="searchForm.sex" placeholder="请选择" clearable style="width: 200px">
@@ -27,8 +37,8 @@
                                   <Option value="1">女</Option>
                                 </Select>
                               </Form-item>
-                              <Form-item label="用户类型" prop="type">
-                                <Select v-model="searchForm.type" placeholder="请选择" clearable style="width: 200px">
+                              <Form-item label="用户类型" prop="roleIds">
+                                <Select v-model="searchForm.roleIds" placeholder="请选择" clearable style="width: 200px">
                                   <Option value="0">普通用户</Option>
                                   <Option value="1">管理员</Option>
                                 </Select>
@@ -87,22 +97,22 @@
         <Modal :title="modalTitle" v-model="userModalVisible" :mask-closable='false' :width="500" :styles="{top: '30px'}">
             <Form ref="userForm" :model="userForm" :label-width="70" :rules="userFormValidate">
                 <FormItem label="姓名" prop="realName">
-                    <Input v-model="userForm.realName" :maxlength="15" autocomplete="off"/>
+                    <Input v-model="userForm.realName" :maxlength="15" autocomplete="off" maxlength="20"/>
                 </FormItem>
                 <FormItem label="用户名" prop="username">
-                    <Input v-model="userForm.username" autocomplete="off"/>
+                    <Input v-model="userForm.username" autocomplete="off" maxlength="20"/>
                 </FormItem>
                 <FormItem label="密码" prop="password" v-if="modalType===0" :error="errorPass">
-                    <Input type="password" v-model="userForm.password" autocomplete="off"/>
+                    <Input type="password" v-model="userForm.password" autocomplete="off" maxlength="20"/>
                 </FormItem>
                 <FormItem label="工号" prop="workNumber">
-                    <Input v-model="userForm.workNumber"/>
+                    <Input v-model="userForm.workNumber" maxlength="20"/>
                 </FormItem>
                 <FormItem label="邮箱" prop="email">
-                    <Input v-model="userForm.email"/>
+                    <Input v-model="userForm.email" maxlength="30"/>
                 </FormItem>
                 <FormItem label="手机号" prop="tel">
-                    <Input v-model="userForm.tel"/>
+                    <Input v-model="userForm.tel" maxlength="20"/>
                 </FormItem>
                 <FormItem label="性别" prop="sex">
                   <RadioGroup v-model="userForm.sex">
@@ -245,14 +255,15 @@ export default {
         tel: "",
         email: "",
         sex: "",
-        type: "",
+        roleIds: "",
         status: "",
         pageNumber: 1,
         pageSize: 10,
         sort: "createTime",
         order: "desc",
         startDate: "",
-        endDate: ""
+        endDate: "",
+        departmentTitle:""
       },
       selectDate: null,
       modalType: 0,
@@ -655,22 +666,40 @@ export default {
         this.companyList = res.data;
       })
     },
+    // initDepartmentData() {
+    //   initDepartment().then(res => {
+    //     res.data.forEach(function(e) {
+    //       debugger;
+    //       e.title = e.name;
+    //       e.isParent = e.parentId === '0';
+    //       if (e.isParent) {
+    //         e.value = e.id;
+    //         e.label = e.title;
+    //         e.loading = false;
+    //         e.children=[]
+    //       } else {
+    //         e.value = e.id;
+    //         e.label = e.title;
+    //       }
+    //       if (e.status === -1) {
+    //         e.label = "[已禁用] " + e.label;
+    //         e.disabled = true;
+    //       }
+    //     });
+    //     this.department = res.data;
+    //   });
+    // },
     initDepartmentData() {
       initDepartment().then(res => {
         res.data.forEach(function(e) {
           e.title = e.name;
           e.isParent = e.parentId === '0';
           if (e.isParent) {
-            e.value = e.id;
-            e.label = e.title;
             e.loading = false;
             e.children = [];
-          } else {
-            e.value = e.id;
-            e.label = e.title;
           }
           if (e.status === -1) {
-            e.label = "[已禁用] " + e.label;
+            e.title = "[已禁用] " + e.title;
             e.disabled = true;
           }
         });
@@ -694,29 +723,48 @@ export default {
         this.dataDep = res.data;
       });
     },
+    // loadData(item, callback) {
+    //   item.loading = true;
+    //   loadDepartment(item.value).then(res => {
+    //     item.loading = false;
+    //     res.data.forEach(function(e) {
+    //       e.title = e.name;
+    //       e.isParent = e.parentId === '0';
+    //       if (e.isParent) {
+    //         e.value = e.id;
+    //         e.label = e.title;
+    //         e.loading = false;
+    //         e.children = [];
+    //       } else {
+    //         e.value = e.id;
+    //         e.label = e.title;
+    //       }
+    //       if (e.status === -1) {
+    //         e.label = "[已禁用] " + e.label;
+    //         e.disabled = true;
+    //       }
+    //     });
+    //     item.children = res.data;
+    //     callback();
+    //   });
+    // },
     loadData(item, callback) {
+      debugger;
       item.loading = true;
-      loadDepartment(item.value).then(res => {
-        item.loading = false;
+      loadDepartment(item.id).then(res => {
         res.data.forEach(function(e) {
           e.title = e.name;
           e.isParent = e.parentId === '0';
           if (e.isParent) {
-            e.value = e.id;
-            e.label = e.title;
             e.loading = false;
             e.children = [];
-          } else {
-            e.value = e.id;
-            e.label = e.title;
           }
           if (e.status === -1) {
-            e.label = "[已禁用] " + e.label;
+            e.title = "[已禁用] " + e.title;
             e.disabled = true;
           }
         });
-        item.children = res.data;
-        callback();
+        callback(res.data);
       });
     },
     loadDataTree(item, callback) {
@@ -750,26 +798,43 @@ export default {
         this.userForm.departmentTitle = data.title;
       }
     },
+    selectDepartmentTree(v) {
+      debugger;
+      if (v.length > 0) {
+        // 转换null为""
+        for (let attr in v[0]) {
+          if (v[0][attr] === null) {
+            v[0][attr] = "";
+          }
+        }
+        let str = JSON.stringify(v[0]);
+        let data = JSON.parse(str);
+        this.searchForm.departmentId = data.id;
+        this.searchForm.departmentTitle = data.title;
+      }
+    },
     clearSelectDep() {
       this.userForm.departmentId = "";
       this.userForm.departmentTitle = "";
     },
     handleChangeDep(value, selectedData) {
+      console.log('value',value)
+      console.log('selectedData',selectedData)
       // 获取最后一个值
-      if (value && value.length > 0) {
-        this.searchForm.departmentId = value[value.length - 1];
-      } else {
-        this.searchForm.departmentId = "";
-      }
+      // if (value && value.length > 0) {
+      //   this.searchForm.departmentId = value[value.length - 1];
+      // } else {
+      //   this.searchForm.departmentId = "";
+      // }
     },
-    handleChangeUserFormDep(value, selectedData) {
-      // 获取最后一个值
-      if (value && value.length > 0) {
-        this.userForm.departmentId = value[value.length - 1];
-      } else {
-        this.userForm.departmentId = "";
-      }
-    },
+    // handleChangeUserFormDep(value, selectedData) {
+    //   // 获取最后一个值
+    //   if (value && value.length > 0) {
+    //     this.userForm.departmentId = value[value.length - 1];
+    //   } else {
+    //     this.userForm.departmentId = "";
+    //   }
+    // },
     changePage(v) {
       this.searchForm.pageNumber = v;
       this.getUserList();
@@ -786,6 +851,7 @@ export default {
       }
     },
     getUserList() {
+      console.log("ada",this.searchForm)
       // 多条件搜索用户列表
       this.loading = true;
       let params = {
@@ -799,7 +865,9 @@ export default {
           tel: this.searchForm.tel,
           email: this.searchForm.email,
           realName: this.searchForm.realName,
-          workNumber: this.searchForm.workNumber
+          workNumber: this.searchForm.workNumber,
+          roleIds:this.searchForm.roleIds,
+          departmentId:this.searchForm.departmentId
         },
         searchVo: {
           startDate: this.searchForm.startDate,
@@ -826,6 +894,7 @@ export default {
       this.searchForm.endDate = "";
       this.selectDep = [];
       this.searchForm.departmentId = "";
+      this.searchForm.departmentTitle = "";
       // 重新加载数据
       this.getUserList();
     },
