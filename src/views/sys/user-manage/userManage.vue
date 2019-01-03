@@ -62,7 +62,7 @@
                           </Button>
                           <DropdownMenu slot="list">
                               <DropdownItem name="refresh">刷新</DropdownItem>
-                              <DropdownItem name="exportData">导出所选数据</DropdownItem>
+                              <!-- <DropdownItem name="exportData">导出所选数据</DropdownItem> -->
                               <!-- <DropdownItem name="exportAll">导出全部数据</DropdownItem> -->
                           </DropdownMenu>
                         </Dropdown>
