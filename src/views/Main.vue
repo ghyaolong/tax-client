@@ -79,7 +79,7 @@ import messageTip from "./main-components/message-tip.vue";
 import Cookies from "js-cookie";
 import util from "@/libs/util.js";
 import scrollBar from "@/views/my-components/scroll-bar/vue-scroller-bars";
-
+import { getDictListDataByType } from '@/api/index.js';
 export default {
   components: {
     shrinkableMenu,
@@ -229,6 +229,10 @@ export default {
   created() {
     // 显示打开的页面的列表
     this.$store.commit("setOpenedList");
+    // 获取币种
+    getDictListDataByType('1').then((res)=>{
+      this.setStore("currencyList", res.data);
+    })
   },
   dispatch() {
     window.removeEventListener("resize", this.scrollBarResize);

@@ -74,7 +74,8 @@ export const otherRouter = {
         { path: 'ownspace-old', title: '个人中心(旧)', name: 'ownspace_old', component: () => import('@/views/own-space/own-space-old.vue') },
         { path: 'change-pass', title: '修改密码', name: 'change_pass', component: () => import('@/views/change-pass/change-pass.vue') },
         { path: 'message', title: '消息中心', name: 'message_index', component: () => import('@/views/message/message.vue') },
-        { path: 'resubmit', title: '编辑-税金申请', name: 'resubmit', component: () => import('@/views/audit/tax-ready-handle/huixianshujuyemian') }
+        { path: 'resubmit', title: '编辑-税金申请', name: 'resubmit', component: () => import('@/views/audit/tax-ready-handle/huixianshujuyemian') },
+        { path: 'details', title: '统计分析', name: 'details', component: () => import('@/views/detail/detail') }
     ]
 };
 

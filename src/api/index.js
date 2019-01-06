@@ -438,3 +438,8 @@ export const resSubmit=params=>{
 export const exportObj=params=>{
   return postRequest('/process/exportExcel',params)
 }
+
+// 统计详情
+export const getDetail=params=>{
+  return postRequest('/statistics/findAll',params)
+}

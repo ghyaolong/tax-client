@@ -5,9 +5,9 @@
       <!-- <img src="../assets/xboot.png" width="220px" /> -->
       <div class="description">税务管理系统</div>
     </Row>
-  
+
     <Alert type="error" show-icon v-if="error">{{errorMsg}}</Alert>
-  
+
     <Row class="login-form" v-if="!socialLogining">
       <Tabs v-model="tabName">
         <TabPane label="账户密码登录" name="username" icon="md-person">
@@ -38,7 +38,7 @@
           </Form>
         </TabPane> -->
       </Tabs>
-  
+
       <!-- <Row type="flex" justify="space-between" class="code-row-bg">
         <Checkbox v-model="saveLogin" size="large">自动登录</Checkbox>
         <a class="forget-pass" @click="showAccount">忘记密码</a>
@@ -68,7 +68,7 @@
         <router-link to="/regist"><a class="forget-pass">注册账户</a></router-link>
       </Row> -->
     </Row>
-  
+
     <!-- <Row class="foot">
       <Row type="flex" justify="space-around" class="code-row-bg help">
         <a class="item" href="https://github.com/Exrick/x-boot" target="_blank">帮助</a>
