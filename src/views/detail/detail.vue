@@ -5,8 +5,8 @@
       <Card>
         <Row>
           <Form ref="searchForm" :model="searchForm" inline :label-width="100" class="search-form">
-            <Form-item label="公司名称" prop="conpanyName">
-              <Select v-model="searchForm.conpanyName" style="width:200px">
+            <Form-item label="公司名称" prop="companyName">
+              <Select v-model="searchForm.companyName" style="width:200px">
                 <Option v-for="(item,index) in conpanyList"
                   :value="item.name"
                   :label="item.name"
@@ -17,22 +17,22 @@
             <Form-item label="税种" prop="taxDict">
               <Select v-model="searchForm.taxDict" style="width:200px">
                 <Option v-for="(item,index) in taxDictList"
-                  :value="item.name"
+                  :value="item.id"
                   :label="item.name"
                   :key="item.id"
                 ></Option>
               </Select>
             </Form-item>
-            <Form-item label="税金类型" prop="type">
-              <Select v-model="searchForm.type" style="width:200px">
-                <Option value="1">实缴税金</Option>
-                <Option value="2">实缴滞纳金</Option>
+            <Form-item label="税金类型" prop="taxType">
+              <Select v-model="searchForm.taxType" style="width:200px">
+                <Option value="PAID">实缴税金</Option>
+                <Option value="LATEFEE">实缴滞纳金</Option>
               </Select>
             </Form-item>
             <Form-item label="币种" prop="currency">
               <Select v-model="searchForm.currency" style="width:200px">
                 <Option v-for="(item,index) in currencyList"
-                  :value="item.name"
+                  :value="item.id"
                   :label="item.name"
                   :key="item.id"
                 ></Option>
@@ -41,10 +41,10 @@
             <Form-item label="纳税所属期" prop="selectDateTaxPeriod">
               <DatePicker type="daterange" v-model="selectDateTaxPeriod" format="yyyy-MM" clearable @on-change="selectDateRangeTaxPeriod" placeholder="选择起始时间" style="width: 200px"></DatePicker>
             </Form-item>
-            <Form-item label="国家" prop="countryName">
-              <Select v-model="searchForm.countryName" style="width:200px">
+            <Form-item label="国家" prop="countryCode">
+              <Select v-model="searchForm.countryCode" style="width:200px">
                 <Option v-for="(item,index) in countryList"
-                  :value="item.name"
+                  :value="item.id"
                   :label="item.name"
                   :key="item.id"
                 ></Option>
@@ -87,11 +87,11 @@ export default {
       conpanyList:[], // 公司
       currencyList:JSON.parse(getStore("currencyList")), // 币种
       searchForm:{
-        conpanyName:"",// 公司
+        companyName:"",// 公司
         currency:"", // 币种
         taxDict:"", // 税种
-        countryName:"",  // 国家
-        type:'' , //税金类型
+        countryCode:"",  // 国家
+        taxType:'' , //税金类型
       },
       startTaxPeriod:"",  // 所属期间开始日期
       endTaxPeriod:"",  // 所属期间结束日期
@@ -292,14 +292,15 @@ export default {
     // 获取全部
     getAllList(){
       let params ={
-        conpanyName:this.searchForm.conpanyName,  // 公司名称
+        countryCode:this.searchForm.countryCode, // 国家
+        companyName:this.searchForm.companyName,  // 公司名称
         currency:this.searchForm.currency,  // 币种
         taxDict:this.searchForm.taxDict,  // 税种
         startTaxPeriod:this.startTaxPeriod, // 纳税所属期
         endTaxPeriod:this.endTaxPeriod,// 纳税所属期
         startTime:this.startTime,// 实缴时期
         endTime:this.endTime,// 实缴时期
-        type:this.searchForm.type//税金类型
+        taxType:this.searchForm.taxType//税金类型
       }
       getDetail(params).then((res)=>{
         // this.data= res.data
@@ -341,9 +342,9 @@ export default {
         var overduePaymentAll=0
         item.data.map((items,indexs)=>{
           // 按实缴税金查询
-          if(this.searchForm.type=="1"){
+          if(this.searchForm.taxType=="PAID"){
             taxPaidALL += items.taxPaid  //实缴税金的和
-          }else if(this.searchForm.type=="2") {
+          }else if(this.searchForm.taxType=="LATEFEE") {
             overduePaymentAll += items.overduePayment   // 实缴纳税金的和
           }else{
             taxPaidALL += items.taxPaid,
@@ -377,9 +378,9 @@ export default {
           for(let keys in tempObj) {
             if(key==keys) {
               tempObj[keys].map((items,indexs)=>{
-                if(this.searchForm.type=="1") {
+                if(this.searchForm.taxType=="PAID") {
                   item[key] += items.taxPaid
-                }else if(this.searchForm.type=="2") {
+                }else if(this.searchForm.taxType=="LATEFEE") {
                   item[key] +=  items.overduePayment
                 }else{
                   item[key] += (items.taxPaid + items.overduePayment)
