@@ -32,7 +32,7 @@
             <Form-item label="币种" prop="currency">
               <Select v-model="searchForm.currency" style="width:200px">
                 <Option v-for="(item,index) in currencyList"
-                  :value="item.id"
+                  :value="item.code"
                   :label="item.name"
                   :key="item.id"
                 ></Option>
@@ -44,7 +44,7 @@
             <Form-item label="国家" prop="countryCode">
               <Select v-model="searchForm.countryCode" style="width:200px">
                 <Option v-for="(item,index) in countryList"
-                  :value="item.id"
+                  :value="item.code"
                   :label="item.name"
                   :key="item.id"
                 ></Option>
