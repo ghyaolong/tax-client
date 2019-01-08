@@ -173,7 +173,8 @@ export default {
         {
           title: "所属国家",
           key: "countryCode",
-          sortable: true
+          sortable: true,
+          render:this.renderName
         },
         {
           title: "币种",
@@ -625,6 +626,16 @@ export default {
       getDictListDataByType(dictType.currency).then(res => {
         this.dictCurrencys = res.data;
       });
+    },
+    // 国家根据code获取中文
+    renderName(h,params) {
+      var submitStr=""
+      this.dictCountrys.map((item,index)=>{
+        if(item.code==params.row.countryCode) {
+            submitStr=item.name
+        }
+      })
+        return h('div',submitStr)
     }
   },
   mounted() {
