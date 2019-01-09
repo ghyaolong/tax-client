@@ -10,10 +10,10 @@
                 修改密码
             </p>
             <div>
-                <Form 
+                <Form
                     ref="editPasswordForm"
-                    :model="editPasswordForm" 
-                    :label-width="100" 
+                    :model="editPasswordForm"
+                    :label-width="100"
                     label-position="right"
                     :rules="passwordValidate"
                     style="width:450px"
@@ -100,6 +100,7 @@ export default {
               }
             });
           });
+          this.savePassLoading = false;
         }
       });
     },

@@ -56,7 +56,7 @@
         </FormItem>
         <FormItem label="字典类型" prop="type">
           <Select v-model="form.type" style="width:200px">
-                <Option v-for="item in typeIds" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                <Option v-for="item in typeIds" :value="item.value*1" :key="item.value*1">{{ item.label }}</Option>
               </Select>
         </FormItem>
         <FormItem label="备注" prop="remarks">

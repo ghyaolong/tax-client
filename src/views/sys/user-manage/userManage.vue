@@ -126,7 +126,11 @@
                   </RadioGroup>
                 </FormItem>
                 <FormItem label="所属公司" prop="companys">
-                  <Select v-model="userForm.companys" multiple filterable>
+                  <Select v-model="userForm.companys" multiple filterable v-if="modalType==0">
+                      <Option v-for="item in companyList" :value="item.id" :key="item.id" :label="item.name">
+                      </Option>
+                  </Select>
+                  <Select v-model="userForm.companys" multiple filterable v-if="modalType==1">
                       <Option v-for="item in allCompanys" :value="item.id" :key="item.id" :label="item.name">
                       </Option>
                   </Select>
