@@ -300,7 +300,7 @@ export default {
         comment:"上报实缴",
         taskId:this.dataDetils.serialNumber,
         userId:this.userInfo.id,
-        currentHandler:'',
+        currentHandler:this.dataDetils.applicantId,
         bean:{
             details:this.dataDetils.details,
             applicantId: this.dataDetils.applicantId,

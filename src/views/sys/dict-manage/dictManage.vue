@@ -56,8 +56,8 @@
         </FormItem>
         <FormItem label="字典类型" prop="type">
           <Select v-model="form.type" style="width:200px">
-                <Option v-for="item in typeIds" :value="item.value*1" :key="item.value*1">{{ item.label }}</Option>
-              </Select>
+                <Option v-for="item in typeIds" :value="item.value" :key="item.value">{{ item.label }}</Option>
+          </Select>
         </FormItem>
         <FormItem label="备注" prop="remarks">
           <Input v-model="form.remarks" :maxlength="40"/>
@@ -89,7 +89,7 @@ export default {
       modalVisible: false,
       modalTitle: '',
       typeIds: [{
-        value: '0',
+        value: "0",
         label: '国家'
       }, {
         value: '1',
@@ -121,7 +121,9 @@ export default {
         code: [
           { required: true, message: '字典代码不能为空', trigger: 'blur' }
         ],
-        type: [{ required: true, message: '字典类型不能为空', trigger: 'blur' }]
+        type: [
+          { required: true, message: '字典类型不能为空', trigger: 'blur' }
+        ]
       },
       submitLoading: false,
       selectList: [],
@@ -303,6 +305,8 @@ export default {
                 this.submitLoading = false
               })
           }
+        }else{
+          console.log("dadada",this.form)
         }
       })
     },
@@ -321,7 +325,7 @@ export default {
     edit(v) {
       this.modalType = 1
       this.modalTitle = '编辑字典'
-      // 转换null为""
+      //转换null为""
       for (let attr in v) {
         if (v[attr] === null) {
           v[attr] = ''
@@ -329,7 +333,9 @@ export default {
       }
       let str = JSON.stringify(v)
       let data = JSON.parse(str)
+      data.type=data.type.toString()
       this.form = data
+      console.log('dadad',data)
       this.modalVisible = true
     },
     remove(v) {

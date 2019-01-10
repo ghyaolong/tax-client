@@ -179,7 +179,8 @@ export default {
         {
           title: "币种",
           key: "currencyCode",
-          sortable: true
+          sortable: true,
+          render:this.renderCurrencysName
         },
         {
           title:"是否分配",
@@ -393,7 +394,9 @@ export default {
       dictCountrys: [],
       dictCurrencys: [],
       currentRows: [],
-      companyId: ""
+      companyId: "",
+      dictCurrencysMap:"",
+      dictCountrysMap:""
     };
   },
   methods: {
@@ -622,20 +625,39 @@ export default {
     getDictData() {
       getDictListDataByType(dictType.country).then(res => {
         this.dictCountrys = res.data;
+        let maps = new Map()
+        res.data.map((item,index)=>{
+          maps.set(item.code,item.name)
+        })
+        this.dictCountrysMap=maps
       });
       getDictListDataByType(dictType.currency).then(res => {
         this.dictCurrencys = res.data;
+        var maps = new Map()
+        res.data.map((item,index)=>{
+          maps.set(item.code,item.name)
+        })
+        this.dictCurrencysMap=maps
       });
     },
     // 国家根据code获取中文
     renderName(h,params) {
-      var submitStr=""
-      this.dictCountrys.map((item,index)=>{
-        if(item.code==params.row.countryCode) {
-            submitStr=item.name
-        }
-      })
-        return h('div',submitStr)
+      // var submitStr=""
+      // this.dictCountrys.map((item,index)=>{
+      //   if(item.code==params.row.countryCode) {
+      //       submitStr=item.name
+      //   }
+      // })
+      //   return h('div',submitStr)
+      if(this.dictCountrysMap) {
+          return h('div',this.dictCountrysMap.get(params.row.countryCode))
+      }
+    },
+    // 根据币种code返回中文名
+    renderCurrencysName(h,params) {
+      if(this.dictCurrencysMap) {
+        return h('div',this.dictCurrencysMap.get(params.row.currencyCode))
+      }
     }
   },
   mounted() {

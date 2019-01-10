@@ -89,7 +89,7 @@
       </Form>
       <footer class="vertical-center" slot="footer">
           <Button style="width: 100px;" @click="handleRefuse">取消</Button>
-          <Button type="primary"  style="width: 100px;margin-left:158px" @click="handleOk">同意</Button>
+          <Button type="primary"  style="width: 100px;margin-left:15px" @click="handleOk">同意</Button>
       </footer>
     </Modal>
     <Modal
