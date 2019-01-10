@@ -75,7 +75,8 @@ export const otherRouter = {
         { path: 'change-pass', title: '修改密码', name: 'change_pass', component: () => import('@/views/change-pass/change-pass.vue') },
         { path: 'message', title: '消息中心', name: 'message_index', component: () => import('@/views/message/message.vue') },
         { path: 'resubmit', title: '编辑-税金申请', name: 'resubmit', component: () => import('@/views/audit/tax-ready-handle/huixianshujuyemian') },
-        { path: 'details', title: '统计分析', name: 'details', component: () => import('@/views/detail/detail') }
+        { path: 'details', title: '统计分析', name: 'details', component: () => import('@/views/detail/detail') },
+        { path: 'reportPaid', title: '上报实缴', name: 'reportPaid', component: () => import('@/views/audit/tax-ready-handle/reportPaid') }
     ]
 };
 

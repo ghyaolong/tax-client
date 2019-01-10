@@ -296,6 +296,7 @@ export default {
           checkPay:'支付审批',
           approvalPay:'审批支付',
           uploadPayFile:'上传文件',
+          reportPaid:"上报实缴"
         }
         tempKeys.map((item,index)=>{
           string += `${obj[item]}/`

@@ -250,7 +250,7 @@
             <Input type="text" disabled v-model="fileUploadForm.taxReturnsPath" style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}" name="file"
-            :data="{materialTypeDict: 'TAX_REPORT'}" :show-upload-list="false"
+            :data="{materialTypeDict: 'TAX_REPORT',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
               <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
             </Upload>
@@ -261,7 +261,7 @@
             <Input type="text" disabled v-model="fileUploadForm.paymentCertificatePath" style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}" name="file"
-            :data="{materialTypeDict: 'DONE_TAX_REPORT'}" :show-upload-list="false"
+            :data="{materialTypeDict: 'DONE_TAX_REPORT',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
               <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
             </Upload>
@@ -272,7 +272,7 @@
             <Input type="text" disabled  v-model="fileUploadForm.otherUploadId"  style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}" name="file"
-            :data="{materialTypeDict: 'OTHER'}" :show-upload-list="false"
+            :data="{materialTypeDict: 'OTHER',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
               <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
             </Upload>
@@ -298,6 +298,8 @@ export default {
   name: 'taxReadyHandle',
   data() {
     return {
+      selectCurrencyCode:"", // 选择的币种
+      colSelectCurrencyCode:"", // 行选择的税种code
       showUploadModal:false,
       accessToken: getStore('accessToken'),
       loading: false,
@@ -475,10 +477,50 @@ export default {
                       on: {
                         click: () => {
                           this.handleLook(params.row);
+
                         }
                       }
                     },
                     "资料补全"
+                  ),
+                  h(
+                    "Button",
+                    {
+                      props: {
+                        type: "primary",
+                        size: "small"
+                      },
+                      style: {
+                        marginRight: "5px"
+                      },
+                      on: {
+                        click: () => {
+                          this.handleLIUCHENGTU(params.row);
+                        }
+                      }
+                    },
+                    "流程图"
+                  )
+                ]);
+            }else if (params.row.currentLink=="reportPaid") {
+              return h("div", [
+                  h(
+                    "Button",
+                    {
+                      props: {
+                        type: "primary",
+                        size: "small"
+                      },
+                      style: {
+                        marginRight: "5px"
+                      },
+                      on: {
+                        click: () => {
+                          this.handleGotoReportPaid(params.row);
+                        }
+                      }
+                    },
+                    "上报实缴"
                   ),
                   h(
                     "Button",
@@ -549,6 +591,7 @@ export default {
           checkPay:'支付审批',
           approvalPay:'审批支付',
           uploadPayFile:'上传文件',
+          reportPaid:"上报实缴"
         }
         return obj[key]
       }
@@ -664,6 +707,7 @@ export default {
     handleLook(v) {
       console.log("1212",v)
       this.tempInfoValue = v;
+      this.selectCurrencyCode=v.currency;
       let tempData = v.details;
       var  payableTaxALL=0 // 应缴税额合计
       var  lateFeePayable=0// 应缴滞纳金合计
@@ -697,6 +741,8 @@ export default {
     // 操作
     handleupLoad(item,index) {
       console.log('item',item)
+      console.log('index',index)
+      this.colSelectCurrencyCode=item.details[index].taxDict
       this.fileUploadForm = {
         uploadFileIndex:index,
         preTaxReturns:item.details[index].preTaxReturns,
@@ -727,6 +773,11 @@ export default {
     edit(v) {
       this.$store.commit('closePage', 'resubmit')
       this.$router.push({name: 'resubmit', params: {type: 'taxReadyHandle', params: v}});
+    },
+    // 上报实缴页面
+    handleGotoReportPaid(v) {
+      this.$store.commit('closePage', 'reportPaid')
+      this.$router.push({name: 'reportPaid', params: {type: 'reportPaid', params: v}});
     },
     // 查看流程图
     handleLIUCHENGTU(v){

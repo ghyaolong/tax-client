@@ -57,7 +57,7 @@
           <Form-item label="财务报表" prop="financialReportPath">
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}"
-            name="file" :data="{materialTypeDict: 'FINANCE_REPORT'}"
+            name="file" :data="{materialTypeDict: 'FINANCE_REPORT',taxDict:'none',currency:selectCurrencyCode}"
             :show-upload-list="false" :on-success="financeUploadSuc" class="upload-box">
               <Input type="text" readonly v-model="form.financialReportPath" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
@@ -94,27 +94,27 @@
         @on-cancel="uploadModalCancel">
         <Form label-position="left" :label-width="100">
           <FormItem label="预申报表">
-            <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'PRE_TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
+            <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'PRE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc" ref="updateFile">
               <Input type="text" readonly v-model="fileUploadForm.preTaxReturnsPath" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
               <!-- <Button v-if="fileUploadForm.preTaxReturns" @click.stop="filePriview(fileUploadForm.preTaxReturnsPath)">预览</Button> -->
             </Upload>
           </FormItem>
-          <FormItem label="申报表" v-if="routeType === 'taxReplenishment'">
+          <FormItem label="申报表" v-if="routeType === 'taxReplenishments'">
             <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.taxReturnsPath" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
               <!-- <div v-if="fileUploadForm.taxReturns"><Button @click.stop="filePriview(fileUploadForm.taxReturnsPath)">预览</Button></div> -->
             </Upload>
           </FormItem>
-          <FormItem label="完税申报表" v-if="routeType === 'taxReplenishment'">
+          <FormItem label="完税申报表" v-if="routeType === 'taxReplenishments'">
             <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'DONE_TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.paymentCertificatePath" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
               <!-- <div v-if="fileUploadForm.paymentCertificate"><Button @click.stop="filePriview(fileUploadForm.paymentCertificatePath)">预览</Button></div> -->
             </Upload>
           </FormItem>
-          <FormItem label="其它" v-if="routeType === 'taxReplenishment'">
+          <FormItem label="其它" v-if="routeType === 'taxReplenishments'">
             <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'OTHER'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.otherUploadId" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
@@ -181,6 +181,8 @@ export default {
   name: 'taxApplication',
   data() {
     return {
+      selectCurrencyCode:"", // 选择的税种code
+      colSelectCurrencyCode:"", // 行选择的税种code
       isRouterAlive: true,
       loading: false,
       priviewModal: false,
@@ -283,14 +285,20 @@ export default {
           key: "taxPaid",
           align: 'center',
           width: 120,
-          render: this.renderInput
+          // render: this.renderInput
+          render: (h, params) => {
+            return h('div', params.row.taxPaid)
+          }
         },
         {
           title: '实缴滞纳金',
           key: "overduePayment",
           align: 'center',
           width: 120,
-          render: this.renderInput
+          // render: this.renderInput
+          render: (h, params) => {
+            return h('div', params.row.overduePayment)
+          }
         },
         {
           title: '实际缴纳税款',
@@ -331,6 +339,7 @@ export default {
                     },
                     on: {
                       click: () => {
+                        const that=this
                         let item = this.data[params.index];
                         let {preTaxReturns, preTaxReturnsPath, taxReturns, taxReturnsPath, paymentCertificate, paymentCertificatePath, otherUploadId, otherUpload} = item;
                         this.fileUploadForm = {
@@ -344,7 +353,12 @@ export default {
                           otherUploadId,
                           otherUpload: otherUpload
                         }
-                        this.showUploadModal = true;
+                        if(item.taxDict=="" || that.selectCurrencyCode=="") {
+                          this.$Message.warning("请选择税种和币种");
+                        }else{
+                          this.colSelectCurrencyCode =item.taxDict
+                          this.showUploadModal = true;
+                        }
                       }
                     }
                   },
@@ -704,16 +718,6 @@ export default {
             console.log(e);
             ids += e.id + ",";
           });
-          /* ids = ids.substring(0, ids.length - 1);
-          this.operationLoading = true;
-          deleteLog(ids).then(res => {
-            this.operationLoading = false;
-            if (res.success === true) {
-              this.$Message.success("删除成功");
-              this.clearSelectAll();
-              this.init();
-            }
-          }); */
         }
       });
     },
@@ -799,25 +803,6 @@ export default {
           }
         })
       }
-
-      /* return h('Input', {
-        props: {
-          type: 'text',
-          maxlength: params.column.key === 'remarks' ? 100 : 10,
-          value: temp || params.row[params.column.key],
-          number: params.column.key != 'remarks'
-        },
-        on: {
-          input: e => {
-            if (params.column.key === 'remarks') {
-              params.row[params.column.key] = e;
-            } else {
-              params.row[params.column.key] = isNaN(e) ? 0 : e;
-            }
-            this.data[params.index] = params.row;
-          }
-        }
-      }) */
     },
     /* 表格框下拉选择框渲染函数 */
     renderSelect(h, params) {
@@ -825,6 +810,7 @@ export default {
         taxPeriod: 'dictTaxPayments',   // 所属期间
         taxDict: 'dictTaxCategorys',   // 税种
       }
+
       return h('Select', {
         props: {
           value: params.row[params.column.key]
@@ -871,6 +857,7 @@ export default {
             this.form.companyName = company.label;
             this.form.countryCode = res.data.countryCode;
             this.form.currency = res.data.currencyCode;
+            this.selectCurrencyCode= res.data.currencyCode;
             that.addColumnByCompany(that.renderTaxDict(res.data.dicts))
           })
           .finally(() => {
@@ -1045,13 +1032,10 @@ export default {
                 remarks: '',
                 status:0
               }]
-        // this.$forceUpdate()
         this.$Message.success('操作成功')
       }).finally(() => {
         this.loading = false;
       })
-      // this.handleReset('form')
-      // this.data = []
     },
     handleReset(formName) {
         this.$refs[formName].resetFields();
@@ -1067,10 +1051,8 @@ export default {
   mounted() {
     this.init();
     this.userInfo = JSON.parse(Cookies.get("userInfo"));
-    console.log("1212",this.$route)
   },
   updated:function() {
-    // console.log("update",this.data)
     var  payableTaxALL=0 // 应缴税额合计
     var  lateFeePayable=0// 应缴滞纳金合计
     var  applTaxPayment=0 // 申请纳税款合计

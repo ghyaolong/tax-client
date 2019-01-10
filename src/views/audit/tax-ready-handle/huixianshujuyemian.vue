@@ -57,7 +57,7 @@
           <Form-item label="财务报表" prop="financialReportPath">
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}"
-            name="file" :data="{materialTypeDict: 'FINANCE_REPORT'}"
+            name="file" :data="{materialTypeDict: 'FINANCE_REPORT',taxDict:'none',currency:selectCurrencyCode}"
             :show-upload-list="false" :on-success="financeUploadSuc" class="upload-box">
               <Input type="text" readonly v-model="form.financialReportPath" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
@@ -94,7 +94,7 @@
         @on-cancel="uploadModalCancel">
         <Form label-position="left" :label-width="100">
           <FormItem label="预申报表">
-            <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'PRE_TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
+            <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'PRE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.preTaxReturnsPath" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
               <!-- <Button v-if="fileUploadForm.preTaxReturns" @click.stop="filePriview(fileUploadForm.preTaxReturnsPath)">预览</Button> -->
@@ -181,6 +181,8 @@ export default {
   name: 'huixianshujuyemian',
   data() {
     return {
+      selectCurrencyCode:"", // 选择的税种code
+      colSelectCurrencyCode:"", // 行选择的税种code
       isRouterAlive: true,
       loading: false,
       priviewModal: false,
@@ -283,14 +285,20 @@ export default {
           key: "taxPaid",
           align: 'center',
           width: 120,
-          render: this.renderInput
+          // render: this.renderInput
+          render: (h, params) => {
+            return h('div', params.row.overduePayment)
+          }
         },
         {
           title: '实缴滞纳金',
           key: "overduePayment",
           align: 'center',
           width: 120,
-          render: this.renderInput
+          // render: this.renderInput
+          render: (h, params) => {
+            return h('div', params.row.overduePayment)
+          }
         },
         {
           title: '实际缴纳税款',
@@ -344,7 +352,12 @@ export default {
                           otherUploadId,
                           otherUploadPath: otherUpload
                         }
-                        this.showUploadModal = true;
+                        if(item.taxDict=="" || that.selectCurrencyCode=="") {
+                          this.$Message.warning("请选择税种和币种");
+                        }else{
+                          this.colSelectCurrencyCode =item.taxDict
+                          this.showUploadModal = true;
+                        }
                       }
                     }
                   },
@@ -980,6 +993,7 @@ export default {
             this.form.companyName = company.label;
             this.form.countryCode = res.data.countryCode;
             this.form.currency = res.data.currencyCode;
+            this.selectCurrencyCode= res.data.currencyCode;
             that.addColumnByCompany(that.renderTaxDict(res.data.dicts))
           })
           .finally(() => {
