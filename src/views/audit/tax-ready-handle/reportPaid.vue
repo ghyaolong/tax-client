@@ -245,13 +245,14 @@ export default {
             title: '实际缴纳日期',
             key: "paymentTime",
             align: 'center',
-            width: 120,
-            render: (h,params)=>{
-              if(params.row.paymentTime) {
-                return h('div',new Date(params.row.paymentTime).format())
-              }
-              return h('div')
-            }
+            width: 140,
+            // render: (h,params)=>{
+            //   if(params.row.paymentTime) {
+            //     return h('div',new Date(params.row.paymentTime).format())
+            //   }
+            //   return h('div')
+            // }
+            render: this.renderDatePicker
           },
           {
             title:'操作',
@@ -292,9 +293,42 @@ export default {
     }
   },
   methods:{
+    /* 表格日期选择框渲染函数 */
+    renderDatePicker(h, params) {
+      return h('DatePicker', {
+        props: {
+          type: params.column.key === 'taxPeriod' ? 'month' : 'date',
+          value: params.row[params.column.key]
+        },
+        on: {
+          'on-change': val => {
+            this.details[params.index][params.column.key] = val;
+          }
+        }
+      })
+    },
     // 操作
     handleSubmit(){
       console.log("adasd",this.dataDetils)
+
+      var tempAll = 0;
+      this.dataDetils.details.forEach((item,index)=>{
+        tempAll = parseFloat(item.taxPaid) + parseFloat(item.overduePayment);
+      })
+      if(tempAll==0){
+          this.$Message.error('实际缴纳税款不能为空,请输入实缴税额或实缴滞纳金');
+          return;
+      }
+      // //实际缴纳日期
+      let sjjnrqi = this.dataDetils.details.some(item => {
+        return !item.paymentTime
+      })
+      if (sjjnrqi) {
+        this.$Message.error('请选择实际缴纳日期');
+        return;
+      }
+
+
       let params = {
         operateApprove:'0',
         comment:"上报实缴",
@@ -335,19 +369,19 @@ export default {
         // this.loading = false;
       })
     },
-    renderApplTaxPaymentALL(h, params) {
-      if(params.row.applTaxPaymentALL) {
-        return h('div', params.row.applTaxPaymentALL)
-      }else{
-        var tempSubmit=0
-        this.details.map((item,index)=>{
-          if(item.applTaxPaymentALL) {
-            tempSubmit += item.applTaxPaymentALL
-          }
-        })
-        return h('div', tempSubmit)
-      }
-    },
+    // renderApplTaxPaymentALL(h, params) {
+    //   if(params.row.applTaxPaymentALL) {
+    //     return h('div', params.row.applTaxPaymentALL)
+    //   }else{
+    //     var tempSubmit=0
+    //     this.details.map((item,index)=>{
+    //       if(item.applTaxPaymentALL) {
+    //         tempSubmit += item.applTaxPaymentALL
+    //       }
+    //     })
+    //     return h('div', tempSubmit)
+    //   }
+    // },
     /* 表格栏输入框渲染函数 */
     renderInput(h, params) {
       console.log("21212",params);
@@ -362,16 +396,16 @@ export default {
             input: e => {
               params.row[params.column.key] = e;
               this.details[params.index] = params.row;
-              var tempTaxPaid=0;
-              var tempOverduePayment=0;
-              this.details.map((item,index)=>{
-                if(item.taxPaid){
-                  tempTaxPaid += item.taxPaid
-                  tempOverduePayment+= item.overduePayment
-                }
-              })
-              this.details[this.details.length-1].tempTaxPaid=tempTaxPaid
-              this.details[this.details.length-1].tempOverduePayment=tempOverduePayment
+              // var tempTaxPaid=0;
+              // var tempOverduePayment=0;
+              // this.details.map((item,index)=>{
+              //   if(item.taxPaid){
+              //     tempTaxPaid += item.taxPaid
+              //     tempOverduePayment+= item.overduePayment
+              //   }
+              // })
+              // this.details[this.details.length-1].tempTaxPaid=tempTaxPaid
+              // this.details[this.details.length-1].tempOverduePayment=tempOverduePayment
               console.log('this.details',this.details)
               this.$forceUpdate()
             }

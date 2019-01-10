@@ -318,7 +318,7 @@ export default {
           key: "paymentTime",
           align: 'center',
           width: 160,
-          render: this.renderDatePicker
+          // render: this.renderDatePicker
         },
         {
           title: '附件',
@@ -518,14 +518,14 @@ export default {
         this.$Message.error('请选择缴款截止日期');
         return;
       }
-      //实际缴纳日期
-      let sjjnrqi = params.taxApplicationVo.details.some(item => {
-        return !item.paymentTime
-      })
-      if (sjjnrqi) {
-        this.$Message.error('请选择缴款截止日期');
-        return;
-      }
+      // //实际缴纳日期
+      // let sjjnrqi = params.taxApplicationVo.details.some(item => {
+      //   return !item.paymentTime
+      // })
+      // if (sjjnrqi) {
+      //   this.$Message.error('请选择缴款截止日期');
+      //   return;
+      // }
       // 税种与申报表
       let preTaxReturnsVerity = params.taxApplicationVo.details.some(item => {
         return !item.preTaxReturns;
