@@ -15,7 +15,7 @@
               <Option v-for="item, index in materialTypeDicts" :value="index" :key="index" :label="item"></Option>
             </Select>
           </Form-item>
-          <Form-item label="创建时间">
+          <Form-item label="上传时间">
             <DatePicker type="daterange" v-model="selectDate" format="yyyy-MM-dd" clearable @on-change="selectDateRange" placeholder="选择起始时间" style="width: 200px"></DatePicker>
           </Form-item>
           <Form-item style="margin-left:-35px;" class="br">

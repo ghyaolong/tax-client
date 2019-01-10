@@ -75,7 +75,7 @@
             <Option value="1" >拒绝</Option>
           </Select>
         </FormItem>
-        <FormItem label="审批意见" :label-width="100" v-if="taxReadyHandle.operateApprove != '1'" >
+        <FormItem label="审批意见" :label-width="100" v-if="taxReadyHandle.operateApprove != '1'" prop="comment">
           <Input type="textarea" v-model="taxReadyHandle.comment" placeholder="请输入审批意见"></Input>
         </FormItem>
         <Form-item label="选择审核人" prop="currentHandler" v-if="taxReadyHandle.operateApprove != '1' && !isApprovalPay" :label-width="100">
@@ -83,7 +83,7 @@
             <Option v-for="item in reviewers" :value="item.id" :key="item.id">{{ item.realName }}</Option>
           </Select>
         </Form-item>
-        <FormItem label="拒绝原因" v-if="taxReadyHandle.operateApprove === '1'" :label-width="100">
+        <FormItem label="拒绝原因" v-if="taxReadyHandle.operateApprove === '1'" :label-width="100" prop="comment">
           <Input type="textarea" v-model="taxReadyHandle.comment" placeholder="请输入拒绝原因"></Input>
         </FormItem>
       </Form>
@@ -315,7 +315,8 @@ export default {
       },
       taxReadyHandleValidate: {
         operateApprove:[{required:true,message:"请选择",trigger: 'blur'}],
-        currentHandler:[{required:true,message:"请选择",trigger: 'blur'}]
+        currentHandler:[{required:true,message:"请选择",trigger: 'blur'}],
+        comment:[{required:true,message:"请输入",trigger: 'blur'}]
       },
       fileUploadFormRules:{
         preTaxReturnsPath:[{required:true,message:"请上传",trigger: 'blur'}],
