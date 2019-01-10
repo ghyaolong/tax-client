@@ -473,7 +473,8 @@ export default {
       ],
       data: [],
       exportData: [],
-      total: 0
+      total: 0,
+      allCompanysTemp:[]
     };
   },
   methods: {
@@ -731,7 +732,13 @@ export default {
     },
     getAllCompanyFN() {
       getAllCompany().then(res => {
-        this.allCompanys = res.data
+        for(let i=0;i<res.data.length;i++) {
+          if(res.data[i].isAssign!=1) {
+            this.allCompanys.push(res.data[i])
+            this.allCompanysTemp.push(res.data[i])
+          }
+        }
+        // this.allCompanys = res.data
       })
     },
     handleDropdown(name) {
@@ -770,6 +777,7 @@ export default {
     },
     cancelUser() {
       this.userModalVisible = false;
+      this.allCompanys=this.allCompanysTemp
     },
     submitUser() {
       this.$refs.userForm.validate(valid => {
@@ -868,7 +876,20 @@ export default {
       v.companys && v.companys.forEach(e => {
         selectCompanyIds.push(e.id);
       });
+      var submitAyy=[]
+      var tempObj={}
+      let tempArry = this.allCompanys.concat(v.companys)
+      for(let i=0;i<tempArry.length;i++) {
+        if(tempArry[i]){
+          if(!tempObj[tempArry[i].id]) {
+            submitAyy.push(tempArry[i])
+            tempObj[tempArry[i].id]=true
+          }
+        }
+      }
+      this.allCompanys = submitAyy
       // this.initCompany()
+      console.log("dasdasdasdasd",submitAyy)
       this.userForm.companys = selectCompanyIds;
       this.userModalVisible = true;
     },

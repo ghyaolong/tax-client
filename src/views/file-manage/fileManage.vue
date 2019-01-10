@@ -48,6 +48,18 @@
 import { getFilesList, getAllCompany } from '@/api/index.js'
 import fileLoadPath from "@/api/fileload";
 import { getStore } from '@/libs/storage';
+import { dictType } from '@/libs/constance.js'
+import {
+  getCompanyByUser,  // 获取所有公司
+  getDictListDataByType,  // 根据类型获取字典信息
+  getCompanyByName,   // 根据公司名称获取公司详情
+  taxAdd,   // 税金申请新增
+  taxDetail,    // 获取税金申请详情（待提申请）
+  taxEdit,    // 税金申请编辑
+  getReviewer,   // 获取当前登录用户的上级审核人
+  previewFile,   // 文件预览
+  resSubmit
+} from '@/api/index'
 export default {
   name: 'fileManage',
   data() {
@@ -74,6 +86,14 @@ export default {
           key: "companyName",
           width: 110
         },
+        // {
+        //   title:"税种",
+        //   // render:this.renderCurrencyCode
+        // },
+        // {
+        //   title:"币种",
+        //   render:this.renderCurrencyCode
+        // },
         {
           title: '上传时间',
           key: "createTime",
@@ -147,7 +167,8 @@ export default {
       company: '',
       materialTypeDict: '',
       companyList: [],
-      priviewFilePath:''
+      priviewFilePath:'',
+      dictCurrencysMap:{}
     }
   },
   computed: {
@@ -291,10 +312,28 @@ export default {
       //   // xhr.send(JSON.stringify(params));
       //   // window.open()
       //   xhr.send()
-    }
+    },
+    // renderCurrencyCode(h,params) {
+    //   if(this.dictCurrencysMap) {
+    //     console.log("adasd",params)
+    //     console.log("sadasd",this.dictCurrencysMap)
+    //     return h('div',this.dictCurrencysMap.get(params.row.currencyCode))
+    //   }
+    // }
   },
   mounted() {
     this.init();
+
+  },
+  created(){
+    getDictListDataByType(dictType.currency)
+      .then(res => {
+        let maps = new Map()
+        res.data.map((item,index)=>{
+          maps.set(item.code,item.name)
+        })
+        this.dictCurrencysMap = maps;
+      });
   }
 }
 </script>
