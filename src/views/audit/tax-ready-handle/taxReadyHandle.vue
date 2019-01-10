@@ -423,7 +423,7 @@ export default {
                     "流程图"
                   )
                 ]);
-            }else if(params.row.status!=3 && params.row.currentLink != "uploadPayFile"){
+            }else if(params.row.status!=3 && params.row.currentLink != "uploadPayFile" && params.row.currentLink!="reportPaid"){
               return h("div", [
                   h(
                     "Button",
@@ -776,7 +776,8 @@ export default {
     },
     // 上报实缴页面
     handleGotoReportPaid(v) {
-      this.$store.commit('closePage', 'reportPaid')
+      console.log('handleGotoReportPaidv',v)
+      // this.$store.commit('closePage', 'reportPaid')
       this.$router.push({name: 'reportPaid', params: {type: 'reportPaid', params: v}});
     },
     // 查看流程图
