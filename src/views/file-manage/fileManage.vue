@@ -86,14 +86,14 @@ export default {
           key: "companyName",
           width: 110
         },
-        // {
-        //   title:"税种",
-        //   // render:this.renderCurrencyCode
-        // },
-        // {
-        //   title:"币种",
-        //   render:this.renderCurrencyCode
-        // },
+        {
+          title:"税种",
+          render:this.renderDaxDict
+        },
+        {
+          title:"币种",
+          render:this.renderCurrencyCode
+        },
         {
           title: '上传时间',
           key: "createTime",
@@ -313,13 +313,16 @@ export default {
       //   // window.open()
       //   xhr.send()
     },
-    // renderCurrencyCode(h,params) {
-    //   if(this.dictCurrencysMap) {
-    //     console.log("adasd",params)
-    //     console.log("sadasd",this.dictCurrencysMap)
-    //     return h('div',this.dictCurrencysMap.get(params.row.currencyCode))
-    //   }
-    // }
+    renderCurrencyCode(h,params) {
+      if(this.dictCurrencysMap) {
+        return h('div',this.dictCurrencysMap.get(params.row.currency))
+      }
+    },
+    renderDaxDict(h,params) {
+      if(this.daxDictMap) {
+        return h('div',this.daxDictMap.get(params.row.taxDict))
+      }
+    }
   },
   mounted() {
     this.init();
@@ -334,6 +337,14 @@ export default {
         })
         this.dictCurrencysMap = maps;
       });
+      getDictListDataByType(dictType.taxCategory)
+        .then(res => {
+          let maps = new Map()
+          res.data.map((item,index)=>{
+            maps.set(item.code,item.name)
+          })
+          this.daxDictMap = maps;
+        });
   }
 }
 </script>
