@@ -99,7 +99,7 @@
                 </Card>
             </Col>
         </Row>
-        <Modal :title="modalTitle" v-model="userModalVisible" :mask-closable='false' :width="500" :styles="{top: '30px'}">
+        <Modal :title="modalTitle" v-model="userModalVisible" :mask-closable='false' :width="500" :styles="{top: '30px'}" @on-cancel="cancelUser">
             <Form ref="userForm" :model="userForm" :label-width="70" :rules="userFormValidate">
                 <FormItem label="姓名" prop="realName">
                     <Input v-model="userForm.realName" :maxlength="15" autocomplete="off" />
