@@ -486,7 +486,7 @@ export default {
       this.getUserList();
       this.initDepartmentTreeData();
       this.initCompany();
-      this.getAllCompanyFN();
+      // this.getAllCompanyFN();
     },
     initCompany() {
       getUnAssignCompany().then(res => {
@@ -735,10 +735,9 @@ export default {
         for(let i=0;i<res.data.length;i++) {
           if(res.data[i].isAssign!=1) {
             this.allCompanys.push(res.data[i])
-            this.allCompanysTemp.push(res.data[i])
+            // this.allCompanysTemp.push(res.data[i])
           }
         }
-        // this.allCompanys = res.data
       })
     },
     handleDropdown(name) {
@@ -777,7 +776,7 @@ export default {
     },
     cancelUser() {
       this.userModalVisible = false;
-      this.allCompanys=this.allCompanysTemp
+      this.allCompanys=[]
     },
     submitUser() {
       this.$refs.userForm.validate(valid => {
@@ -844,11 +843,62 @@ export default {
       this.userModalVisible = true;
     },
     edit(v) {
+      getUnAssignCompany().then(res => {
+        for(let i=0;i<res.data.length;i++) {
+          // if(res.data[i].isAssign!=1) {
+            this.allCompanys.push(res.data[i])
+            // this.allCompanysTemp.push(res.data[i])
+          // }
+        }
+        this.tempUserObk = v
+        this.modalType = 1;
+        this.modalTitle = "编辑用户";
+        this.$refs.userForm.resetFields();
+
+        let str = JSON.stringify(v);
+        let userInfo = JSON.parse(str);
+        userInfo.sex=userInfo.sex+""
+        this.userForm = userInfo;
+        let selectRolesId = [];
+        this.userForm.roles && this.userForm.roles.forEach(function(e) {
+          selectRolesId.push(e.id);
+        });
+        this.userForm.roles = selectRolesId;
+        if (this.userForm.departments && this.userForm.departments.length > 0) {
+          this.userForm.departmentId = this.userForm.departments[0].id;
+          this.userForm.departmentTitle = this.userForm.departments[0].name;
+        }
+        // 选择的公司
+        let selectCompanyIds = [];
+        v.companys && v.companys.forEach(e => {
+          selectCompanyIds.push(e.id);
+        });
+
+        // var submitAyy=[]
+        // var tempObj={}
+        // let tempArry = this.allCompanys.concat(v.companys)
+        // for(let i=0;i<tempArry.length;i++) {
+        //   if(tempArry[i]){
+        //     if(!tempObj[tempArry[i].id]) {
+        //       submitAyy.push(tempArry[i])
+        //       tempObj[tempArry[i].id]=true
+        //     }
+        //   }
+        // }
+        // this.allCompanys = submitAyy
+        if(v.companys) {
+          this.allCompanys = this.allCompanys.concat(v.companys)
+        }
+        // this.initCompany()
+        console.log("dasdasdasdasd",this.allCompanys)
+        this.userForm.companys = selectCompanyIds;
+        this.userModalVisible = true;
+      })
       // this.initCompany()
-      this.tempUserObk = v
-      this.modalType = 1;
-      this.modalTitle = "编辑用户";
-      this.$refs.userForm.resetFields();
+      // this.tempUserObk = v
+      // this.modalType = 1;
+      // this.modalTitle = "编辑用户";
+      // this.$refs.userForm.resetFields();
       // // 转换null为""
       // for (let attr in v) {
       //   if (v[attr] === null) {
@@ -859,39 +909,39 @@ export default {
       //     }
       //   }
       // }
-      let str = JSON.stringify(v);
-      let userInfo = JSON.parse(str);
-      userInfo.sex=userInfo.sex+""
-      this.userForm = userInfo;
-      let selectRolesId = [];
-      this.userForm.roles && this.userForm.roles.forEach(function(e) {
-        selectRolesId.push(e.id);
-      });
-      this.userForm.roles = selectRolesId;
-      if (this.userForm.departments && this.userForm.departments.length > 0) {
-        this.userForm.departmentId = this.userForm.departments[0].id;
-        this.userForm.departmentTitle = this.userForm.departments[0].name;
-      }
-      let selectCompanyIds = [];
-      v.companys && v.companys.forEach(e => {
-        selectCompanyIds.push(e.id);
-      });
-      var submitAyy=[]
-      var tempObj={}
-      let tempArry = this.allCompanys.concat(v.companys)
-      for(let i=0;i<tempArry.length;i++) {
-        if(tempArry[i]){
-          if(!tempObj[tempArry[i].id]) {
-            submitAyy.push(tempArry[i])
-            tempObj[tempArry[i].id]=true
-          }
-        }
-      }
-      this.allCompanys = submitAyy
-      // this.initCompany()
-      console.log("dasdasdasdasd",submitAyy)
-      this.userForm.companys = selectCompanyIds;
-      this.userModalVisible = true;
+      // let str = JSON.stringify(v);
+      // let userInfo = JSON.parse(str);
+      // userInfo.sex=userInfo.sex+""
+      // this.userForm = userInfo;
+      // let selectRolesId = [];
+      // this.userForm.roles && this.userForm.roles.forEach(function(e) {
+      //   selectRolesId.push(e.id);
+      // });
+      // this.userForm.roles = selectRolesId;
+      // if (this.userForm.departments && this.userForm.departments.length > 0) {
+      //   this.userForm.departmentId = this.userForm.departments[0].id;
+      //   this.userForm.departmentTitle = this.userForm.departments[0].name;
+      // }
+      // let selectCompanyIds = [];
+      // v.companys && v.companys.forEach(e => {
+      //   selectCompanyIds.push(e.id);
+      // });
+      // var submitAyy=[]
+      // var tempObj={}
+      // let tempArry = this.allCompanys.concat(v.companys)
+      // for(let i=0;i<tempArry.length;i++) {
+      //   if(tempArry[i]){
+      //     if(!tempObj[tempArry[i].id]) {
+      //       submitAyy.push(tempArry[i])
+      //       tempObj[tempArry[i].id]=true
+      //     }
+      //   }
+      // }
+      // this.allCompanys = submitAyy
+      // // this.initCompany()
+      // console.log("dasdasdasdasd",submitAyy)
+      // this.userForm.companys = selectCompanyIds;
+      // this.userModalVisible = true;
     },
     enable(v) {
       this.$Modal.confirm({

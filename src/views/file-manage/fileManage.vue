@@ -69,6 +69,7 @@ export default {
       accessToken: getStore('accessToken'),
       fileName: '',
       materialTypeDicts: {
+        'PRE_TAX_REPORT':"预审报表",
         'FINANCE_REPORT': '财务报表',
         'TAX_REPORT': '税务申报表',
         'DONE_TAX_REPORT': '完税申报表',

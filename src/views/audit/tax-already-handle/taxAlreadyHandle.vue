@@ -106,7 +106,7 @@
                   <td >{{item.taxPaid}}</td>
                   <td >{{item.overduePayment}}</td>
                   <td >{{item.taxPaid + item.overduePayment}}</td>
-                  <td >{{`${item.paymentTime && new Date(item.paymentTime).format()}`}}</td>
+                  <td >{{`${item.paymentTime ? new Date(item.paymentTime).format():''}`}}</td>
                   <td >
                     <span class="myspan" @click="handleLook(item,index)">操作</span>
                   </td>

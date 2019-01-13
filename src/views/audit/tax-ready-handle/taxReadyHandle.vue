@@ -155,11 +155,11 @@
                   <td >{{item.payableTax}}</td>
                   <td >{{item.lateFeePayable}}</td>
                   <td >{{item.payableTax+item.lateFeePayable}}</td>
-                  <td >{{`${new Date(item.deadline).format()}`}}</td>
+                  <td >{{`${item.deadline && new Date(item.deadline).format()}`}}</td>
                   <td >{{item.taxPaid}}</td>
                   <td>{{item.overduePayment}}</td>
                   <td>{{item.taxPaid + item.overduePayment}}</td>
-                  <td >{{ `${new Date(item.paymentTime).format()}` }}</td>
+                  <td >{{ `${item.paymentTime ? new Date(item.paymentTime).format(): ''}` }}</td>
                   <td >
                     <span class="myspan" @click="handleupLoad(tableList[0],index)">资料补全</span>
                   </td>
