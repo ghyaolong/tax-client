@@ -266,10 +266,10 @@ export default {
          render: (h, params) => {
            return h('div', {
              domProps: {
-               innerText: parseFloat(params.row.payableTax?params.row.payableTax:0) + parseFloat(params.row.lateFeePayable?params.row.lateFeePayable:0)
+               innerText: `${parseFloat(params.row.payableTax?params.row.payableTax:0) + parseFloat(params.row.lateFeePayable?params.row.lateFeePayable:0)}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1")
              }
            })
-           return h('div', parseFloat(this.data[params.index].payableTax?this.data[params.index].payableTax:0) + parseFloat(this.data[params.index].lateFeePayable?this.data[params.index].lateFeePayable:0))
+           return h('div', `${parseFloat(this.data[params.index].payableTax?this.data[params.index].payableTax:0) + parseFloat(this.data[params.index].lateFeePayable?this.data[params.index].lateFeePayable:0)}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1"))
          }
             // let item = this.data[params.index];
             // item[params.column.key] = parseFloat(item.payableTax) + parseFloat(item.lateFeePayable);
@@ -949,7 +949,9 @@ export default {
         return h('InputNumber', {
           props: {
             maxlength: 10,
-            value: temp || Number(params.row[params.column.key])
+            value: temp || Number(params.row[params.column.key]),
+            formatter:(values)=>`${values}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/, '$1'),
+            parser:(values) => `${values}`.replace(/$s?|(,*)/g, '$1')
           },
           on: {
             input: e => {
@@ -1131,16 +1133,16 @@ export default {
   },
   updated:function() {
     // console.log("update",this.data)
-    var  payableTaxALL=0 // 应缴税额合计
-    var  lateFeePayable=0// 应缴滞纳金合计
-    var  applTaxPayment=0 // 申请纳税款合计
-    var  taxPaid=0 // 实缴税款合计
-    var  overduePayment=0 //实缴滞纳金合计
-    var  taxsjsk=0 // 实缴税款合计
+    var  payableTaxALL="" // 应缴税额合计
+    var  lateFeePayable=""// 应缴滞纳金合计
+    var  applTaxPayment="" // 申请纳税款合计
+    var  taxPaid="" // 实缴税款合计
+    var  overduePayment="" //实缴滞纳金合计
+    var  taxsjsk="" // 实缴税款合计
     for(let i=0;i<this.data.length;i++) {
-        payableTaxALL+=this.data[i].payableTax
-        lateFeePayable+=this.data[i].lateFeePayable
-        applTaxPayment=payableTaxALL+lateFeePayable
+        payableTaxALL+=this.data[i].payableTax ? parseFloat(`${this.data[i].payableTax}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1")) : 0
+        lateFeePayable+=this.data[i].lateFeePayable ? parseFloat(`${this.data[i].lateFeePayable}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1")) : 0
+        applTaxPayment=parseFloat(parseFloat(payableTaxALL)+parseFloat(lateFeePayable))
         taxPaid+=this.data[i].taxPaid
         overduePayment+=this.data[i].overduePayment
         taxsjsk=taxPaid+overduePayment

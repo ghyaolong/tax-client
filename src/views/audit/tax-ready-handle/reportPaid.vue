@@ -236,10 +236,10 @@ export default {
             render: (h, params) => {
               return h('div', {
                 domProps: {
-                  innerText: parseFloat(params.row.taxPaid?params.row.taxPaid:0) + parseFloat(params.row.overduePayment?params.row.overduePayment:0)
+                  innerText: `${parseFloat(params.row.taxPaid?params.row.taxPaid:0) + parseFloat(params.row.overduePayment?params.row.overduePayment:0)}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1")
                 }
               })
-              return h('div', parseFloat(this.data[params.index].taxPaid?this.data[params.index].taxPaid:0) + parseFloat(this.data[params.index].overduePayment?this.data[params.index].overduePayment:0))
+              return h('div', `${parseFloat(this.data[params.index].taxPaid?this.data[params.index].taxPaid:0) + parseFloat(this.data[params.index].overduePayment?this.data[params.index].overduePayment:0)}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1"))
             }
           },
           {
@@ -388,7 +388,9 @@ export default {
         return h('InputNumber', {
           props: {
             maxlength: 10,
-            value: temp || Number(params.row[params.column.key])
+            value: temp || Number(params.row[params.column.key]),
+            formatter:(values)=>`${values}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/, '$1'),
+            parser:(values) => `${values}`.replace(/$s?|(,*)/g, '$1')
           },
           on: {
             input: e => {
@@ -528,17 +530,18 @@ export default {
     var  payableTaxALL=0 // 应缴税额合计
     var  lateFeePayable=0// 应缴滞纳金合计
     var  applTaxPayment=0 // 申请纳税款合计
-    var  taxPaid=0 // 实缴税款合计
-    var  overduePayment=0 //实缴滞纳金合计
-    var  taxsjsk=0 // 实缴税款合计
+    var  taxPaid="" // 实缴税款合计
+    var  overduePayment="" //实缴滞纳金合计
+    var  taxsjsk="" // 实际缴纳税款合计
     for(let i=0;i<this.details.length;i++) {
         payableTaxALL+=this.details[i].payableTax
         lateFeePayable+=this.details[i].lateFeePayable
         applTaxPayment=payableTaxALL+lateFeePayable
-        taxPaid+=this.details[i].taxPaid
-        overduePayment+=this.details[i].overduePayment
-        taxsjsk=taxPaid+overduePayment
+        taxPaid+=this.details[i].taxPaid ? parseFloat(`${this.details[i].taxPaid}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1")) : 0
+        overduePayment+=this.details[i].overduePayment ? parseFloat(`${this.details[i].overduePayment}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1")) : 0
+        taxsjsk=parseFloat(parseFloat(taxPaid)+parseFloat(overduePayment))
     }
+    // console.log("taxsjsk",taxsjsk)
     document.getElementById("payableTaxALL").innerHTML=payableTaxALL
     document.getElementById("lateFeePayable").innerHTML=lateFeePayable
     document.getElementById("applTaxPayment").innerHTML=applTaxPayment
