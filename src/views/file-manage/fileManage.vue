@@ -109,7 +109,7 @@ export default {
           key: 'oriName'
         },
         {
-          title: '文件类型',
+          title: '资料类型',
           key: 'materialTypeDict',
           render: (h, params) => {
             return h('div', this.materialTypeDicts[params.row[params.column.key]])

@@ -16,7 +16,7 @@
            <td width="82">国家</td>
            <td colspan="5" width="504">{{dataDetils.countryName}}</td>
            <td width="72">币种</td>
-           <td colspan="5" width="502">{{dataDetils.currency}}</td>
+           <td colspan="5" width="502">{{dictCurrencysMap && dictCurrencysMap.get(dataDetils.currency)}}</td>
          </tr>
          <tr>
            <td width="82">申请人</td>
@@ -26,7 +26,7 @@
          </tr>
          <tr>
            <td width="82" >财务报表</td>
-           <td colspan="5" style="border-right-color:#fff">{{dataDetils.financialReportPath}}</td>
+           <td colspan="5" style="border-right-color:#fff">{{dataDetils.oriName}}</td>
            <td style="border-right-color:#fff" class="myspan" @click="priviewFile(dataDetils.financialReportPath)">预览</td>
            <td class="myspan" @click="uploadFile(dataDetils.financialReportPath)">下载</td>
          </tr>
@@ -45,7 +45,7 @@
         v-model="showUploadModal">
         <Form label-position="left" :label-width="100" :modal="fileUploadForm" ref="showUploadRefs">
           <FormItem label="预申报表" prop="preTaxReturnsPath">
-            <Input type="text" disabled v-model="fileUploadForm.preTaxReturnsPath" style="width:150px;float:left"/>
+            <Input type="text" disabled v-model="fileUploadForm.preTaxReturnsPathFileName" style="width:150px;float:left"/>
             <!-- <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file"
             :data="{materialTypeDict: 'PRE_TAX_REPORT'}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
@@ -55,7 +55,7 @@
             <Button   @click.stop="uploadFile(fileUploadForm.preTaxReturnsPath)">下载</Button>
           </FormItem>
           <FormItem label="申报表" prop="taxReturnsPath">
-            <Input type="text" disabled v-model="fileUploadForm.taxReturnsPath" style="width:150px;float:left"/>
+            <Input type="text" disabled v-model="fileUploadForm.taxReturnsPathFileName" style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
 
             :data="{materialTypeDict: 'TAX_REPORT'}" :show-upload-list="false"
@@ -66,7 +66,7 @@
             <Button  @click.stop="uploadFile(fileUploadForm.taxReturnsPath)">下载</Button>
           </FormItem>
           <FormItem label="完税申报表" prop="paymentCertificatePath">
-            <Input type="text" disabled v-model="fileUploadForm.paymentCertificatePath" style="width:150px;float:left"/>
+            <Input type="text" disabled v-model="fileUploadForm.paymentCertificatePathFileName" style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
              name="file"
             :data="{materialTypeDict: 'DONE_TAX_REPORT'}" :show-upload-list="false"
@@ -77,7 +77,7 @@
             <Button  @click.stop="uploadFile(fileUploadForm.paymentCertificatePath)">下载</Button>
           </FormItem>
           <FormItem label="其它" prop="otherUploadId">
-            <Input type="text" disabled  v-model="fileUploadForm.otherUploadId"  style="width:150px;float:left"/>
+            <Input type="text" disabled  v-model="fileUploadForm.otherUploadFileName"  style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
              name="file"
             :data="{materialTypeDict: 'OTHER'}" :show-upload-list="false"
@@ -97,9 +97,10 @@
 
 <script>
 import fileLoadPath from '@/api/fileload';
-import { taxReadyHandle,getReviewer,dbrwAudit,lookLiuchengtu,getAllCompany,getUserListData } from '@/api/index.js'
+import { taxReadyHandle,getReviewer,dbrwAudit,lookLiuchengtu,getAllCompany,getUserListData,getDictListDataByType } from '@/api/index.js'
 import { getStore } from '@/libs/storage';
 import Cookies from "js-cookie";
+import { dictType } from '@/libs/constance.js'
 export default {
   data() {
     return {
@@ -166,14 +167,14 @@ export default {
             key: "taxDict",
             align: 'center',
             width: 160,
-            // render: this.renderSelect
+            render: this.renderTaxDict
           },
           {
             title: '应缴税额',
             key: "payableTax",
             align: 'center',
             width: 120,
-            // render: this.renderInput
+            // render: this.renderPayableTax
           },
           {
             title: '应缴滞纳金',
@@ -235,10 +236,10 @@ export default {
             render: (h, params) => {
               return h('div', {
                 domProps: {
-                  innerText: parseFloat(params.row.taxPaid) + parseFloat(params.row.overduePayment)
+                  innerText: parseFloat(params.row.taxPaid?params.row.taxPaid:0) + parseFloat(params.row.overduePayment?params.row.overduePayment:0)
                 }
               })
-              return h('div', parseFloat(this.data[params.index].taxPaid) + parseFloat(this.data[params.index].overduePayment))
+              return h('div', parseFloat(this.data[params.index].taxPaid?this.data[params.index].taxPaid:0) + parseFloat(this.data[params.index].overduePayment?this.data[params.index].overduePayment:0))
             }
           },
           {
@@ -289,10 +290,20 @@ export default {
             width: 160,
             // render: this.renderInput
           },
-      ]
+      ],
+      dictCurrencys:[],
+      dictCurrencysMap:"",
+      dictTaxCategorys:[],
+      dictTaxCategorysMap:''
     }
   },
   methods:{
+    renderTaxDict(h,params) {
+      if(this.dictTaxCategorysMap) {
+        return h("div",this.dictTaxCategorysMap.get(params.row.taxDict))
+      }
+
+    },
     /* 表格日期选择框渲染函数 */
     renderDatePicker(h, params) {
       return h('DatePicker', {
@@ -369,19 +380,6 @@ export default {
         // this.loading = false;
       })
     },
-    // renderApplTaxPaymentALL(h, params) {
-    //   if(params.row.applTaxPaymentALL) {
-    //     return h('div', params.row.applTaxPaymentALL)
-    //   }else{
-    //     var tempSubmit=0
-    //     this.details.map((item,index)=>{
-    //       if(item.applTaxPaymentALL) {
-    //         tempSubmit += item.applTaxPaymentALL
-    //       }
-    //     })
-    //     return h('div', tempSubmit)
-    //   }
-    // },
     /* 表格栏输入框渲染函数 */
     renderInput(h, params) {
       console.log("21212",params);
@@ -396,17 +394,6 @@ export default {
             input: e => {
               params.row[params.column.key] = e;
               this.details[params.index] = params.row;
-              // var tempTaxPaid=0;
-              // var tempOverduePayment=0;
-              // this.details.map((item,index)=>{
-              //   if(item.taxPaid){
-              //     tempTaxPaid += item.taxPaid
-              //     tempOverduePayment+= item.overduePayment
-              //   }
-              // })
-              // this.details[this.details.length-1].tempTaxPaid=tempTaxPaid
-              // this.details[this.details.length-1].tempOverduePayment=tempOverduePayment
-              console.log('this.details',this.details)
               this.$forceUpdate()
             }
           }
@@ -477,6 +464,24 @@ export default {
       this.dataDetils = dataDetilInfo
       this.details = dataDetilInfo.details
       this.auditLogVoList = dataDetilInfo.auditLogVoList
+      getDictListDataByType(dictType.currency)
+        .then(res => {
+          let map = new Map()
+          this.dictCurrencys = res.data;
+          res.data.map((item,index)=>{
+            map.set(item.code,item.name)
+          })
+          this.dictCurrencysMap = map
+        });
+      getDictListDataByType(dictType.taxCategory)
+        .then(res => {
+          this.dictTaxCategorys = res.data;
+          let maps = new Map()
+          res.data.map((item,index)=>{
+            maps.set(item.code,item.name)
+          })
+          this.dictTaxCategorysMap = maps
+        })
     },
     // 预览
       priviewFile(v) {

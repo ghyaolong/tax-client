@@ -37,7 +37,7 @@
                                   <Option value="1">女</Option>
                                 </Select>
                               </Form-item>
-                              <Form-item label="用户类型" prop="roleIds">
+                              <!-- <Form-item label="用户类型" prop="roleIds">
                                 <Select v-model="searchForm.roleIds" placeholder="请选择" clearable style="width: 200px">
                                   <Option v-for="(item,index) in roleList"
                                   :label="item.name"
@@ -45,9 +45,8 @@
                                   :key="index"
                                   >
                                   </Option>
-
                                 </Select>
-                              </Form-item>
+                              </Form-item> -->
                               <!-- <Form-item label="用户状态" prop="status">
                                 <Select v-model="searchForm.status" placeholder="请选择" clearable style="width: 200px">
                                   <Option value="0">正常</Option>
@@ -105,7 +104,7 @@
                     <Input v-model="userForm.realName" :maxlength="15" autocomplete="off" />
                 </FormItem>
                 <FormItem label="用户名" prop="username">
-                    <Input v-model="userForm.username" autocomplete="off" :maxlength="20"/>
+                    <Input v-model="userForm.username" autocomplete="off" />
                 </FormItem>
                 <FormItem label="密码" prop="password" v-if="modalType===0" :error="errorPass">
                     <Input type="password" v-model="userForm.password" autocomplete="off" :maxlength="20"/>
@@ -273,7 +272,8 @@ export default {
       errorPass: "",
       userFormValidate: {
         username: [
-          { required: true, message: "账号不能为空", trigger: "blur" }
+          { required: true, message: "账号不能为空", trigger: "blur" },
+          {  max: 20, message: '最多输入20个字符', trigger: 'blur' }
         ],
         tel: [
           { required: true, message: "手机号不能为空", trigger: "blur" },

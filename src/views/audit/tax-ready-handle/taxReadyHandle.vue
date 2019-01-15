@@ -121,7 +121,7 @@
                   <td width="82">国家</td>
                   <td colspan="5" width="504">{{tableList[0].countryName}}</td>
                   <td width="72">币种</td>
-                  <td colspan="5" width="502">{{tableList[0].currency}}</td>
+                  <td colspan="5" width="502">{{dictCurrencysMap.get(tableList[0].currency)}}</td>
                 </tr>
                 <tr>
                   <td width="82">申请人</td>
@@ -131,7 +131,7 @@
                 </tr>
                 <tr>
                   <td width="82" >财务报表</td>
-                  <td colspan="5" style="border-right-color:#fff">{{tableList[0].financialReportPath}}</td>
+                  <td colspan="5" style="border-right-color:#fff">{{tableList[0].oriName}}</td>
                   <td style="border-right-color:#fff" class="myspan" @click="priviewFile(tableList[0].financialReportPath)">预览</td>
                   <td class="myspan" @click="uploadFile(tableList[0].financialReportPath)">下载</td>
                 </tr>
@@ -151,7 +151,7 @@
                 </tr>
                 <tr v-for="(item,index) in tableList[0].details" :key="item.id">
                   <td >{{item.taxPeriod}}</td>
-                  <td >{{item.taxDict}}</td>
+                  <td >{{dictTaxCategorysMap.get(item.taxDict)}}</td>
                   <td >{{item.payableTax}}</td>
                   <td >{{item.lateFeePayable}}</td>
                   <td >{{item.payableTax+item.lateFeePayable}}</td>
@@ -237,7 +237,7 @@
         v-model="showUploadModal">
         <Form label-position="left" :label-width="100" :modal="fileUploadForm" :rules="fileUploadFormRules" ref="showUploadRefs">
           <FormItem label="预申报表" prop="preTaxReturnsPath">
-            <Input type="text" disabled v-model="fileUploadForm.preTaxReturnsPath" style="width:150px;float:left"/>
+            <Input type="text" disabled v-model="fileUploadForm.preTaxReturnsPathFileName" style="width:150px;float:left"/>
             <!-- <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file"
             :data="{materialTypeDict: 'PRE_TAX_REPORT'}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
@@ -247,7 +247,7 @@
             <Button   @click.stop="uploadFile(fileUploadForm.preTaxReturnsPath)">下载</Button>
           </FormItem>
           <FormItem label="申报表" prop="taxReturnsPath">
-            <Input type="text" disabled v-model="fileUploadForm.taxReturnsPath" style="width:150px;float:left"/>
+            <Input type="text" disabled v-model="fileUploadForm.taxReturnsPathFileName" style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}" name="file"
             :data="{materialTypeDict: 'TAX_REPORT',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
@@ -258,7 +258,7 @@
             <Button  @click.stop="uploadFile(fileUploadForm.taxReturnsPath)">下载</Button>
           </FormItem>
           <FormItem label="完税申报表" prop="paymentCertificatePath">
-            <Input type="text" disabled v-model="fileUploadForm.paymentCertificatePath" style="width:150px;float:left"/>
+            <Input type="text" disabled v-model="fileUploadForm.paymentCertificatePathFileName" style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}" name="file"
             :data="{materialTypeDict: 'DONE_TAX_REPORT',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
@@ -269,7 +269,7 @@
             <Button  @click.stop="uploadFile(fileUploadForm.paymentCertificatePath)">下载</Button>
           </FormItem>
           <FormItem label="其它" prop="otherUploadId">
-            <Input type="text" disabled  v-model="fileUploadForm.otherUploadId"  style="width:150px;float:left"/>
+            <Input type="text" disabled  v-model="fileUploadForm.otherUploadFileName"  style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}" name="file"
             :data="{materialTypeDict: 'OTHER',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
@@ -290,10 +290,11 @@
 </template>
 
 <script>
-import { taxReadyHandle,getReviewer,dbrwAudit,lookLiuchengtu,getAllCompany,getUserListData } from '@/api/index.js'
+import { taxReadyHandle,getReviewer,dbrwAudit,lookLiuchengtu,getAllCompany,getUserListData,getDictListDataByType } from '@/api/index.js'
 import Cookies from "js-cookie";
 import { getStore } from '@/libs/storage';
 import fileLoadPath from '@/api/fileload';
+import { dictType } from '@/libs/constance.js'
 export default {
   name: 'taxReadyHandle',
   data() {
@@ -575,6 +576,10 @@ export default {
       companyListName:[],
       userList:[],
       userListName:[],
+      dictCurrencys:[],
+      dictCurrencysMap:"",
+      dictTaxCategorys:[],
+      dictTaxCategorysMap:""
     }
   },
   methods: {
@@ -613,9 +618,11 @@ export default {
       if(res.data.materialTypeDict=="OTHER") {
         this.fileUploadForm[key] = res.data.id;
         this.fileUploadForm[key + 'Id'] = res.data.fileName;
+        this.fileUploadForm[key + 'FileName'] = res.data.oriName;
       }else{
         this.fileUploadForm[key] = res.data.id;
         this.fileUploadForm[key + 'Path'] = res.data.fileName;
+        this.fileUploadForm[key + 'Path' + 'FileName'] = res.data.oriName
       }
     },
     // 取消
@@ -748,12 +755,16 @@ export default {
         uploadFileIndex:index,
         preTaxReturns:item.details[index].preTaxReturns,
         preTaxReturnsPath:item.details[index].preTaxReturnsPath,
+        preTaxReturnsPathFileName:item.details[index].preTaxReturnsPathFileName,
         taxReturns:item.details[index].taxReturns,
         taxReturnsPath:item.details[index].taxReturnsPath,
+        taxReturnsPathFileName:item.details[index].taxReturnsPathFileName,
         paymentCertificate:item.details[index].paymentCertificate,
         paymentCertificatePath:item.details[index].paymentCertificatePath,
+        paymentCertificatePathFileName:item.details[index].paymentCertificatePathFileName,
         otherUpload:item.details[index].otherUpload,
         otherUploadId:item.details[index].otherUploadId,
+        otherUploadFileName:item.details[index].otherUploadFileName,
       }
       this.showUploadModal = true
     },
@@ -823,6 +834,25 @@ export default {
     },
     init() {
       this.initPageData();
+      getDictListDataByType(dictType.currency)
+        .then(res => {
+          let map = new Map()
+          this.dictCurrencys = res.data;
+          res.data.map((item,index)=>{
+            map.set(item.code,item.name)
+          })
+          this.dictCurrencysMap = map
+        });
+      getDictListDataByType(dictType.taxCategory)
+        .then(res => {
+          this.dictTaxCategorys = res.data;
+          let maps = new Map()
+          res.data.map((item,index)=>{
+            maps.set(item.code,item.name)
+          })
+          this.dictTaxCategorysMap = maps
+        })
+
     },
     // 根据名称获取id
     renderIdByName(dataList,name) {
