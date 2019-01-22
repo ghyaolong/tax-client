@@ -40,15 +40,15 @@
             </Select>
           </Form-item>
           <Form-item label="税务识别号码" prop="tin">
-            <Input type="text" v-model="form.tin" disabled style="width: 200px" class="my-input" placeholder="请检查"/>
+            <Input type="text" v-model="form.tin" disabled style="width: 200px" class="my-input" placeholder=""/>
           </Form-item>
           <Form-item label="国家" prop="countryCode">
-            <Select v-model="form.countryCode" disabled style="width:200px" class="my-select" placeholder="请检查">
+            <Select v-model="form.countryCode" disabled style="width:200px" class="my-select" placeholder="">
               <Option v-for="item in dictCountrys" :value="item.code" :key="item.id">{{ item.name }}</Option>
             </Select>
           </Form-item>
           <Form-item label="币种" prop="currency">
-            <Select v-model="form.currency" disabled style="width:200px" class="my-select" placeholder="请检查">
+            <Select v-model="form.currency" disabled style="width:200px" class="my-select" placeholder="">
               <Option v-for="item in dictCurrencys" :value="item.code" :key="item.id">{{ item.name }}</Option>
             </Select>
           </Form-item>
@@ -214,7 +214,8 @@ export default {
         currentHandler: '',
         financialReport: '',
         financialReportPath: '',
-        fileName:""
+        fileName:"",
+        oriName:""
       },
       columns: [
         {
@@ -495,6 +496,8 @@ export default {
       this.form.applicantName=this.userInfo.username  // 用户名
       this.form.applicantId=this.userInfo.id // 用户id
       this.form.executeType=1; // 提交
+      this.form.oriName=this.form.fileName
+
       if(this.form.countryCode) {
         this.form.countryName = this.dictCountrys && this.dictCountrys.filter((item)=>{return item.code==this.form.countryCode})[0].name;
 
@@ -594,7 +597,8 @@ export default {
           currentHandler: '',
           financialReport: '',
           financialReportPath: '',
-          fileName:""
+          fileName:"",
+          oriName:""
         }
         this.data=[{ taxPeriod: '',
                 taxDict: '',
@@ -620,9 +624,8 @@ export default {
       this.form.applicantName=this.userInfo.username  // 用户名
       this.form.applicantId=this.userInfo.id // 用户id
       this.form.executeType=1; // 提交
+      this.form.oriName=this.form.fileName
       this.form.countryName = this.dictCountrys && this.dictCountrys.filter((item)=>{return item.code==this.form.countryCode})[0].name;
-      // this.form.status=0;
-      // this.form.operateApprove=1;
 
       let params = {
         taxApplicationVo:{...this.form,details:[...this.data]},
@@ -709,7 +712,8 @@ export default {
           currentHandler: '',
           financialReport: '',
           financialReportPath: '',
-          fileName:""
+          fileName:"",
+          oriName:""
         }
         this.data=[{ taxPeriod: '',
                 taxDict: '',
@@ -810,6 +814,7 @@ export default {
         this.data = datalist || [];
         this.form.id = params.id;
         this.form.fileName = params.oriName,
+        this.form.oriName=params.oriName,
         this.form.serialNumber = params.serialNumber;
         this.form.companyId = params.companyId;
         this.form.companyName = params.companyName;
@@ -1098,12 +1103,16 @@ export default {
       let uploadColomunIndex = this.fileUploadForm.uploadColomunIndex;
       this.data[uploadColomunIndex].preTaxReturns = this.fileUploadForm.preTaxReturns;
       this.data[uploadColomunIndex].preTaxReturnsPath = this.fileUploadForm.preTaxReturnsPath;
+      this.data[uploadColomunIndex].preTaxReturnsPathFileName = this.fileUploadForm.preTaxReturnsPathFileName;
       this.data[uploadColomunIndex].taxReturns = this.fileUploadForm.taxReturns;
       this.data[uploadColomunIndex].taxReturnsPath = this.fileUploadForm.taxReturnsPath;
+      this.data[uploadColomunIndex].taxReturnsPathFileName = this.fileUploadForm.taxReturnsPathFileName;
       this.data[uploadColomunIndex].paymentCertificate = this.fileUploadForm.paymentCertificate;
       this.data[uploadColomunIndex].paymentCertificatePath = this.fileUploadForm.paymentCertificatePath;
+      this.data[uploadColomunIndex].paymentCertificatePathFileName = this.fileUploadForm.paymentCertificatePathFileName;
       this.data[uploadColomunIndex].otherUploadId = this.fileUploadForm.otherUploadId;
       this.data[uploadColomunIndex].otherUpload = this.fileUploadForm.otherUploadIdPath;
+      this.data[uploadColomunIndex].otherUploadFileName = this.fileUploadForm.otherUploadFileName;
       this.showUploadModal = false;
     },
     uploadModalCancel() {

@@ -527,24 +527,26 @@ export default {
     this.init()
   },
   updated:function() {
-    var  payableTaxALL=0 // 应缴税额合计
-    var  lateFeePayable=0// 应缴滞纳金合计
-    var  applTaxPayment=0 // 申请纳税款合计
-    var  taxPaid="" // 实缴税款合计
-    var  overduePayment="" //实缴滞纳金合计
-    var  taxsjsk="" // 实际缴纳税款合计
+    // var  payableTaxALL=0 // 应缴税额合计
+    // var  lateFeePayable=0// 应缴滞纳金合计
+    // var  applTaxPayment=0 // 申请纳税款合计
+    var  taxPaid=0 // 实缴税款合计
+    var  overduePayment=0 //实缴滞纳金合计
+    var  taxsjsk=0 // 实际缴纳税款合计
     for(let i=0;i<this.details.length;i++) {
-        payableTaxALL+=this.details[i].payableTax
-        lateFeePayable+=this.details[i].lateFeePayable
-        applTaxPayment=payableTaxALL+lateFeePayable
+        // payableTaxALL+=this.details[i].payableTax
+        // lateFeePayable+=this.details[i].lateFeePayable
+        // applTaxPayment=payableTaxALL+lateFeePayable
+        taxPaid=parseFloat(taxPaid)
+        overduePayment=parseFloat(overduePayment)
         taxPaid+=this.details[i].taxPaid ? parseFloat(`${this.details[i].taxPaid}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1")) : 0
         overduePayment+=this.details[i].overduePayment ? parseFloat(`${this.details[i].overduePayment}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1")) : 0
-        taxsjsk=parseFloat(parseFloat(taxPaid)+parseFloat(overduePayment))
+        taxsjsk=parseFloat(taxPaid)+parseFloat(overduePayment)
     }
     // console.log("taxsjsk",taxsjsk)
-    document.getElementById("payableTaxALL").innerHTML=payableTaxALL
-    document.getElementById("lateFeePayable").innerHTML=lateFeePayable
-    document.getElementById("applTaxPayment").innerHTML=applTaxPayment
+    // document.getElementById("payableTaxALL").innerHTML=payableTaxALL
+    // document.getElementById("lateFeePayable").innerHTML=lateFeePayable
+    // document.getElementById("applTaxPayment").innerHTML=applTaxPayment
     document.getElementById("taxPaid").innerHTML=taxPaid
     document.getElementById("overduePayment").innerHTML=overduePayment
     document.getElementById("taxsjsk").innerHTML=taxsjsk
