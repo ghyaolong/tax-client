@@ -270,12 +270,16 @@ export default {
                     this.fileUploadForm = {
                       preTaxReturns:this.dataDetils.details[params.index].preTaxReturns,
                       preTaxReturnsPath:this.dataDetils.details[params.index].preTaxReturnsPath,
+                      preTaxReturnsPathFileName:this.dataDetils.details[params.index].preTaxReturnsPathFileName,
                       taxReturns:this.dataDetils.details[params.index].taxReturns,
                       taxReturnsPath:this.dataDetils.details[params.index].taxReturnsPath,
+                      taxReturnsPathFileName:this.dataDetils.details[params.index].taxReturnsPathFileName,
                       paymentCertificate:this.dataDetils.details[params.index].paymentCertificate,
                       paymentCertificatePath:this.dataDetils.details[params.index].paymentCertificatePath,
+                      paymentCertificatePathFileName:this.dataDetils.details[params.index].paymentCertificatePathFileName,
                       otherUpload:this.dataDetils.details[params.index].otherUpload,
                       otherUploadId:this.dataDetils.details[params.index].otherUploadId,
+                      otherUploadFileName:this.dataDetils.details[params.index].otherUploadFileName,
                     }
                     this.showUploadModal = true
                   }
@@ -487,36 +491,46 @@ export default {
     },
     // 预览
       priviewFile(v) {
+        console.log("v",v)
         const that = this;
-        let lastString = v.lastIndexOf(".")
-        let filelastName = v.substr(lastString+1)
-        if(filelastName=="png" || filelastName=="jpg" || filelastName=="jpeg") {
-          let baseurl = fileLoadPath.loadFilePath
-          window.open(`${baseurl}${v}?view`)
+        if(v){
+          let lastString = v.lastIndexOf(".")
+          let filelastName = v.substr(lastString+1)
+          if(filelastName=="png" || filelastName=="jpg" || filelastName=="jpeg") {
+            let baseurl = fileLoadPath.loadFilePath
+            window.open(`${baseurl}${v}?view`)
+          }else{
+            let base="/api"
+            var xhr = new XMLHttpRequest();
+            xhr.responseType = "blob";
+              xhr.onreadystatechange = function(){
+                  if( xhr.readyState == 4){
+                      if( xhr.status >= 200 && xhr.status < 300 || xhr.status == 304){
+                        let blob = xhr.response
+                        let imgTag = URL.createObjectURL(blob)
+                        that.priviewFilePath=imgTag
+                        window.open(imgTag)
+                      }
+                  }
+              };
+              xhr.open("post",`${base}/previewFile`,true);
+              xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+              xhr.setRequestHeader("accessToken", this.accessToken);
+              xhr.send(JSON.stringify({fileName:v}));
+          }
         }else{
-          let base="/api"
-          var xhr = new XMLHttpRequest();
-          xhr.responseType = "blob";
-            xhr.onreadystatechange = function(){
-                if( xhr.readyState == 4){
-                    if( xhr.status >= 200 && xhr.status < 300 || xhr.status == 304){
-                      let blob = xhr.response
-                      let imgTag = URL.createObjectURL(blob)
-                      that.priviewFilePath=imgTag
-                      window.open(imgTag)
-                    }
-                }
-            };
-            xhr.open("post",`${base}/previewFile`,true);
-            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            xhr.setRequestHeader("accessToken", this.accessToken);
-            xhr.send(JSON.stringify({fileName:v}));
+          this.$Message.error('没有上传文件!');
         }
       },
     // 下载
     uploadFile(path) {
-      let baseurl = fileLoadPath.loadFilePath
-      window.open(baseurl+path)
+      if(path){
+        let baseurl = fileLoadPath.loadFilePath
+        window.open(baseurl+path)
+      }else{
+        this.$Message.error('没有上传文件!');
+      }
+
     },
     init() {
       this.inintPage()
@@ -527,16 +541,16 @@ export default {
     this.init()
   },
   updated:function() {
-    // var  payableTaxALL=0 // 应缴税额合计
-    // var  lateFeePayable=0// 应缴滞纳金合计
-    // var  applTaxPayment=0 // 申请纳税款合计
+    var  payableTaxALL=0 // 应缴税额合计
+    var  lateFeePayable=0// 应缴滞纳金合计
+    var  applTaxPayment=0 // 申请纳税款合计
     var  taxPaid=0 // 实缴税款合计
     var  overduePayment=0 //实缴滞纳金合计
     var  taxsjsk=0 // 实际缴纳税款合计
     for(let i=0;i<this.details.length;i++) {
-        // payableTaxALL+=this.details[i].payableTax
-        // lateFeePayable+=this.details[i].lateFeePayable
-        // applTaxPayment=payableTaxALL+lateFeePayable
+        payableTaxALL+=this.details[i].payableTax
+        lateFeePayable+=this.details[i].lateFeePayable
+        applTaxPayment=payableTaxALL+lateFeePayable
         taxPaid=parseFloat(taxPaid)
         overduePayment=parseFloat(overduePayment)
         taxPaid+=this.details[i].taxPaid ? parseFloat(`${this.details[i].taxPaid}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1")) : 0
@@ -544,9 +558,9 @@ export default {
         taxsjsk=parseFloat(taxPaid)+parseFloat(overduePayment)
     }
     // console.log("taxsjsk",taxsjsk)
-    // document.getElementById("payableTaxALL").innerHTML=payableTaxALL
-    // document.getElementById("lateFeePayable").innerHTML=lateFeePayable
-    // document.getElementById("applTaxPayment").innerHTML=applTaxPayment
+    document.getElementById("payableTaxALL").innerHTML=payableTaxALL
+    document.getElementById("lateFeePayable").innerHTML=lateFeePayable
+    document.getElementById("applTaxPayment").innerHTML=applTaxPayment
     document.getElementById("taxPaid").innerHTML=taxPaid
     document.getElementById("overduePayment").innerHTML=overduePayment
     document.getElementById("taxsjsk").innerHTML=taxsjsk

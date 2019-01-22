@@ -473,35 +473,43 @@ export default {
       priviewFile(v) {
         console.log("预览",v)
         const that = this;
-        let lastString = v.lastIndexOf(".")
-        let filelastName = v.substr(lastString+1)
-        if(filelastName=="png" || filelastName=="jpg" || filelastName=="jpeg") {
-          let baseurl = fileLoadPath.loadFilePath
-          window.open(`${baseurl}${v}?view`)
+        if(v){
+          let lastString = v.lastIndexOf(".")
+          let filelastName = v.substr(lastString+1)
+          if(filelastName=="png" || filelastName=="jpg" || filelastName=="jpeg") {
+            let baseurl = fileLoadPath.loadFilePath
+            window.open(`${baseurl}${v}?view`)
+          }else{
+            let base="/api"
+            var xhr = new XMLHttpRequest();
+            xhr.responseType = "blob";
+              xhr.onreadystatechange = function(){
+                  if( xhr.readyState == 4){
+                      if( xhr.status >= 200 && xhr.status < 300 || xhr.status == 304){
+                        let blob = xhr.response
+                        let imgTag = URL.createObjectURL(blob)
+                        that.priviewFilePath=imgTag
+                        window.open(imgTag)
+                      }
+                  }
+              };
+              xhr.open("post",`${base}/previewFile`,true);
+              xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+              xhr.setRequestHeader("accessToken", this.accessToken);
+              xhr.send(JSON.stringify({fileName:v}));
+          }
         }else{
-          let base="/api"
-          var xhr = new XMLHttpRequest();
-          xhr.responseType = "blob";
-            xhr.onreadystatechange = function(){
-                if( xhr.readyState == 4){
-                    if( xhr.status >= 200 && xhr.status < 300 || xhr.status == 304){
-                      let blob = xhr.response
-                      let imgTag = URL.createObjectURL(blob)
-                      that.priviewFilePath=imgTag
-                      window.open(imgTag)
-                    }
-                }
-            };
-            xhr.open("post",`${base}/previewFile`,true);
-            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            xhr.setRequestHeader("accessToken", this.accessToken);
-            xhr.send(JSON.stringify({fileName:v}));
+          this.$Message.error("没有上传文件!");
         }
       },
     // 下载
     uploadFile(path) {
-      let baseurl = fileLoadPath.loadFilePath
-      window.open(baseurl+path)
+      if(path){
+        let baseurl = fileLoadPath.loadFilePath
+        window.open(baseurl+path)
+      }else{
+        this.$Message.error("没有上传文件!");
+      }
     },
     // 操作
     handleLook(item,index) {

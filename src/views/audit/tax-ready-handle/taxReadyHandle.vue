@@ -299,6 +299,8 @@ export default {
   name: 'taxReadyHandle',
   data() {
     return {
+      dictTaxCategorys:[],
+      dictTaxCategorysMap:"",
       selectCurrencyCode:"", // 选择的币种
       colSelectCurrencyCode:"", // 行选择的税种code
       showUploadModal:false,
@@ -635,7 +637,7 @@ export default {
       let tempObj = this.tempInfoValue.details
       for(let i=0;i<tempObj.length;i++) {
         if(!tempObj[i].taxReturns || !tempObj[i].paymentCertificate || !tempObj[i].preTaxReturns) {
-          this.$Message.error(`税种 ${tempObj[i].taxDict} 资料未补全`);
+          this.$Message.error(`税种 ${this.dictTaxCategorysMap.get(tempObj[i].taxDict)} 资料未补全`);
           return
         }
       }
@@ -680,36 +682,46 @@ export default {
     },
     // 预览
       priviewFile(v) {
-        const that = this;
-        let lastString = v.lastIndexOf(".")
-        let filelastName = v.substr(lastString+1)
-        if(filelastName=="png" || filelastName=="jpg" || filelastName=="jpeg") {
-          let baseurl = fileLoadPath.loadFilePath
-          window.open(`${baseurl}${v}?view`)
+        console.log("v",v)
+        if(v){
+          const that = this;
+          let lastString = v.lastIndexOf(".")
+          let filelastName = v.substr(lastString+1)
+          if(filelastName=="png" || filelastName=="jpg" || filelastName=="jpeg") {
+            let baseurl = fileLoadPath.loadFilePath
+            window.open(`${baseurl}${v}?view`)
+          }else{
+            let base="/api"
+            var xhr = new XMLHttpRequest();
+            xhr.responseType = "blob";
+              xhr.onreadystatechange = function(){
+                  if( xhr.readyState == 4){
+                      if( xhr.status >= 200 && xhr.status < 300 || xhr.status == 304){
+                        let blob = xhr.response
+                        let imgTag = URL.createObjectURL(blob)
+                        that.priviewFilePath=imgTag
+                        window.open(imgTag)
+                      }
+                  }
+              };
+              xhr.open("post",`${base}/previewFile`,true);
+              xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+              xhr.setRequestHeader("accessToken", this.accessToken);
+              xhr.send(JSON.stringify({fileName:v}));
+          }
         }else{
-          let base="/api"
-          var xhr = new XMLHttpRequest();
-          xhr.responseType = "blob";
-            xhr.onreadystatechange = function(){
-                if( xhr.readyState == 4){
-                    if( xhr.status >= 200 && xhr.status < 300 || xhr.status == 304){
-                      let blob = xhr.response
-                      let imgTag = URL.createObjectURL(blob)
-                      that.priviewFilePath=imgTag
-                      window.open(imgTag)
-                    }
-                }
-            };
-            xhr.open("post",`${base}/previewFile`,true);
-            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            xhr.setRequestHeader("accessToken", this.accessToken);
-            xhr.send(JSON.stringify({fileName:v}));
+          this.$Message.error("没有上传文件!");
         }
       },
     // 下载
     uploadFile(path) {
-      let baseurl = fileLoadPath.loadFilePath
-      window.open(baseurl+path)
+      if(path){
+        let baseurl = fileLoadPath.loadFilePath
+        window.open(baseurl+path)
+      }else{
+        this.$Message.error("没有上传文件!");
+      }
+
     },
     // 查看详情
     handleLook(v) {
@@ -773,12 +785,16 @@ export default {
       let indexs = this.fileUploadForm.uploadFileIndex;
       this.tempInfoValue.details[indexs].preTaxReturns = this.fileUploadForm.preTaxReturns
       this.tempInfoValue.details[indexs].preTaxReturnsPath = this.fileUploadForm.preTaxReturnsPath
+      this.tempInfoValue.details[indexs].preTaxReturnsPathFileName = this.fileUploadForm.preTaxReturnsPathFileName
       this.tempInfoValue.details[indexs].taxReturns = this.fileUploadForm.taxReturns
       this.tempInfoValue.details[indexs].taxReturnsPath = this.fileUploadForm.taxReturnsPath
+      this.tempInfoValue.details[indexs].taxReturnsPathFileName = this.fileUploadForm.taxReturnsPathFileName
       this.tempInfoValue.details[indexs].paymentCertificate = this.fileUploadForm.paymentCertificate
       this.tempInfoValue.details[indexs].paymentCertificatePath = this.fileUploadForm.paymentCertificatePath
+      this.tempInfoValue.details[indexs].paymentCertificatePathFileName = this.fileUploadForm.paymentCertificatePathFileName
       this.tempInfoValue.details[indexs].otherUpload = this.fileUploadForm.otherUpload
       this.tempInfoValue.details[indexs].otherUploadId = this.fileUploadForm.otherUploadId
+      this.tempInfoValue.details[indexs].otherUploadFileName = this.fileUploadForm.otherUploadFileName
       this.showUploadModal=false
     },
     // 编辑
