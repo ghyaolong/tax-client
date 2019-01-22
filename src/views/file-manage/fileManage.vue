@@ -102,10 +102,6 @@ export default {
         },
         {
           title: '文件名称',
-          key: 'fileName'
-        },
-        {
-          title: '原文件名称',
           key: 'oriName'
         },
         {

@@ -323,7 +323,7 @@ export default {
           width: 145,
         },
         {
-          title: "工号",
+          title: "E编码",
           key: "workNumber",
           width: 120
         },

@@ -113,7 +113,7 @@ export default {
           }
         },
         {
-          title:"实缴日期",
+          title:"实缴时期",
           width:150,
           key:"paymentTime"
         },
