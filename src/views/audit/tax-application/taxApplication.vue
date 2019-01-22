@@ -16,6 +16,16 @@
     width: 70%;
     margin-right: 10px;
   }
+  .my-input {
+    input {
+      color: #57a3f3 !important;
+    }
+  }
+  .my-select {
+    span {
+      color: #57a3f3 !important;
+    }
+  }
 </style>
 <template>
   <Row>
@@ -30,15 +40,15 @@
             </Select>
           </Form-item>
           <Form-item label="税务识别号码" prop="tin">
-            <Input type="text" v-model="form.tin" disabled style="width: 200px" />
+            <Input type="text" v-model="form.tin" disabled style="width: 200px" class="my-input" placeholder="请检查"/>
           </Form-item>
           <Form-item label="国家" prop="countryCode">
-            <Select v-model="form.countryCode" disabled style="width:200px">
+            <Select v-model="form.countryCode" disabled style="width:200px" class="my-select" placeholder="请检查">
               <Option v-for="item in dictCountrys" :value="item.code" :key="item.id">{{ item.name }}</Option>
             </Select>
           </Form-item>
           <Form-item label="币种" prop="currency">
-            <Select v-model="form.currency" disabled style="width:200px">
+            <Select v-model="form.currency" disabled style="width:200px" class="my-select" placeholder="请检查">
               <Option v-for="item in dictCurrencys" :value="item.code" :key="item.id">{{ item.name }}</Option>
             </Select>
           </Form-item>
@@ -204,7 +214,8 @@ export default {
         currentHandler: '',
         financialReport: '',
         financialReportPath: '',
-        fileName: ''
+        fileName: '',
+        oriName:""
       },
       columns: [
         {
@@ -382,51 +393,6 @@ export default {
                   },
                   "上传"
                 ),
-                // h(
-                //   "Button",
-                //   {
-                //     props: {
-                //       size: "small"
-                //     },
-                //     style: {
-                //       marginRight: "5px"
-                //     },
-                //     on: {
-                //       click: () => {
-                //         let item = this.data[params.index];
-                //         let {preTaxReturns, preTaxReturnsPath, taxReturns, taxReturnsPath, paymentCertificate, paymentCertificatePath, otherUploadId, otherUpload} = item;
-                //         this.fileUploadForm = {
-                //           uploadColomunIndex: params.index,
-                //           preTaxReturns,
-                //           preTaxReturnsPath,
-                //           taxReturns,
-                //           taxReturnsPath,
-                //           paymentCertificate,
-                //           paymentCertificatePath,
-                //           otherUploadId,
-                //           otherUploadPath: otherUpload
-                //         }
-                //         this.showPreviewModal = true;
-                //       }
-                //     }
-                //   },
-                //   "预览"
-                // ),
-                // h(
-                //   "Button",
-                //   {
-                //     props: {
-                //       type: "error",
-                //       size: "small"
-                //     },
-                //     on: {
-                //       click: () => {
-                //         // this.remove(params.row);
-                //       }
-                //     }
-                //   },
-                //   "删除"
-                // )
               ]);
           }
         },
@@ -483,6 +449,7 @@ export default {
       this.form.applicantName=this.userInfo.username  // 用户名
       this.form.applicantId=this.userInfo.id // 用户id
       this.form.executeType=1; // 提交
+      this.form.oriName=this.form.fileName
       if(this.form.countryCode) {
         this.form.countryName = this.dictCountrys && this.dictCountrys.filter((item)=>{return item.code==this.form.countryCode})[0].name;
       }
@@ -503,6 +470,7 @@ export default {
         this.$Message.error('请上传财务报表');
         return;
       }
+
       // 所属期间
       let dateVerity = params.details.some(item => {
         return !item.taxPeriod
@@ -583,6 +551,7 @@ export default {
           financialReport: '',
           financialReportPath: '',
           fileName:"",
+          oriName:"",
           status:0
         }
         this.data=[{ taxPeriod: '',
@@ -694,6 +663,7 @@ export default {
             this.form.companyName = params.companyName;
             this.form.tin = params.tin;
             this.form.fileName = params.oriName;
+            this.form.oriName = params.oriName;
             this.form.countryCode = params.countryCode;
             this.form.currentHandler=params.currentHandler;
             this.form.currency = params.currency;
@@ -957,12 +927,16 @@ export default {
       let uploadColomunIndex = this.fileUploadForm.uploadColomunIndex;
       this.data[uploadColomunIndex].preTaxReturns = this.fileUploadForm.preTaxReturns;
       this.data[uploadColomunIndex].preTaxReturnsPath = this.fileUploadForm.preTaxReturnsPath;
+      this.data[uploadColomunIndex].preTaxReturnsPathFileName = this.fileUploadForm.preTaxReturnsPathFileName;
       this.data[uploadColomunIndex].taxReturns = this.fileUploadForm.taxReturns;
       this.data[uploadColomunIndex].taxReturnsPath = this.fileUploadForm.taxReturnsPath;
+      this.data[uploadColomunIndex].taxReturnsPathFileName = this.fileUploadForm.taxReturnsPathFileName;
       this.data[uploadColomunIndex].paymentCertificate = this.fileUploadForm.paymentCertificate;
       this.data[uploadColomunIndex].paymentCertificatePath = this.fileUploadForm.paymentCertificatePath;
+      this.data[uploadColomunIndex].paymentCertificatePathFileName = this.fileUploadForm.paymentCertificatePathFileName;
       this.data[uploadColomunIndex].otherUploadId = this.fileUploadForm.otherUploadId;
       this.data[uploadColomunIndex].otherUpload = this.fileUploadForm.otherUpload;
+      this.data[uploadColomunIndex].otherUploadFileName = this.fileUploadForm.otherUploadFileName;
       this.showUploadModal = false;
     },
     uploadModalCancel() {
@@ -990,6 +964,7 @@ export default {
     /* 提交 */
     submit(save) {
       console.log("1111",this.data)
+      this.form.oriName=this.form.fileName
       let params = {...this.form, details: this.data};
       params.executeType = save === 'save' ? 0 : 1;
       // 公司
@@ -1007,6 +982,7 @@ export default {
         this.$Message.error('请上传财务报表');
         return;
       }
+
         // 所属期间字段显示月份，但提交后台需要精确值日
         let dateVerity = params.details.some(item => {
           return !item.taxPeriod
@@ -1074,6 +1050,8 @@ export default {
           currentHandler: '',
           financialReport: '',
           financialReportPath: '',
+          fileName:"",
+          oriName:"",
           status:0
         }
         this.data=[{ taxPeriod: '',
@@ -1110,26 +1088,28 @@ export default {
     this.userInfo = JSON.parse(Cookies.get("userInfo"));
   },
   updated:function() {
-    var  payableTaxALL="" // 应缴税额合计
-    var  lateFeePayable=""// 应缴滞纳金合计
-    var  applTaxPayment="" // 申请纳税款合计
+    var  payableTaxALL=0 // 应缴税额合计
+    var  lateFeePayable=0// 应缴滞纳金合计
+    var  applTaxPayment=0 // 申请纳税款合计
     var  taxPaid="" // 实缴税款合计
     var  overduePayment="" //实缴滞纳金合计
     var  taxsjsk="" // 实缴税款合计
     for(let i=0;i<this.data.length;i++) {
+        payableTaxALL=parseFloat(payableTaxALL)
+        lateFeePayable=parseFloat(lateFeePayable)
         payableTaxALL+=this.data[i].payableTax ? parseFloat(`${this.data[i].payableTax}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1")) : 0
         lateFeePayable+=this.data[i].lateFeePayable ? parseFloat(`${this.data[i].lateFeePayable}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1")) : 0
-        applTaxPayment=parseFloat(parseFloat(payableTaxALL)+parseFloat(lateFeePayable))
-        taxPaid+=this.data[i].taxPaid ? this.data[i].taxPaid : 0
-        overduePayment+=this.data[i].overduePayment ? this.data[i].overduePayment : 0
-        taxsjsk=taxPaid+overduePayment
+        applTaxPayment=parseFloat(payableTaxALL)+parseFloat(lateFeePayable)
+        // taxPaid+=this.data[i].taxPaid ? this.data[i].taxPaid : 0
+        // overduePayment+=this.data[i].overduePayment ? this.data[i].overduePayment : 0
+        // taxsjsk=taxPaid+overduePayment
     }
     document.getElementById("payableTaxALL").innerHTML=payableTaxALL
     document.getElementById("lateFeePayable").innerHTML=lateFeePayable
     document.getElementById("applTaxPayment").innerHTML=applTaxPayment
-    document.getElementById("taxPaid").innerHTML=taxPaid
-    document.getElementById("overduePayment").innerHTML=overduePayment
-    document.getElementById("taxsjsk").innerHTML=taxsjsk
+    // document.getElementById("taxPaid").innerHTML=taxPaid
+    // document.getElementById("overduePayment").innerHTML=overduePayment
+    // document.getElementById("taxsjsk").innerHTML=taxsjsk
   }
 }
 </script>

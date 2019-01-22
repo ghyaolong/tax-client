@@ -12,7 +12,7 @@
                               <Input type="text" v-model="searchForm.username" clearable placeholder="请输入用户名" style="width: 200px" :maxlength="20"/>
                             </Form-item>
                             <Form-item label="部门" prop="department">
-                              <Poptip trigger="click" placement="right" title="选择部门" width="200px">
+                              <Poptip trigger="click" placement="bottom-start" title="选择部门" width="200px">
                                 <div style="display:flex;">
                                   <Input v-model="searchForm.departmentTitle" readonly style="margin-right:10px;width:200px"/>
                                 </div>

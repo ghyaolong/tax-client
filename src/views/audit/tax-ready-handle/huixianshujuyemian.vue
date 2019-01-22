@@ -16,6 +16,16 @@
     width: 70%;
     margin-right: 10px;
   }
+  .my-input {
+    input {
+      color: #57a3f3 !important;
+    }
+  }
+  .my-select {
+    span {
+      color: #57a3f3 !important;
+    }
+  }
 </style>
 <template>
   <Row>
@@ -30,15 +40,15 @@
             </Select>
           </Form-item>
           <Form-item label="税务识别号码" prop="tin">
-            <Input type="text" v-model="form.tin" disabled style="width: 200px" />
+            <Input type="text" v-model="form.tin" disabled style="width: 200px" class="my-input" placeholder="请检查"/>
           </Form-item>
           <Form-item label="国家" prop="countryCode">
-            <Select v-model="form.countryCode" disabled style="width:200px">
+            <Select v-model="form.countryCode" disabled style="width:200px" class="my-select" placeholder="请检查">
               <Option v-for="item in dictCountrys" :value="item.code" :key="item.id">{{ item.name }}</Option>
             </Select>
           </Form-item>
           <Form-item label="币种" prop="currency">
-            <Select v-model="form.currency" disabled style="width:200px">
+            <Select v-model="form.currency" disabled style="width:200px" class="my-select" placeholder="请检查">
               <Option v-for="item in dictCurrencys" :value="item.code" :key="item.id">{{ item.name }}</Option>
             </Select>
           </Form-item>
@@ -1133,26 +1143,28 @@ export default {
   },
   updated:function() {
     // console.log("update",this.data)
-    var  payableTaxALL="" // 应缴税额合计
-    var  lateFeePayable=""// 应缴滞纳金合计
-    var  applTaxPayment="" // 申请纳税款合计
+    var  payableTaxALL=0 // 应缴税额合计
+    var  lateFeePayable=0// 应缴滞纳金合计
+    var  applTaxPayment=0 // 申请纳税款合计
     var  taxPaid="" // 实缴税款合计
     var  overduePayment="" //实缴滞纳金合计
     var  taxsjsk="" // 实缴税款合计
     for(let i=0;i<this.data.length;i++) {
+        payableTaxALL=parseFloat(payableTaxALL)
+        lateFeePayable=parseFloat(lateFeePayable)
         payableTaxALL+=this.data[i].payableTax ? parseFloat(`${this.data[i].payableTax}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1")) : 0
         lateFeePayable+=this.data[i].lateFeePayable ? parseFloat(`${this.data[i].lateFeePayable}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1")) : 0
-        applTaxPayment=parseFloat(parseFloat(payableTaxALL)+parseFloat(lateFeePayable))
-        taxPaid+=this.data[i].taxPaid
-        overduePayment+=this.data[i].overduePayment
-        taxsjsk=taxPaid+overduePayment
+        applTaxPayment=parseFloat(payableTaxALL)+parseFloat(lateFeePayable)
+        // taxPaid+=this.data[i].taxPaid
+        // overduePayment+=this.data[i].overduePayment
+        // taxsjsk=taxPaid+overduePayment
     }
     document.getElementById("payableTaxALL").innerHTML=payableTaxALL
     document.getElementById("lateFeePayable").innerHTML=lateFeePayable
     document.getElementById("applTaxPayment").innerHTML=applTaxPayment
-    document.getElementById("taxPaid").innerHTML=taxPaid
-    document.getElementById("overduePayment").innerHTML=overduePayment
-    document.getElementById("taxsjsk").innerHTML=taxsjsk
+    // document.getElementById("taxPaid").innerHTML=taxPaid
+    // document.getElementById("overduePayment").innerHTML=overduePayment
+    // document.getElementById("taxsjsk").innerHTML=taxsjsk
   }
 }
 </script>
