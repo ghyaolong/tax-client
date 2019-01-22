@@ -250,6 +250,8 @@
             <Input type="text" disabled v-model="fileUploadForm.taxReturnsPathFileName" style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}" name="file"
+            :before-upload="finleBeforeUpload"
+            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip"
             :data="{materialTypeDict: 'TAX_REPORT',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
               <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
@@ -261,6 +263,8 @@
             <Input type="text" disabled v-model="fileUploadForm.paymentCertificatePathFileName" style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}" name="file"
+            :before-upload="finleBeforeUpload"
+            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip"
             :data="{materialTypeDict: 'DONE_TAX_REPORT',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
               <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
@@ -272,6 +276,8 @@
             <Input type="text" disabled  v-model="fileUploadForm.otherUploadFileName"  style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}" name="file"
+            :before-upload="finleBeforeUpload"
+            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip"
             :data="{materialTypeDict: 'OTHER',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
               <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
@@ -285,6 +291,7 @@
           <Button type="primary" style="width: 100px;margin-left:20px" @click="tempSubmitOk" v-if="currentLinkType=='uploadPayFile'">确定</Button>
           <Button type="primary" style="width: 100px;margin-left:20px" @click="fileuploadFormCancel" v-if="currentLinkType!='uploadPayFile'">确定</Button>
       </footer>
+      <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip 文件，并且不能大于4MB</span>
     </Modal>
   </div>
 </template>
@@ -585,6 +592,19 @@ export default {
     }
   },
   methods: {
+    // 文件上传之前文件大小校验
+    finleBeforeUpload(file) {
+      // console.log(file)
+      if(file) {
+        let fileSize= file.size
+        if(fileSize/1024/1024 >4 ) {
+          this.$Message.error('上传文件不能大于4MB');
+          return false
+        }else{
+          return true
+        }
+      }
+    },
     filterMethod (value, option) {
           return option.toUpperCase().indexOf(value.toUpperCase()) !== -1;
     },
