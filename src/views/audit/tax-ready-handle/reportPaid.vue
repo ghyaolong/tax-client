@@ -561,9 +561,9 @@ export default {
     document.getElementById("payableTaxALL").innerHTML=payableTaxALL
     document.getElementById("lateFeePayable").innerHTML=lateFeePayable
     document.getElementById("applTaxPayment").innerHTML=applTaxPayment
-    document.getElementById("taxPaid").innerHTML=taxPaid
-    document.getElementById("overduePayment").innerHTML=overduePayment
-    document.getElementById("taxsjsk").innerHTML=taxsjsk
+    document.getElementById("taxPaid").innerHTML=taxPaid.toFixed(2)
+    document.getElementById("overduePayment").innerHTML=overduePayment.toFixed(2)
+    document.getElementById("taxsjsk").innerHTML=taxsjsk.toFixed(2)
   },
   created:function() {
     this.userInfo = JSON.parse(Cookies.get("userInfo"));

@@ -1119,9 +1119,9 @@ export default {
         // overduePayment+=this.data[i].overduePayment ? this.data[i].overduePayment : 0
         // taxsjsk=taxPaid+overduePayment
     }
-    document.getElementById("payableTaxALL").innerHTML=payableTaxALL
-    document.getElementById("lateFeePayable").innerHTML=lateFeePayable
-    document.getElementById("applTaxPayment").innerHTML=applTaxPayment
+    document.getElementById("payableTaxALL").innerHTML=payableTaxALL.toFixed(2)
+    document.getElementById("lateFeePayable").innerHTML=lateFeePayable.toFixed(2)
+    document.getElementById("applTaxPayment").innerHTML=applTaxPayment.toFixed(2)
     // document.getElementById("taxPaid").innerHTML=taxPaid
     // document.getElementById("overduePayment").innerHTML=overduePayment
     // document.getElementById("taxsjsk").innerHTML=taxsjsk
