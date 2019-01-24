@@ -596,7 +596,7 @@ export default {
         return !item.preTaxReturns;
       });
       if (preTaxReturnsVerity) {
-        this.$Message.error('请检查'+`${this.dictTaxCategorysMap.get(tempString)}`+'的预申报表');
+        this.$Message.error('请上传'+`${this.dictTaxCategorysMap.get(tempString)}`+'的预申报表');
         return;
       }
       this.loading = true;

@@ -109,7 +109,7 @@
                 <FormItem label="密码" prop="password" v-if="modalType===0" :error="errorPass">
                     <Input type="password" v-model="userForm.password" autocomplete="off" :maxlength="20"/>
                 </FormItem>
-                <FormItem label="工号" prop="workNumber">
+                <FormItem label="E编码" prop="workNumber">
                     <Input v-model="userForm.workNumber" :maxlength="20"/>
                 </FormItem>
                 <FormItem label="邮箱" prop="email">
