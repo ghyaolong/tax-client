@@ -16,12 +16,6 @@
                         <Button @click="init" icon="md-refresh">刷新</Button>
                         <circleLoading v-if="operationLoading"/>
                     </Row>
-                    <!-- <Row>
-                        <Alert show-icon>
-                            已选择 <span class="select-count">{{selectCount}}</span> 项
-                            <a class="select-clear" @click="clearSelectAll">清空</a>
-                        </Alert>
-                    </Row> -->
                     <Row>
                         <Table :loading="loading" border :columns="columns" :data="data" ref="table" sortable="custom" @on-sort-change="changeSort" @on-selection-change="changeSelect"></Table>
                     </Row>
@@ -43,6 +37,9 @@
               <Select v-model="form.countryCode" style="width:200px">
                 <Option v-for="item in dictCountrys" :value="item.code" :key="item.id">{{ item.name }}</Option>
               </Select>
+            </FormItem>
+            <FormItem label="成立日期" prop="establishmentTime">
+              <DatePicker v-model="form.establishmentTime" type="date"  clearable placeholder="选择日期" style="width: 200px"></DatePicker>
             </FormItem>
             <FormItem label="币种" prop="currencyCode">
               <Select v-model="form.currencyCode" style="width:200px">
@@ -119,7 +116,8 @@ export default {
         tin: "",
         countryCode: "",
         currencyCode: "",
-        remarks: ""
+        remarks: "",
+        establishmentTime:""
       },
       formValidate: {
         name: [
@@ -133,6 +131,9 @@ export default {
         ],
         currencyCode: [
           { required: true, message: "币种不能为空", trigger: "blur" }
+        ],
+        establishmentTime:[
+            { required: true, message: "成立日期不能为空", trigger: "blur" }
         ]
       },
       submitLoading: false,
@@ -195,142 +196,13 @@ export default {
           key: "remarks",
           sortable: true
         },
-        /* {
-          title: "状态",
-          key: "status",
-          align: "center",
-          width: 140,
-          render: (h, params) => {
-            let re = "";
-            if (params.row.status === 0) {
-              return h("div", [
-                h(
-                  "Tag",
-                  {
-                    props: {
-                      type: "dot",
-                      color: "success"
-                    }
-                  },
-                  "执行中"
-                )
-              ]);
-            } else if (params.row.status === -1) {
-              return h("div", [
-                h(
-                  "Tag",
-                  {
-                    props: {
-                      type: "dot",
-                      color: "error"
-                    }
-                  },
-                  "已停止"
-                )
-              ]);
-            }
-          },
-          filters: [
-            {
-              label: "执行中",
-              value: 0
-            },
-            {
-              label: "已停止",
-              value: -1
-            }
-          ],
-          filterMultiple: false,
-          filterMethod(value, row) {
-            if (value === 0) {
-              return row.status === 0;
-            } else if (value === -1) {
-              return row.status === -1;
-            }
-          }
-        }, */
         {
           title: "操作",
           key: "action",
           align: "center",
           width: 240,
           render: (h, params) => {
-            /* if (params.row.status === 0) {
-              return h("div", [
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "warning",
-                      size: "small",
-                      icon: "md-pause"
-                    },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: () => {
-                        this.pause(params.row);
-                      }
-                    }
-                  },
-                  "暂停"
-                ),
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "primary",
-                      size: "small"
-                    },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: () => {
-                        this.edit(params.row);
-                      }
-                    }
-                  },
-                  "编辑"
-                ),
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "error",
-                      size: "small"
-                    },
-                    on: {
-                      click: () => {
-                        this.remove(params.row);
-                      }
-                    }
-                  },
-                  "删除"
-                )
-              ]);
-            } else { */
             return h("div", [
-              /* h(
-                  "Button",
-                  {
-                    props: {
-                      type: "info",
-                      size: "small",
-                      icon: "md-play"
-                    },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: () => {
-                        this.resume(params.row);
-                      }
-                    }
-                  },
-                  "恢复执行"
-                ), */
               h(
                 "Button",
                 {

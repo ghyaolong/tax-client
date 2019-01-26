@@ -7,54 +7,19 @@
             <Col>
                 <Card>
                     <Row>
-                        <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form">
+                        <Form ref="searchForm" :model="searchForm" inline :label-width="120" class="search-form">
                             <Form-item label="用户名" prop="username">
                               <Input type="text" v-model="searchForm.username" clearable placeholder="请输入用户名" style="width: 200px" :maxlength="20"/>
                             </Form-item>
-                            <Form-item label="部门" prop="department">
-                              <Poptip trigger="click" placement="bottom-start" title="选择部门" width="200px">
-                                <div style="display:flex;">
-                                  <Input v-model="searchForm.departmentTitle" readonly style="margin-right:10px;width:200px"/>
-                                </div>
-                                <div slot="content">
-                                  <Tree :data="department" :load-data="loadData" @on-select-change="selectDepartmentTree"></Tree>
-                                </div>
-                              </Poptip>
-                              <!-- @on-change="handleChangeDep" :load-data="loadData" filterable-->
-                              <!-- <Cascader :data="department" change-on-select @on-change="handleChangeDep"></Cascader> -->
-                              <!-- <Cascader v-model="selectDep" :data="department"  :load-data="loadData"  change-on-select @on-change="handleChangeDep" placeholder="请选择或输入搜索部门" style="width: 200px"></Cascader> -->
+                            <Form-item label="E编码" prop="eCode">
+                              <Input type="text" v-model="searchForm.eCode" clearable placeholder="请输入E编码" style="width: 200px" :maxlength="20"/>
                             </Form-item>
                             <span v-if="drop">
-                            <Form-item label="手机号" prop="tel">
-                              <Input type="text" v-model="searchForm.tel" clearable placeholder="请输入手机号" style="width: 200px" :maxlength="20"/>
-                            </Form-item>
-                              <Form-item label="邮箱" prop="email">
-                                <Input type="text" v-model="searchForm.email" clearable placeholder="请输入邮箱" style="width: 200px" :maxlength="20"/>
+                              <Form-item label="创建开始时间">
+                                <DatePicker v-model="searchForm.startDate" type="date"  clearable placeholder="选择开始时间" style="width: 200px"></DatePicker>
                               </Form-item>
-                              <Form-item label="性别" prop="sex">
-                                <Select v-model="searchForm.sex" placeholder="请选择" clearable style="width: 200px">
-                                  <Option value="0">男</Option>
-                                  <Option value="1">女</Option>
-                                </Select>
-                              </Form-item>
-                              <!-- <Form-item label="用户类型" prop="roleIds">
-                                <Select v-model="searchForm.roleIds" placeholder="请选择" clearable style="width: 200px">
-                                  <Option v-for="(item,index) in roleList"
-                                  :label="item.name"
-                                  :value="item.id"
-                                  :key="index"
-                                  >
-                                  </Option>
-                                </Select>
-                              </Form-item> -->
-                              <!-- <Form-item label="用户状态" prop="status">
-                                <Select v-model="searchForm.status" placeholder="请选择" clearable style="width: 200px">
-                                  <Option value="0">正常</Option>
-                                  <Option value="-1">禁用</Option>
-                                </Select>
-                              </Form-item> -->
-                              <Form-item label="创建时间">
-                                <DatePicker v-model="selectDate" type="daterange" format="yyyy-MM-dd" clearable @on-change="selectDateRange" placeholder="选择起始时间" style="width: 200px"></DatePicker>
+                              <Form-item label="创建结束时间">
+                                <DatePicker v-model="searchForm.endDate" type="date" :options="renderEndDate" clearable placeholder="选择结束时间" style="width: 200px"></DatePicker>
                               </Form-item>
                             </span>
                             <Form-item style="margin-left:-35px;" class="br">
@@ -76,8 +41,6 @@
                           </Button>
                           <DropdownMenu slot="list">
                               <DropdownItem name="refresh">刷新</DropdownItem>
-                              <!-- <DropdownItem name="exportData">导出所选数据</DropdownItem> -->
-                              <!-- <DropdownItem name="exportAll">导出全部数据</DropdownItem> -->
                           </DropdownMenu>
                         </Dropdown>
                         <circleLoading v-if="operationLoading"/>
@@ -90,7 +53,6 @@
                     </Row>
                     <Row>
                         <Table :loading="loading" border :columns="columns" :data="data" sortable="custom" @on-sort-change="changeSort" @on-selection-change="showSelect" ref="table"></Table>
-                        <Table :columns="exportColumns" :data="exportData" ref="exportTable" style="display:none"></Table>
                     </Row>
                     <Row type="flex" justify="end" class="page">
                         <Page :current="searchForm.pageNumber" :total="total" :page-size="searchForm.pageSize" @on-change="changePage" @on-page-size-change="changePageSize" :page-size-opts="[10,20,50]" size="small" show-total show-elevator show-sizer></Page>
@@ -100,29 +62,17 @@
         </Row>
         <Modal :title="modalTitle" v-model="userModalVisible" :mask-closable='false' :width="500" :styles="{top: '30px'}" @on-cancel="cancelUser">
             <Form ref="userForm" :model="userForm" :label-width="70" :rules="userFormValidate">
-                <FormItem label="姓名" prop="realName">
-                    <Input v-model="userForm.realName" :maxlength="15" autocomplete="off" />
-                </FormItem>
-                <FormItem label="用户名" prop="username">
-                    <Input v-model="userForm.username" autocomplete="off" />
+                <FormItem label="姓名" prop="username">
+                    <Input v-model="userForm.username" :maxlength="15" autocomplete="off" />
                 </FormItem>
                 <FormItem label="密码" prop="password" v-if="modalType===0" :error="errorPass">
                     <Input type="password" v-model="userForm.password" autocomplete="off" :maxlength="20"/>
                 </FormItem>
-                <FormItem label="E编码" prop="workNumber">
+                <FormItem label="工号" prop="workNumber">
                     <Input v-model="userForm.workNumber" :maxlength="20"/>
                 </FormItem>
-                <FormItem label="邮箱" prop="email">
-                    <Input v-model="userForm.email" :maxlength="20"/>
-                </FormItem>
-                <FormItem label="手机号" prop="tel">
-                    <Input v-model="userForm.tel" :maxlength="20"/>
-                </FormItem>
-                <FormItem label="性别" prop="sex">
-                  <RadioGroup v-model="userForm.sex">
-                    <Radio label="0" >男</Radio>
-                    <Radio label="1" >女</Radio>
-                  </RadioGroup>
+                <FormItem label="E编码" prop="eCode">
+                    <Input v-model="userForm.eCode" :maxlength="20"/>
                 </FormItem>
                 <FormItem label="所属公司" prop="companys">
                   <Select v-model="userForm.companys" multiple filterable v-if="modalType==0">
@@ -134,24 +84,6 @@
                       </Option>
                   </Select>
                 </FormItem>
-                <Form-item label="所属部门" prop="departmentTitle">
-                  <Poptip trigger="click" placement="right" title="选择部门" width="250">
-                    <div style="display:flex;">
-                      <Input v-model="userForm.departmentTitle" readonly style="margin-right:10px;"/>
-                      <Button icon="md-trash" @click="clearSelectDep">清空已选</Button>
-                    </div>
-                    <div slot="content">
-                      <Tree :data="dataDep" :load-data="loadDataTree" @on-select-change="selectTree"></Tree>
-                      <Spin size="large" fix v-if="loading"></Spin>
-                    </div>
-                  </Poptip>
-                </Form-item>
-                <!-- <FormItem label="用户类型" prop="type">
-                  <Select v-model="userForm.type" placeholder="请选择">
-                    <Option :value="0">普通用户</Option>
-                    <Option :value="1">管理员</Option>
-                  </Select>
-                </FormItem> -->
                 <FormItem label="角色分配" prop="roles">
                   <Select v-model="userForm.roles" multiple>
                       <Option v-for="item in roleList" :value="item.id" :key="item.id" :label="item.name">
@@ -163,19 +95,6 @@
                 <Button type="text" @click="cancelUser">取消</Button>
                 <Button type="primary" :loading="submitLoading" @click="submitUser">提交</Button>
             </div>
-        </Modal>
-        <Modal title="图片预览" v-model="viewImage" :styles="{top: '30px'}" draggable>
-          <img :src="userForm.avatar" alt="无效的图片链接" style="width: 100%;margin: 0 auto;display: block;">
-          <div slot="footer">
-            <Button @click="viewImage=false">关闭</Button>
-          </div>
-        </Modal>
-        <Modal
-            v-model="modalExportAll"
-            title="确认导出"
-            :loading="loadingExport"
-            @on-ok="exportAll">
-            <p>您确认要导出全部 {{total}} 条数据？</p>
         </Modal>
     </div>
 </template>
@@ -209,36 +128,21 @@ export default {
         callback();
       }
     };
-    const validateMobile = (rule, value, callback) => {
-      var reg = /^[1][3,4,5,7,8][0-9]{9}$/;
-      if (!reg.test(value)) {
-        callback(new Error("手机号格式错误"));
-      } else {
-        callback();
-      }
-    };
     return {
       accessToken: {},
       loading: true,
       operationLoading: false,
-      loadingExport: true,
-      modalExportAll: false,
       drop: false,
       dropDownContent: "展开",
       dropDownIcon: "ios-arrow-down",
       selectCount: 0,
       selectList: [],
-      viewImage: false,
       department: [],
       selectDep: [],
       dataDep: [],
       allCompanys:[],
       searchForm: {
         username: "",
-        departmentId: "",
-        tel: "",
-        email: "",
-        sex: "",
         roleIds: "",
         status: "",
         pageNumber: 1,
@@ -255,16 +159,13 @@ export default {
       modalTitle: "",
       userForm: {
         username: '',
-        realName: '',
         password: '',
         workNumber: "",
-        sex:"0",
-        email:"",
-        tel:"",
         roles: [],
         companys: [],
         departmentId: "",
-        departmentTitle: ""
+        departmentTitle: "",
+        eCode:""
       },
       userRoles: [],
       roleList: [],
@@ -272,28 +173,17 @@ export default {
       errorPass: "",
       userFormValidate: {
         username: [
-          { required: true, message: "账号不能为空", trigger: "blur" },
+          { required: true, message: "姓名不能为空", trigger: "blur" },
           {  max: 20, message: '最多输入20个字符', trigger: 'blur' }
-        ],
-        tel: [
-          { required: true, message: "手机号不能为空", trigger: "blur" },
-          { validator: validateMobile, trigger: "blur" }
-        ],
-        email: [
-          { required: true, message: "请输入邮箱地址",trigger: "blur" },
-          { type: "email", message: "邮箱格式不正确",trigger: "blur" }
-        ],
-        realName:[
-          { required: true, message: "请输入姓名", trigger: "blur" },
         ],
         workNumber:[
           { required: true, message: "请输入工号", trigger: "blur" },
         ],
-        sex:[
-            { required: true, message: "请选择性别", trigger: "blur" },
-        ],
         password:[
             { required: true, message: "请输入密码", trigger: "blur" },
+        ],
+        eCode:[
+          { required: true, message: "请输入E编码", trigger: "blur" },
         ]
       },
       submitLoading: false,
@@ -312,58 +202,18 @@ export default {
         },
         {
           title: "姓名",
-          key: "realName",
-          width: 145,
-          sortable: true,
-          fixed: "left"
-        },
-        {
-          title: "用户名",
           key: "username",
           width: 145,
         },
         {
-          title: "E编码",
+          title: "工号",
           key: "workNumber",
           width: 120
         },
         {
-          title: "所属部门",
-          key: "departments",
-          render: (h, params) => {
-            let departmentTitle = (params.row.departments && params.row.departments.length > 0) ?
-                    params.row.departments[0].name :
-                      '';
-            return h("div", departmentTitle);
-          },
+          title: "E编码",
+          key: "eCode",
           width: 120
-        },
-        {
-          title: "手机",
-          key: "tel",
-          width: 115,
-          sortable: true,
-        },
-        {
-          title: "邮箱",
-          key: "email",
-          width: 180,
-          sortable: true
-        },
-        {
-          title: "性别",
-          key: "sex",
-          width: 70,
-          align: "center",
-          render: (h, params) => {
-            let re = "";
-            if (params.row.sex === 0) {
-              re = "男";
-            } else if (params.row.sex === 1) {
-              re = "女";
-            }
-            return h("div", re);
-          }
         },
         {
           title: "创建时间",
@@ -421,60 +271,17 @@ export default {
           }
         }
       ],
-      exportColumns: [
-        {
-          title: "用户名",
-          key: "username"
-        },
-        {
-          title: "头像",
-          key: "avatar"
-        },
-        {
-          title: "所属部门ID",
-          key: "departmentId"
-        },
-        {
-          title: "所属部门",
-          key: "departmentTitle"
-        },
-        {
-          title: "手机",
-          key: "tel"
-        },
-        {
-          title: "邮箱",
-          key: "email"
-        },
-        {
-          title: "性别",
-          key: "sex"
-        },
-        {
-          title: "用户类型",
-          key: "type"
-        },
-        {
-          title: "状态",
-          key: "status"
-        },
-        {
-          title: "删除标志",
-          key: "delFlag"
-        },
-        {
-          title: "创建时间",
-          key: "createTime"
-        },
-        {
-          title: "更新时间",
-          key: "updateTime"
-        }
-      ],
       data: [],
       exportData: [],
       total: 0,
-      allCompanysTemp:[]
+      allCompanysTemp:[],
+      renderEndDate:{
+        disabledDate:(date)=>{
+          if(date && this.searchForm.startDate) {
+            return date.valueOf() < this.searchForm.startDate
+          }
+        }
+      },
     };
   },
   methods: {
@@ -486,36 +293,12 @@ export default {
       this.getUserList();
       this.initDepartmentTreeData();
       this.initCompany();
-      // this.getAllCompanyFN();
     },
     initCompany() {
       getUnAssignCompany().then(res => {
         this.companyList = res.data;
       })
     },
-    // initDepartmentData() {
-    //   initDepartment().then(res => {
-    //     res.data.forEach(function(e) {
-    //       debugger;
-    //       e.title = e.name;
-    //       e.isParent = e.parentId === '0';
-    //       if (e.isParent) {
-    //         e.value = e.id;
-    //         e.label = e.title;
-    //         e.loading = false;
-    //         e.children=[]
-    //       } else {
-    //         e.value = e.id;
-    //         e.label = e.title;
-    //       }
-    //       if (e.status === -1) {
-    //         e.label = "[已禁用] " + e.label;
-    //         e.disabled = true;
-    //       }
-    //     });
-    //     this.department = res.data;
-    //   });
-    // },
     initDepartmentData() {
       initDepartment().then(res => {
         res.data.forEach(function(e) {
@@ -550,110 +333,11 @@ export default {
         this.dataDep = res.data;
       });
     },
-    // loadData(item, callback) {
-    //   item.loading = true;
-    //   loadDepartment(item.value).then(res => {
-    //     item.loading = false;
-    //     res.data.forEach(function(e) {
-    //       e.title = e.name;
-    //       e.isParent = e.parentId === '0';
-    //       if (e.isParent) {
-    //         e.value = e.id;
-    //         e.label = e.title;
-    //         e.loading = false;
-    //         e.children = [];
-    //       } else {
-    //         e.value = e.id;
-    //         e.label = e.title;
-    //       }
-    //       if (e.status === -1) {
-    //         e.label = "[已禁用] " + e.label;
-    //         e.disabled = true;
-    //       }
-    //     });
-    //     item.children = res.data;
-    //     callback();
-    //   });
-    // },
-    loadData(item, callback) {
-      debugger;
-      item.loading = true;
-      loadDepartment(item.id).then(res => {
-        res.data.forEach(function(e) {
-          e.title = e.name;
-          e.isParent = e.parentId === '0';
-          if (e.isParent) {
-            e.loading = false;
-            e.children = [];
-          }
-          if (e.status === -1) {
-            e.title = "[已禁用] " + e.title;
-            e.disabled = true;
-          }
-        });
-        callback(res.data);
-      });
-    },
-    loadDataTree(item, callback) {
-      loadDepartment(item.id).then(res => {
-        res.data.forEach(function(e) {
-          e.title = e.name;
-          e.isParent = e.parentId === '0';
-          if (e.isParent) {
-            e.loading = false;
-            e.children = [];
-          }
-          if (e.status === -1) {
-            e.title = "[已禁用] " + e.title;
-            e.disabled = true;
-          }
-        });
-        callback(res.data);
-      });
-    },
-    selectTree(v) {
-      if (v.length > 0) {
-        // 转换null为""
-        for (let attr in v[0]) {
-          if (v[0][attr] === null) {
-            v[0][attr] = "";
-          }
-        }
-        let str = JSON.stringify(v[0]);
-        let data = JSON.parse(str);
-        this.userForm.departmentId = data.id;
-        this.userForm.departmentTitle = data.title;
-        this.$forceUpdate();
-      }
-    },
-    selectDepartmentTree(v) {
-      if (v.length > 0) {
-        // 转换null为""
-        for (let attr in v[0]) {
-          if (v[0][attr] === null) {
-            v[0][attr] = "";
-          }
-        }
-        let str = JSON.stringify(v[0]);
-        let data = JSON.parse(str);
-        this.searchForm.departmentId = data.id;
-        this.searchForm.departmentTitle = data.title;
-        this.$forceUpdate();
-      }
-    },
     clearSelectDep() {
       this.userForm.departmentId = "";
       this.userForm.departmentTitle = "";
       this.$forceUpdate();
     },
-    // handleChangeUserFormDep(value, selectedData) {
-    //   // 获取最后一个值
-    //   if (value && value.length > 0) {
-    //     this.userForm.departmentId = value[value.length - 1];
-    //   } else {
-    //     this.userForm.departmentId = "";
-    //   }
-    // },
     changePage(v) {
       this.searchForm.pageNumber = v;
       this.getUserList();
@@ -680,17 +364,11 @@ export default {
         },
         userVo: {
           username: this.searchForm.username,
-          sex: this.searchForm.sex,
-          tel: this.searchForm.tel,
-          email: this.searchForm.email,
-          realName: this.searchForm.realName,
-          workNumber: this.searchForm.workNumber,
-          roleIds:this.searchForm.roleIds,
-          departmentIds:this.searchForm.departmentId
+          eCode:this.searchForm.eCode,
         },
         searchVo: {
-          startDate: this.searchForm.startDate,
-          endDate: this.searchForm.endDate
+          startDate: this.searchForm.startDate && new Date(this.searchForm.startDate).format("yyyy-MM-dd"),
+          endDate: this.searchForm.endDate && new Date(this.searchForm.endDate).format('yyyy-MM-dd'),
         }
       }
       getUserListData(params).then(res => {
@@ -743,36 +421,7 @@ export default {
     handleDropdown(name) {
       if (name === "refresh") {
         this.getUserList();
-      } else if (name === "exportData") {
-        if (this.selectCount <= 0) {
-          this.$Message.warning("您还未选择要导出的数据");
-          return;
-        }
-        this.$Modal.confirm({
-          title: "确认导出",
-          content: "您确认要导出所选 " + this.selectCount + " 条数据?",
-          onOk: () => {
-            this.$refs.exportTable.exportCsv({
-              filename: "用户数据"
-            });
-          }
-        });
-      } else if (name === "exportAll") {
-        this.modalExportAll = true;
       }
-    },
-    exportAll() {
-      getAllUserData().then(res => {
-        this.modalExportAll = false;
-        if (res.success) {
-          this.exportData = res.result;
-          setTimeout(() => {
-            this.$refs.exportTable.exportCsv({
-              filename: "用户全部数据"
-            });
-          }, 1000);
-        }
-      });
     },
     cancelUser() {
       this.userModalVisible = false;
@@ -845,10 +494,7 @@ export default {
     edit(v) {
       getUnAssignCompany().then(res => {
         for(let i=0;i<res.data.length;i++) {
-          // if(res.data[i].isAssign!=1) {
             this.allCompanys.push(res.data[i])
-            // this.allCompanysTemp.push(res.data[i])
-          // }
         }
         this.tempUserObk = v
         this.modalType = 1;
@@ -873,75 +519,13 @@ export default {
         v.companys && v.companys.forEach(e => {
           selectCompanyIds.push(e.id);
         });
-
-        // var submitAyy=[]
-        // var tempObj={}
-        // let tempArry = this.allCompanys.concat(v.companys)
-        // for(let i=0;i<tempArry.length;i++) {
-        //   if(tempArry[i]){
-        //     if(!tempObj[tempArry[i].id]) {
-        //       submitAyy.push(tempArry[i])
-        //       tempObj[tempArry[i].id]=true
-        //     }
-        //   }
-        // }
-        // this.allCompanys = submitAyy
         if(v.companys) {
           this.allCompanys = this.allCompanys.concat(v.companys)
         }
-        // this.initCompany()
         console.log("dasdasdasdasd",this.allCompanys)
         this.userForm.companys = selectCompanyIds;
         this.userModalVisible = true;
       })
-      // this.initCompany()
-      // this.tempUserObk = v
-      // this.modalType = 1;
-      // this.modalTitle = "编辑用户";
-      // this.$refs.userForm.resetFields();
-      // // 转换null为""
-      // for (let attr in v) {
-      //   if (v[attr] === null) {
-      //     if (attr === 'roles' || attr === 'departments' || attr === 'companys') {
-      //       v[attr] = [];
-      //     } else {
-      //       v[attr] = "";
-      //     }
-      //   }
-      // }
-      // let str = JSON.stringify(v);
-      // let userInfo = JSON.parse(str);
-      // userInfo.sex=userInfo.sex+""
-      // this.userForm = userInfo;
-      // let selectRolesId = [];
-      // this.userForm.roles && this.userForm.roles.forEach(function(e) {
-      //   selectRolesId.push(e.id);
-      // });
-      // this.userForm.roles = selectRolesId;
-      // if (this.userForm.departments && this.userForm.departments.length > 0) {
-      //   this.userForm.departmentId = this.userForm.departments[0].id;
-      //   this.userForm.departmentTitle = this.userForm.departments[0].name;
-      // }
-      // let selectCompanyIds = [];
-      // v.companys && v.companys.forEach(e => {
-      //   selectCompanyIds.push(e.id);
-      // });
-      // var submitAyy=[]
-      // var tempObj={}
-      // let tempArry = this.allCompanys.concat(v.companys)
-      // for(let i=0;i<tempArry.length;i++) {
-      //   if(tempArry[i]){
-      //     if(!tempObj[tempArry[i].id]) {
-      //       submitAyy.push(tempArry[i])
-      //       tempObj[tempArry[i].id]=true
-      //     }
-      //   }
-      // }
-      // this.allCompanys = submitAyy
-      // // this.initCompany()
-      // console.log("dasdasdasdasd",submitAyy)
-      // this.userForm.companys = selectCompanyIds;
-      // this.userModalVisible = true;
     },
     enable(v) {
       this.$Modal.confirm({
