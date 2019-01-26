@@ -14,6 +14,11 @@
                             <Form-item label="E编码" prop="eCode">
                               <Input type="text" v-model="searchForm.eCode" clearable placeholder="请输入E编码" style="width: 200px" :maxlength="20"/>
                             </Form-item>
+                            <Form-item label="角色" prop="roleids">
+                              <Select v-model="searchForm.roleids" style="width: 200px">
+                                <Option v-for="item in roleList" :value="item.id" :key="item.id" :label="item.name"></Option>
+                              </Select>
+                            </Form-item>
                             <span v-if="drop">
                               <Form-item label="创建开始时间">
                                 <DatePicker v-model="searchForm.startDate" type="date"  clearable placeholder="选择开始时间" style="width: 200px"></DatePicker>
@@ -151,7 +156,7 @@ export default {
         order: "desc",
         startDate: "",
         endDate: "",
-        departmentTitle:""
+        departmentTitle:"",
       },
       selectDate: null,
       modalType: 0,
@@ -216,11 +221,16 @@ export default {
           width: 120
         },
         {
+          title: "角色",
+          key: "roleNames",
+          width: 150
+        },
+        {
           title: "创建时间",
           key: "createTime",
           sortable: true,
           sortType: "desc",
-          minWidth: 150,
+          minWidth: 120,
           render: (h, params) => {
             return h('div', params.row.createTime && new Date(params.row.createTime).format())
           }
@@ -365,6 +375,7 @@ export default {
         userVo: {
           username: this.searchForm.username,
           eCode:this.searchForm.eCode,
+          roleids:this.searchForm.roleids
         },
         searchVo: {
           startDate: this.searchForm.startDate && new Date(this.searchForm.startDate).format("yyyy-MM-dd"),

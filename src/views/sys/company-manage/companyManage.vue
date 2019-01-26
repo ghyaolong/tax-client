@@ -41,6 +41,9 @@
             <FormItem label="成立日期" prop="establishmentTime">
               <DatePicker v-model="form.establishmentTime" type="date"  clearable placeholder="选择日期" style="width: 200px"></DatePicker>
             </FormItem>
+            <FormItem label="注销日期" prop="writeOffTime">
+              <DatePicker v-model="form.writeOffTime" type="date"  clearable placeholder="选择日期" style="width: 200px"></DatePicker>
+            </FormItem>
             <FormItem label="币种" prop="currencyCode">
               <Select v-model="form.currencyCode" style="width:200px">
                 <Option v-for="item in dictCurrencys" :value="item.code" :key="item.id">{{ item.name }}</Option>
@@ -117,7 +120,8 @@ export default {
         countryCode: "",
         currencyCode: "",
         remarks: "",
-        establishmentTime:""
+        establishmentTime:"",
+        writeOffTime:""
       },
       formValidate: {
         name: [
@@ -133,7 +137,7 @@ export default {
           { required: true, message: "币种不能为空", trigger: "blur" }
         ],
         establishmentTime:[
-            { required: true, message: "成立日期不能为空", trigger: "blur" }
+            { required: true, message: "成立日期不能为空", trigger: "blur",pattern: /.+/ }
         ]
       },
       submitLoading: false,
@@ -172,21 +176,33 @@ export default {
           }
         },
         {
+          title: "注销日期",
+          key: "writeOffTime",
+          sortable: true,
+          width: 160,
+          render: (h, params) => {
+            return h("div", params.row.writeOffTime && new Date(params.row.writeOffTime).format());
+          }
+        },
+        {
           title: "所属国家",
           key: "countryCode",
           sortable: true,
+          width:100,
           render:this.renderName
         },
         {
           title: "币种",
           key: "currencyCode",
           sortable: true,
+          width:100,
           render:this.renderCurrencysName
         },
         {
           title:"是否分配",
           key:"isAssign",
           sortable: true,
+          width:100,
           render: (h, params) => {
             return h('div', params.row.isAssign && params.row.isAssign==1?"已分配":"未分配")
           }
@@ -194,12 +210,13 @@ export default {
         {
           title: "备注",
           key: "remarks",
-          sortable: true
+          width:150
         },
         {
           title: "操作",
           key: "action",
           align: "center",
+          fixed:"right",
           width: 240,
           render: (h, params) => {
             return h("div", [
@@ -437,6 +454,8 @@ export default {
           v[attr] = "";
         }
       }
+      v.establishmentTime = new Date(v.establishmentTime).format("yyyy-MM-dd")
+      v.writeOffTime = v.writeOffTime && new Date(v.writeOffTime).format("yyyy-MM-dd")
       let str = JSON.stringify(v);
       let data = JSON.parse(str);
       this.form = data;
