@@ -206,6 +206,11 @@ export default {
           fixed: "left"
         },
         {
+          title: "角色",
+          key: "roleNames",
+          width: 150
+        },
+        {
           title: "姓名",
           key: "username",
           width: 145,
@@ -219,11 +224,6 @@ export default {
           title: "E编码",
           key: "eCode",
           width: 120
-        },
-        {
-          title: "角色",
-          key: "roleNames",
-          width: 150
         },
         {
           title: "创建时间",
