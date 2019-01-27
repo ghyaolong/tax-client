@@ -446,6 +446,7 @@ export default {
             username: this.userForm.username,
             password: this.userForm.password,
             workNumber: this.userForm.workNumber,
+            eCode:this.userForm.eCode,
             sex: this.userForm.sex,
             email: this.userForm.email,
             tel: this.userForm.tel,

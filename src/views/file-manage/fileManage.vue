@@ -5,14 +5,20 @@
       <Card>
         <Form inline :label-width="120" class="search-form">
           <Form-item label="公司名称" prop="company">
-            <Select v-model="company" filterable style="width: 200px" label-in-value>
-              <Option v-for="item in companyList" :value="item.name" :key="item.id" :label="item.name">
+            <Select v-model="company" filterable style="width: 200px" multiple  label-in-value>
+              <Option v-for="item in companyList" :value="item.id" :key="item.id" :label="item.name">
               </Option>
             </Select>
           </Form-item>
           <Form-item label="资料类型" prop="materialTypeDict">
             <Select v-model="materialTypeDict" filterable style="width: 200px" label-in-value>
               <Option v-for="item, index in materialTypeDicts" :value="index" :key="index" :label="item"></Option>
+            </Select>
+          </Form-item>
+          <Form-item label="税种" prop="taxDict">
+            <Select v-model="taxDict" filterable style="width: 200px" multiple  label-in-value>
+              <Option v-for="item in taxDictList" :value="item.id" :key="item.id" :label="item.name">
+              </Option>
             </Select>
           </Form-item>
           <Form-item label="开始日期">
@@ -163,7 +169,7 @@ export default {
       total: 0,
       startDate: "",
       endDate: "",
-      company: '',
+      company: [],
       materialTypeDict: '',
       companyList: [],
       priviewFilePath:'',
@@ -174,7 +180,9 @@ export default {
             return date.valueOf()<this.startDate
           }
         }
-      }
+      },
+      taxDict:[],
+      taxDictList:[]
     }
   },
   computed: {
@@ -197,8 +205,9 @@ export default {
           pageNumber: this.pageNumber,
           pageSize: this.pageSize
         },
-        companyName: this.company,
+        companyName: this.company.join(","),
         materialTypeDict: this.materialTypeDict,
+        taxDict:this.taxDict.join(","),
         searchVo: {
           startDate: this.startDate && new Date(this.startDate).format("yyyy-MM-dd"),
           endDate: this.endDate && new Date(this.endDate).format("yyyy-MM-dd")
@@ -217,6 +226,10 @@ export default {
         .then(res => {
           this.companyList = res.data;
         })
+    },
+    // 获取税种
+    initTaxDict(){
+
     },
     clearSelectAll() {
       this.$refs.table.selectAll(false)
@@ -305,6 +318,7 @@ export default {
           res.data.map((item,index)=>{
             maps.set(item.code,item.name)
           })
+          this.taxDictList=res.data
           this.daxDictMap = maps;
         });
   }
