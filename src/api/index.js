@@ -1,5 +1,5 @@
 // 统一请求路径前缀在libs/axios.js中修改
-import { getRequest, formPostRequest, postRequest, putRequest, deleteRequest, uploadFileRequest } from '@/libs/axios';
+import { getRequest, formPostRequest, postRequest, putRequest, deleteRequest, uploadFileRequest,deleteFile } from '@/libs/axios';
 
 // 登陆
 export const login = (params) => {
@@ -442,4 +442,9 @@ export const exportObj=params=>{
 // 统计详情
 export const getDetail=params=>{
   return postRequest('/statistics/findAll',params)
+}
+
+// 删除文件
+export const delFile=params=>{
+  return deleteFile('/file/delete',params)
 }

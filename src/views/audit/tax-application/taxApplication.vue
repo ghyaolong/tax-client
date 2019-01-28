@@ -67,15 +67,14 @@
           <Form-item label="财务报表" prop="financialReportPath">
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}"
-            :before-upload="finleBeforeUpload"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip"
+            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
             name="file" :data="{materialTypeDict: 'FINANCE_REPORT',taxDict:'none',currency:selectCurrencyCode}"
             :show-upload-list="false" :on-success="financeUploadSuc" class="upload-box" >
               <Input type="text" readonly v-model="form.fileName" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
               <!-- <span style="padding-left: 10px;" v-if="form.financialReport">已上传</span> -->
             </Upload>
-            <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip 文件，并且不能大于4MB</span>
+            <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg 文件</span>
           </Form-item>
         </Form>
         <Spin size="large" fix v-if="loading"></Spin>
@@ -103,85 +102,56 @@
     </Col>
     <Modal
         v-model="showUploadModal"
+        width="600"
         @on-ok="uploadModalOk"
         @on-cancel="uploadModalCancel">
         <Form label-position="left" :label-width="100">
           <FormItem label="预申报表">
             <Upload action="/api/file/upload"
-            :before-upload="finleBeforeUpload"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip"
+            style="float:left"
+            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'PRE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc" ref="updateFile">
               <Input type="text" readonly v-model="fileUploadForm.preTaxReturnsPathFileName" />
-              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline" v-if="isCommissioner">上传文件</Button>
               <!-- <Button v-if="fileUploadForm.preTaxReturns" @click.stop="filePriview(fileUploadForm.preTaxReturnsPath)">预览</Button> -->
             </Upload>
+            <Button  v-if="isCommissioner" @click="handleDelFile">删除</Button>
           </FormItem>
           <FormItem label="申报表" v-if="routeType === 'taxReplenishments'">
             <Upload action="/api/file/upload"
-            :before-upload="finleBeforeUpload"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip"
+            style="float:left"
+            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.taxReturnsPathFileName" />
-              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline"  v-if="isCommissioner">上传文件</Button>
               <!-- <div v-if="fileUploadForm.taxReturns"><Button @click.stop="filePriview(fileUploadForm.taxReturnsPath)">预览</Button></div> -->
             </Upload>
+            <Button  v-if="isCommissioner" >删除</Button>
           </FormItem>
           <FormItem label="完税申报表" v-if="routeType === 'taxReplenishments'">
             <Upload action="/api/file/upload"
-            :before-upload="finleBeforeUpload"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip"
+            style="float:left"
+            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'DONE_TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.paymentCertificatePathFileName" />
-              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline"  v-if="isCommissioner">上传文件</Button>
               <!-- <div v-if="fileUploadForm.paymentCertificate"><Button @click.stop="filePriview(fileUploadForm.paymentCertificatePath)">预览</Button></div> -->
             </Upload>
+            <Button  v-if="isCommissioner">删除</Button>
           </FormItem>
           <FormItem label="其它" v-if="routeType === 'taxReplenishments'">
             <Upload action="/api/file/upload"
-            :before-upload="finleBeforeUpload"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip"
+            style="float:left"
+            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'OTHER'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.otherUploadFileName" />
-              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline"  v-if="isCommissioner">上传文件</Button>
               <!-- <div v-if="fileUploadForm.otherUploadId"><Button @click.stop="filePriview(fileUploadForm.otherUploadIdPath)">预览</Button></div> -->
             </Upload>
+            <Button  v-if="isCommissioner">删除</Button>
           </FormItem>
       </Form>
-      <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip 文件，并且不能大于4MB</span>
-    </Modal>
-    <Modal
-        :closable="false"
-        class-name="preview-modal-inline"
-        v-model="showPreviewModal">
-        <Form label-position="left" :label-width="100">
-          <FormItem label="预申报表">
-            <Input type="text" readonly
-            v-model="fileUploadForm.preTaxReturnsPath" />
-            <Button v-if="fileUploadForm.preTaxReturns" @click.stop="filePriview(fileUploadForm.preTaxReturnsPath)">预览</Button>
-          </FormItem>
-          <FormItem label="申报表">
-            <Input type="text" readonly v-model="fileUploadForm.taxReturnsPath" />
-            <Button v-if="fileUploadForm.taxReturns" @click.stop="filePriview(fileUploadForm.taxReturnsPath)">预览</Button>
-          </FormItem>
-          <FormItem label="完税申报表">
-              <Input type="text" readonly v-model="fileUploadForm.paymentCertificatePath" />
-              <Button v-if="fileUploadForm.paymentCertificate" @click.stop="filePriview(fileUploadForm.paymentCertificatePath)">预览</Button>
-            </Upload>
-          </FormItem>
-          <FormItem label="其它">
-              <Input type="text" readonly v-model="fileUploadForm.otherUploadId" />
-              <Button v-if="fileUploadForm.otherUploadId" @click.stop="filePriview(fileUploadForm.otherUploadId)">预览</Button>
-            </Upload>
-          </FormItem>
-      </Form>
-    </Modal>
-    <Modal
-        v-model="priviewModal"
-        :title="fileName"
-        width="700"
-        class-name="preview-modal"
-        footer-hide>
-        <iframe style="width: 100%; height: 600px;" :src="filePath" frameborder="0"></iframe>
+      <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg 文件</span>
     </Modal>
   </Row>
 </template>
@@ -202,7 +172,7 @@ import { dictType } from '@/libs/constance.js'
 import { getStore } from '@/libs/storage';
 import Cookies from "js-cookie";
 import circleLoading from "../../my-components/circle-loading.vue"
-import {submitJJSQ} from '@/api/index';
+import {submitJJSQ,delFile} from '@/api/index';
 export default {
   name: 'taxApplication',
   data() {
@@ -217,6 +187,7 @@ export default {
       filePath: '',
       operationLoading: false,
       accessToken: getStore('accessToken'),
+      isCommissioner:getStore('isCommissioner'),
       showUploadModal: false,
       form: {
         companyId: '',
@@ -397,10 +368,11 @@ export default {
                           otherUploadFileName,
                         }
                         if(item.taxDict=="" || that.selectCurrencyCode=="") {
-                          console.log("item",item)
                           this.$Message.warning("请选择税种和币种");
                         }else{
                           this.colSelectCurrencyCode =item.taxDict
+                          this.delFileNameIndex = params.index
+                          this.delFileName = item
                           this.showUploadModal = true;
                         }
                       }
@@ -442,23 +414,25 @@ export default {
       overduePayment:0, //实缴滞纳金合计
       taxsjsk:0, // 实缴税款合计
       userInfo:{},
-      dictTaxCategorysMap:""
+      dictTaxCategorysMap:"",
+      delFileName:"",
+      delFileNameIndex:""
     }
   },
   methods: {
     // 文件上传之前文件大小校验
-    finleBeforeUpload(file) {
-      // console.log(file)
-      if(file) {
-        let fileSize= file.size
-        if(fileSize/1024/1024 >4 ) {
-          this.$Message.error('上传文件不能大于4MB');
-          return false
-        }else{
-          return true
-        }
-      }
-    },
+    // finleBeforeUpload(file) {
+    //   // console.log(file)
+    //   if(file) {
+    //     let fileSize= file.size
+    //     if(fileSize/1024/1024 >4 ) {
+    //       this.$Message.error('上传文件不能大于4MB');
+    //       return false
+    //     }else{
+    //       return true
+    //     }
+    //   }
+    // },
     // 真是提交
     submitTrue() {
       this.form.applicantName=this.userInfo.username  // 用户名
@@ -510,17 +484,6 @@ export default {
         this.$Message.error('请选择税种');
         return;
       }
-      //  申请缴纳税款不能为空
-      // let flag = params.details.some((item) => {
-      //   if (item.applTaxPayment == '') {
-      //     item.applTaxPayment = parseFloat(item.payableTax) + parseFloat(item.lateFeePayable);
-      //   }
-      //   return item.applTaxPayment <= 0
-      // });
-      // if (flag) {
-      //   this.$Message.error('申请缴纳税款不能为空,请输入应缴税额或应缴滞纳金');
-      //   return;
-      // }
       //  缴款截止日期
       let jnjzrq = params.details.some(item => {
         return !item.deadline
@@ -529,14 +492,6 @@ export default {
         this.$Message.error('请选择缴款截止日期');
         return;
       }
-      //实际缴纳日期
-      // let sjjnrqi = params.details.some(item => {
-      //   return !item.paymentTime
-      // })
-      // if (sjjnrqi) {
-      //   this.$Message.error('请选择缴款截止日期');
-      //   return;
-      // }
       // 税种与申报表
       var tempString=""
       let preTaxReturnsVerity = params.details.some(item => {
@@ -593,6 +548,22 @@ export default {
       this.getDictData()
       this.addColumn()
       this.addTable();
+    },
+    // 删除预申报表
+    handleDelFile() {
+      console.log("aaaaaaaa",this.delFileName)
+      console.log("bbbb",this.delFileNameIndex)
+      const that=this
+      let tempFileName = this.delFileName.preTaxReturnsPath;
+      let tempIndex = this.delFileNameIndex;
+      delFile(tempFileName).then((res)=>{
+        console.log("del",res)
+        // if(res.status=="0") {
+        //   that.data[tempIndex].preTaxReturnsPath=""
+        //   that.data[tempIndex].preTaxReturns=""
+        //   that.data[tempIndex].preTaxReturnsPathFileName=""
+        // }
+      })
     },
     // table下面添加table
     addTable() {

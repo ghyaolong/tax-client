@@ -20,65 +20,14 @@
             </FormItem>
           </Form>
         </TabPane>
-        <!-- <TabPane label="手机号登录" name="mobile" icon="ios-phone-portrait">
-          <Form ref="mobileLoginForm" :model="form" :rules="rules" class="form">
-            <FormItem prop="mobile">
-              <Input v-model="form.mobile" prefix="ios-phone-portrait" size="large" clearable placeholder="请输入手机号" />
-            </FormItem>
-            <FormItem prop="code" :error="errorCode">
-              <Row type="flex" justify="space-between" class="code-row-bg">
-                <Input v-model="form.code" prefix="ios-mail-outline" size="large" clearable placeholder="请输入短信验证码" :maxlength="maxLength" class="input-verify" />
-                <Button size="large" :loading="sending" @click="sendVerify" v-if="!sended" class="send-verify">
-                  <span v-if="!sending">获取验证码</span>
-                  <span v-else>发送中</span>
-                </Button>
-                <Button size="large" disabled v-if="sended" class="count-verify">{{countButton}}</Button>
-              </Row>
-            </FormItem>
-          </Form>
-        </TabPane> -->
       </Tabs>
-
-      <!-- <Row type="flex" justify="space-between" class="code-row-bg">
-        <Checkbox v-model="saveLogin" size="large">自动登录</Checkbox>
-        <a class="forget-pass" @click="showAccount">忘记密码</a>
-      </Row> -->
       <Row>
         <Button class="login-btn" type="primary" size="large" :loading="loading" @click="submitLogin" long>
                             <span v-if="!loading">登录</span>
                             <span v-else>登录中...</span>
                         </Button>
       </Row>
-      <!-- <Row type="flex" justify="space-between" class="code-row-bg other-login">
-        <div class="other-way icons">
-          其它方式登录
-          <div class="other-icon" @click="toGithubLogin">
-            <icon scale="1.1" name="brands/github"></icon>
-          </div>
-          <div class="other-icon" @click="toQQLogin">
-            <icon name="brands/qq"></icon>
-          </div>
-          <div class="other-icon" @click="toWeiboLogin">
-            <icon scale="1.2" name="brands/weibo"></icon>
-          </div>
-          <div class="other-icon" @click="toWeixinLogin">
-            <icon scale="1.2" name="brands/weixin"></icon>
-          </div>
-        </div>
-        <router-link to="/regist"><a class="forget-pass">注册账户</a></router-link>
-      </Row> -->
     </Row>
-
-    <!-- <Row class="foot">
-      <Row type="flex" justify="space-around" class="code-row-bg help">
-        <a class="item" href="https://github.com/Exrick/x-boot" target="_blank">帮助</a>
-        <a class="item" href="https://github.com/Exrick/x-boot" target="_blank">隐私</a>
-        <a class="item" href="https://github.com/Exrick/x-boot" target="_blank">条款</a>
-      </Row>
-      <Row type="flex" justify="center" class="code-row-bg copyright">
-        Copyright © 2018-Present <a href="http://exrick.cn" target="_blank" style="margin:0 5px;">Exrick</a> 版权所有
-      </Row>
-    </Row> -->
     </Col>
   </Row>
 </template>
@@ -204,6 +153,12 @@ export default {
                   Cookies.set("userInfo", JSON.stringify(res.data));
                 }
                 this.setStore("userInfo", res.data);
+                //判断角色里是否包含税务专员
+                let isROLE_COMMISSIONER_OF_TAX=res.data.roles.some((item,index)=>{
+                   return item.code =="ROLE_COMMISSIONER_OF_TAX"
+                })
+                this.setStore("isCommissioner", isROLE_COMMISSIONER_OF_TAX);
+
                 this.$store.commit("setAvatarPath", res.data.avatar);
                 // 加载菜单
                 util.initRouter(this);

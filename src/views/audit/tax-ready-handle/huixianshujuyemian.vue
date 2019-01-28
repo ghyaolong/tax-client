@@ -67,15 +67,14 @@
           <Form-item label="财务报表" prop="financialReportPath">
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}"
-            :before-upload="finleBeforeUpload"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip"
+            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
             name="file" :data="{materialTypeDict: 'FINANCE_REPORT',taxDict:'none',currency:selectCurrencyCode}"
             :show-upload-list="false" :on-success="financeUploadSuc" class="upload-box">
               <Input type="text" readonly v-model="form.fileName" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
               <!-- <span style="padding-left: 10px;" v-if="form.financialReport">已上传</span> -->
             </Upload>
-            <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip 文件，并且不能大于4MB</span>
+            <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg 文件</span>
           </Form-item>
         </Form>
         <Spin size="large" fix v-if="loading"></Spin>
@@ -87,12 +86,6 @@
         <Button @click="submitTrue" >提交</Button>
         <circleLoading v-if="operationLoading"/>
       </Row>
-      <!-- <Row>
-        <Alert show-icon>
-          已选择 <span class="select-count">{{selectCount}}</span> 项
-          <a class="select-clear" @click="clearSelectAll">清空</a>
-        </Alert>
-      </Row> -->
       <Row>
         <Table ref="table" border :columns="columns" :data="data" id="myTable"
         @on-selection-change="changeSelect">
@@ -108,8 +101,7 @@
         <Form label-position="left" :label-width="100">
           <FormItem label="预申报表">
             <Upload action="/api/file/upload"
-            :before-upload="finleBeforeUpload"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip"
+            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'PRE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.preTaxReturnsPathFileName" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
@@ -118,8 +110,7 @@
           </FormItem>
           <FormItem label="申报表" v-if="routeType === 'taxReplenishment'">
             <Upload action="/api/file/upload"
-            :before-upload="finleBeforeUpload"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip"
+            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.taxReturnsPathFileName" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
@@ -128,8 +119,7 @@
           </FormItem>
           <FormItem label="完税申报表" v-if="routeType === 'taxReplenishment'">
             <Upload action="/api/file/upload"
-            :before-upload="finleBeforeUpload"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip"
+            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'DONE_TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.paymentCertificatePathFileName" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
@@ -138,8 +128,7 @@
           </FormItem>
           <FormItem label="其它" v-if="routeType === 'taxReplenishment'">
             <Upload action="/api/file/upload"
-            :before-upload="finleBeforeUpload"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip"
+            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'OTHER'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.otherUploadFileName" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
@@ -147,7 +136,7 @@
             </Upload>
           </FormItem>
       </Form>
-      <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip 文件，并且不能大于4MB</span>
+      <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg 文件</span>
     </Modal>
     <Modal
         :closable="false"
@@ -297,9 +286,6 @@ export default {
            })
            return h('div', `${parseFloat(this.data[params.index].payableTax?this.data[params.index].payableTax:0) + parseFloat(this.data[params.index].lateFeePayable?this.data[params.index].lateFeePayable:0)}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1"))
          }
-            // let item = this.data[params.index];
-            // item[params.column.key] = parseFloat(item.payableTax) + parseFloat(item.lateFeePayable);
-            // return h('div', item[params.column.key])
         },
         {
           title: '缴款截止日期',
@@ -410,51 +396,6 @@ export default {
                   },
                   "上传"
                 ),
-                // h(
-                //   "Button",
-                //   {
-                //     props: {
-                //       size: "small"
-                //     },
-                //     style: {
-                //       marginRight: "5px"
-                //     },
-                //     on: {
-                //       click: () => {
-                //         let item = this.data[params.index];
-                //         let {preTaxReturns, preTaxReturnsPath, taxReturns, taxReturnsPath, paymentCertificate, paymentCertificatePath, otherUploadId, otherUpload} = item;
-                //         this.fileUploadForm = {
-                //           uploadColomunIndex: params.index,
-                //           preTaxReturns,
-                //           preTaxReturnsPath,
-                //           taxReturns,
-                //           taxReturnsPath,
-                //           paymentCertificate,
-                //           paymentCertificatePath,
-                //           otherUploadId,
-                //           otherUploadPath: otherUpload
-                //         }
-                //         this.showPreviewModal = true;
-                //       }
-                //     }
-                //   },
-                //   "预览"
-                // ),
-                // h(
-                //   "Button",
-                //   {
-                //     props: {
-                //       type: "error",
-                //       size: "small"
-                //     },
-                //     on: {
-                //       click: () => {
-                //         // this.remove(params.row);
-                //       }
-                //     }
-                //   },
-                //   "删除"
-                // )
               ]);
           }
         },
@@ -494,18 +435,18 @@ export default {
   },
   methods: {
     // 文件上传之前文件大小校验
-    finleBeforeUpload(file) {
-      // console.log(file)
-      if(file) {
-        let fileSize= file.size
-        if(fileSize/1024/1024 >4 ) {
-          this.$Message.error('上传文件不能大于4MB');
-          return false
-        }else{
-          return true
-        }
-      }
-    },
+    // finleBeforeUpload(file) {
+    //   // console.log(file)
+    //   if(file) {
+    //     let fileSize= file.size
+    //     if(fileSize/1024/1024 >4 ) {
+    //       this.$Message.error('上传文件不能大于4MB');
+    //       return false
+    //     }else{
+    //       return true
+    //     }
+    //   }
+    // },
     // 放弃
     resubmit() {
       this.form.applicantName=this.userInfo.username  // 用户名

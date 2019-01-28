@@ -21,7 +21,6 @@ axios.interceptors.request.use(config => {
 // http response 拦截器
 axios.interceptors.response.use(response => {
     const data = response.data;
-
     switch (data.status) {
         case '0':
             data.success = true;
@@ -33,7 +32,6 @@ axios.interceptors.response.use(response => {
             }
             return Promise.reject(data);
     }
-
     // 根据返回的code值来做不同的处理(和后端约定)
     switch (data.code) {
         case 401:
@@ -53,6 +51,7 @@ axios.interceptors.response.use(response => {
         case 500:
             // 错误
             if (data.message !== null) {
+                console.log("......",data)
                 Message.error(data.message);
             } else {
                 Message.error("未知错误");
@@ -61,7 +60,6 @@ axios.interceptors.response.use(response => {
         default:
             return data;
     }
-
     return data;
 }, (err) => {
     // 返回状态码不为200时候的错误处理
@@ -156,3 +154,13 @@ export const uploadFileRequest = (url, params) => {
         }
     });
 };
+export const deleteFile = (url,params) =>{
+  let accessToken = getStore('accessToken');
+  return axios({
+      method: 'delete',
+      url: `${base}${url}/${params}`,
+      headers: {
+          'accessToken': accessToken
+      }
+  });
+}

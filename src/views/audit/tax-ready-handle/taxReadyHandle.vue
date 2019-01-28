@@ -133,7 +133,7 @@
                   <td width="82" >财务报表</td>
                   <td colspan="5" style="border-right-color:#fff">{{tableList[0].oriName}}</td>
                   <td style="border-right-color:#fff" class="myspan" @click="priviewFile(tableList[0].financialReportPath)">预览</td>
-                  <td class="myspan" @click="uploadFile(tableList[0].financialReportPath)">下载</td>
+                  <!-- <td class="myspan" @click="uploadFile(tableList[0].financialReportPath)">下载</td> -->
                 </tr>
                 <tr>
                   <td width="82">所属期间</td>
@@ -238,52 +238,44 @@
         <Form label-position="left" :label-width="100" :modal="fileUploadForm" :rules="fileUploadFormRules" ref="showUploadRefs">
           <FormItem label="预申报表" prop="preTaxReturnsPath">
             <Input type="text" disabled v-model="fileUploadForm.preTaxReturnsPathFileName" style="width:150px;float:left"/>
-            <!-- <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file"
-            :data="{materialTypeDict: 'PRE_TAX_REPORT'}" :show-upload-list="false"
-            :on-success="uploadSuc" style="float:left">
-              <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
-            </Upload> -->
             <Button   @click.stop="priviewFile(fileUploadForm.preTaxReturnsPath)">预览</Button>
-            <Button   @click.stop="uploadFile(fileUploadForm.preTaxReturnsPath)">下载</Button>
+            <!-- <Button   @click.stop="uploadFile(fileUploadForm.preTaxReturnsPath)">下载</Button> -->
           </FormItem>
           <FormItem label="申报表" prop="taxReturnsPath">
             <Input type="text" disabled v-model="fileUploadForm.taxReturnsPathFileName" style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}" name="file"
-            :before-upload="finleBeforeUpload"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip"
+            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
             :data="{materialTypeDict: 'TAX_REPORT',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
-              <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile' && isCommissioner">上传文件</Button>
             </Upload>
             <Button  @click.stop="priviewFile(fileUploadForm.taxReturnsPath)">预览</Button>
-            <Button  @click.stop="uploadFile(fileUploadForm.taxReturnsPath)">下载</Button>
+            <!-- <Button  @click.stop="uploadFile(fileUploadForm.taxReturnsPath)">下载</Button> -->
           </FormItem>
           <FormItem label="完税申报表" prop="paymentCertificatePath">
             <Input type="text" disabled v-model="fileUploadForm.paymentCertificatePathFileName" style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}" name="file"
-            :before-upload="finleBeforeUpload"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip"
+            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
             :data="{materialTypeDict: 'DONE_TAX_REPORT',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
-              <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile' && isCommissioner">上传文件</Button>
             </Upload>
             <Button  @click.stop="priviewFile(fileUploadForm.paymentCertificatePath)">预览</Button>
-            <Button  @click.stop="uploadFile(fileUploadForm.paymentCertificatePath)">下载</Button>
+            <!-- <Button  @click.stop="uploadFile(fileUploadForm.paymentCertificatePath)">下载</Button> -->
           </FormItem>
           <FormItem label="其它" prop="otherUploadId">
             <Input type="text" disabled  v-model="fileUploadForm.otherUploadFileName"  style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}" name="file"
-            :before-upload="finleBeforeUpload"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip"
+            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
             :data="{materialTypeDict: 'OTHER',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
-              <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile' && isCommissioner">上传文件</Button>
             </Upload>
             <Button @click.stop="priviewFile(fileUploadForm.otherUploadId)">预览</Button>
-            <Button  @click.stop="uploadFile(fileUploadForm.otherUploadId)">下载</Button>
+            <!-- <Button  @click.stop="uploadFile(fileUploadForm.otherUploadId)">下载</Button> -->
           </FormItem>
       </Form>
       <footer class="vertical-center" slot="footer">
@@ -291,7 +283,7 @@
           <Button type="primary" style="width: 100px;margin-left:20px" @click="tempSubmitOk" v-if="currentLinkType=='uploadPayFile'">确定</Button>
           <Button type="primary" style="width: 100px;margin-left:20px" @click="fileuploadFormCancel" v-if="currentLinkType!='uploadPayFile'">确定</Button>
       </footer>
-      <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip 文件，并且不能大于4MB</span>
+      <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg 文件</span>
     </Modal>
   </div>
 </template>
@@ -312,6 +304,7 @@ export default {
       colSelectCurrencyCode:"", // 行选择的税种code
       showUploadModal:false,
       accessToken: getStore('accessToken'),
+      isCommissioner:getStore('isCommissioner'),
       loading: false,
       handelModal: false,
       userInfo:{},
@@ -593,18 +586,18 @@ export default {
   },
   methods: {
     // 文件上传之前文件大小校验
-    finleBeforeUpload(file) {
-      // console.log(file)
-      if(file) {
-        let fileSize= file.size
-        if(fileSize/1024/1024 >4 ) {
-          this.$Message.error('上传文件不能大于4MB');
-          return false
-        }else{
-          return true
-        }
-      }
-    },
+    // finleBeforeUpload(file) {
+    //   // console.log(file)
+    //   if(file) {
+    //     let fileSize= file.size
+    //     if(fileSize/1024/1024 >4 ) {
+    //       this.$Message.error('上传文件不能大于4MB');
+    //       return false
+    //     }else{
+    //       return true
+    //     }
+    //   }
+    // },
     filterMethod (value, option) {
           return option.toUpperCase().indexOf(value.toUpperCase()) !== -1;
     },

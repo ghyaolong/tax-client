@@ -4,8 +4,8 @@
       <Col>
       <Card>
         <Form inline :label-width="120" class="search-form">
-          <Form-item label="公司名称" prop="company">
-            <Select v-model="company" filterable style="width: 200px" multiple  label-in-value>
+          <Form-item label="公司名称" prop="companyIds">
+            <Select v-model="companyIds" filterable style="width: 200px" multiple  label-in-value>
               <Option v-for="item in companyList" :value="item.id" :key="item.id" :label="item.name">
               </Option>
             </Select>
@@ -15,17 +15,17 @@
               <Option v-for="item, index in materialTypeDicts" :value="index" :key="index" :label="item"></Option>
             </Select>
           </Form-item>
-          <Form-item label="税种" prop="taxDict">
-            <Select v-model="taxDict" filterable style="width: 200px" multiple  label-in-value>
-              <Option v-for="item in taxDictList" :value="item.id" :key="item.id" :label="item.name">
+          <Form-item label="税种" prop="taxDicts">
+            <Select v-model="taxDicts" filterable style="width: 200px" multiple  label-in-value>
+              <Option v-for="item in taxDictList" :value="item.code" :key="item.id" :label="item.name">
               </Option>
             </Select>
           </Form-item>
-          <Form-item label="开始日期">
-            <DatePicker type="date" v-model="startDate"  clearable  placeholder="选择开始日期" style="width: 200px"></DatePicker>
+          <Form-item label="开始所属期间">
+            <DatePicker type="month" v-model="startDate"  clearable  placeholder="选择开始日期" style="width: 200px"></DatePicker>
           </Form-item>
-          <Form-item label="结束日期">
-            <DatePicker type="date" v-model="endDate"  :options="renderEndDate" clearable  placeholder="选择结束日期" style="width: 200px"></DatePicker>
+          <Form-item label="结束所属期间">
+            <DatePicker type="month" v-model="endDate"  :options="renderEndDate" clearable  placeholder="选择结束日期" style="width: 200px"></DatePicker>
           </Form-item>
           <Form-item style="margin-left:-35px;" class="br">
             <Button @click="initPageData" type="primary" icon="ios-search">搜索</Button>
@@ -169,7 +169,7 @@ export default {
       total: 0,
       startDate: "",
       endDate: "",
-      company: [],
+      companyIds: [],
       materialTypeDict: '',
       companyList: [],
       priviewFilePath:'',
@@ -181,7 +181,7 @@ export default {
           }
         }
       },
-      taxDict:[],
+      taxDicts:[],
       taxDictList:[]
     }
   },
@@ -205,9 +205,9 @@ export default {
           pageNumber: this.pageNumber,
           pageSize: this.pageSize
         },
-        companyName: this.company.join(","),
+        companyIds: this.companyIds.join(","),
         materialTypeDict: this.materialTypeDict,
-        taxDict:this.taxDict.join(","),
+        taxDicts:this.taxDicts.join(","),
         searchVo: {
           startDate: this.startDate && new Date(this.startDate).format("yyyy-MM-dd"),
           endDate: this.endDate && new Date(this.endDate).format("yyyy-MM-dd")
@@ -248,8 +248,9 @@ export default {
       this.pageSize = 10;
       this.startDate = "";
       this.endDate = "";
-      this.company = '';
+      this.companyIds = [];
       this.materialTypeDict = '';
+      this.taxDicts=[]
       // 重新加载数据
       this.initPageData();
     },
