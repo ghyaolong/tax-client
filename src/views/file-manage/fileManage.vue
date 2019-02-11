@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { getFilesList, getAllCompany } from '@/api/index.js'
+import { getFilesList, getAllCompany,getCompanyList } from '@/api/index.js'
 import fileLoadPath from "@/api/fileload";
 import { getStore } from '@/libs/storage';
 import { dictType } from '@/libs/constance.js'
@@ -76,6 +76,7 @@ export default {
       loading: false,
       priviewModal: false,
       accessToken: getStore('accessToken'),
+      userInfo: JSON.parse(getStore("userInfo")),
       fileName: '',
       materialTypeDicts: {
         'PRE_TAX_REPORT':"预申报表",
@@ -222,7 +223,8 @@ export default {
     },
     /* 获取公司列表 */
     initCompanyList() {
-      getAllCompany()
+      let userId = this.userInfo.id
+      getCompanyList(userId)
         .then(res => {
           this.companyList = res.data;
         })
