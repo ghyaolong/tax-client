@@ -451,5 +451,5 @@ export const delFile=params=>{
 
 // 资料管理和统计页面获取公司
 export const getCompanyList=params=>{
-  return getRequest(`/company/userid/${params}`)
+  return getRequest(`/company/userId/${params}`)
 }

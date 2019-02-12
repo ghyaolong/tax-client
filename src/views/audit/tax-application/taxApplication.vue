@@ -556,14 +556,11 @@ export default {
       const that=this
       let tempFileName = this.delFileName.preTaxReturnsPath;
       let tempIndex = this.delFileNameIndex;
-      delFile(tempFileName).then((res)=>{
-        console.log("del",res)
-        // if(res.status=="0") {
-        //   that.data[tempIndex].preTaxReturnsPath=""
-        //   that.data[tempIndex].preTaxReturns=""
-        //   that.data[tempIndex].preTaxReturnsPathFileName=""
-        // }
-      })
+      if(tempFileName) {
+        delFile(tempFileName).then((res)=>{
+          console.log("del",res)
+        })
+      }
     },
     // table下面添加table
     addTable() {
