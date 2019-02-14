@@ -78,7 +78,7 @@
       <Row class="operation">
         <!-- <Button @click="delAll" icon="md-trash">批量删除</Button> -->
         <Button @click="addColumn" icon="md-add">增加一栏</Button>
-        <Button @click="submit('save')">保存</Button>
+        <!-- <Button @click="submit('save')">保存</Button> -->
         <Button @click="submitTrue" >提交</Button>
         <circleLoading v-if="operationLoading"/>
       </Row>
@@ -157,7 +157,7 @@ import { dictType } from '@/libs/constance.js'
 import { getStore } from '@/libs/storage';
 import Cookies from "js-cookie";
 import circleLoading from "../../my-components/circle-loading.vue"
-import {submitJJSQ,delFile} from '@/api/index';
+import {inputData,delFile} from '@/api/index';
 export default {
   name: 'taxApplication',
   data() {
@@ -488,7 +488,7 @@ export default {
       //   return;
       // }
       this.loading = true;
-      submitJJSQ(params).then((res)=>{
+      inputData(params).then((res)=>{
         if(res.data == "流程启动失败") {
           this.$Message.error("启动流程失败")
         }else{

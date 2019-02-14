@@ -453,3 +453,7 @@ export const delFile=params=>{
 export const getCompanyList=params=>{
   return getRequest(`/company/userId/${params}`)
 }
+// 录入数据
+export const inputData=params=>{
+  return postRequest("/tax/inputData",params)
+}

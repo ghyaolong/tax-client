@@ -107,7 +107,10 @@ export default {
         },
         {
           title: '所属期间',
-          key: "createTime",
+          key: "taxPeriod",
+          render:(h,params)=>{
+            return h("div",params.row.taxPeriod && params.row.taxPeriod.replace(/(.*)-01/,"$1"))
+          }
           // width: 110
         },
         {
@@ -215,8 +218,10 @@ export default {
         }
       }
       getFilesList(params).then(res => {
-        this.total = res.data.total;
-        this.data = res.data.list;
+        if(res.data) {
+          this.total = res.data.total && res.data.total;
+          this.data = res.data.list && res.data.list;
+        }
       }).finally(() => {
         this.loading = false;
       })
