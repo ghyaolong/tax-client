@@ -1008,6 +1008,7 @@ export default {
           applicantName: '',
           remarks: '',
           currentHandler: '',
+          
           financialReport: '',
           financialReportPath: '',
           fileName:"",
