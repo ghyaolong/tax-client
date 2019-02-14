@@ -76,7 +76,7 @@
                     </span>
                   </FormItem>
                   <FormItem label="前端组件" prop="component">
-                    <Input v-model="menuForm.component" :maxlength="20"/>
+                    <Input v-model="menuForm.component" :maxlength="100"/>
                   </FormItem>
                   <FormItem label="跳转网页链接" prop="url">
                     <Poptip trigger="focus" placement="right" width="230" word-wrap title="提示" content="前端组件需为 sys/monitor/monitor 时生效">
