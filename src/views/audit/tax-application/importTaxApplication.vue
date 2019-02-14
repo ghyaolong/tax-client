@@ -55,11 +55,11 @@
           <Form-item label="备注" prop="remarks">
             <Input type="text" v-model="form.remarks" :maxlength="40" clearable placeholder="请输入备注" style="width: 200px" />
           </Form-item>
-          <Form-item label="选择审核人" prop="currentHandler">
+          <!-- <Form-item label="选择审核人" prop="currentHandler">
             <Select v-model="form.currentHandler" style="width:200px">
               <Option v-for="item in reviewers" :value="item.id" :key="item.id">{{ item.realName }}</Option>
             </Select>
-          </Form-item>
+          </Form-item> -->
           <br/>
           <!-- <Form-item label="财务报表" prop="financialReportPath">
             <Upload action="/api/file/upload"
@@ -435,10 +435,10 @@ export default {
         return;
       }
       // 审核人
-      if (!params.currentHandler) {
-        this.$Message.error('请选择审核人');
-        return;
-      }
+      // if (!params.currentHandler) {
+      //   this.$Message.error('请选择审核人');
+      //   return;
+      // }
       // 财务报表
       // if (!params.financialReport) {
       //   this.$Message.error('请上传财务报表');
