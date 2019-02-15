@@ -138,6 +138,13 @@
       </Form>
       <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg 文件</span>
     </Modal> -->
+    <Modal
+      v-model="taxModal"
+      title="注意!"
+      @on-ok="taxModalOk"
+      @on-cancel="taxModalCancel">
+      <p>应缴税额和实缴税额,应缴滞纳金和实缴滞纳金。金额不相等,是否继续提交?</p>
+    </Modal>
   </Row>
 </template>
 
@@ -162,6 +169,7 @@ export default {
   name: 'taxApplication',
   data() {
     return {
+      taxModal:false,
       selectCurrencyCode:"", // 选择的税种code
       colSelectCurrencyCode:"", // 行选择的税种code
       isRouterAlive: true,
@@ -402,7 +410,8 @@ export default {
       userInfo:{},
       dictTaxCategorysMap:"",
       delFileName:"",
-      delFileNameIndex:""
+      delFileNameIndex:"",
+      tempPatams:null
     }
   },
   methods: {
@@ -419,6 +428,51 @@ export default {
     //     }
     //   }
     // },
+    // 确定
+    taxModalOk() {
+      this.loading = true;
+      inputData(this.tempPatams).then((res)=>{
+        if(res.data == "流程启动失败") {
+          this.$Message.error("启动流程失败")
+        }else{
+          this.$Message.success('操作成功')
+        }
+        this.form={
+          companyId: '',
+          companyName: '',
+          tin: '',
+          countryCode: '',
+          currency: '',
+          applicantName: '',
+          remarks: '',
+          currentHandler: '',
+          financialReport: '',
+          financialReportPath: '',
+          fileName:"",
+          oriName:"",
+          status:0
+        }
+        this.data=[{ taxPeriod: '',
+                taxDict: '',
+                payableTax: 0,
+                lateFeePayable: 0,
+                applTaxPayment: 0,
+                deadline: '',
+                taxPaid: 0,
+                overduePayment: 0,
+                paymentTime: '',
+                taxReturns: "",
+                remarks: '',
+                status:0
+              }]
+      }).finally(() => {
+        this.loading = false;
+      })
+    },
+    // 取消
+    taxModalCancel() {
+      this.taxModal=false
+    },
     // 真是提交
     submitTrue() {
       this.form.applicantName=this.userInfo.username  // 用户名
@@ -428,7 +482,6 @@ export default {
       if(this.form.countryCode) {
         this.form.countryName = this.dictCountrys && this.dictCountrys.filter((item)=>{return item.code==this.form.countryCode})[0].name;
       }
-      this.form.status=0;
       let params = {...this.form,details:[...this.data]}
       // 公司
       if (!params.companyId) {
@@ -478,6 +531,7 @@ export default {
         this.$Message.error('请选择缴款截止日期');
         return;
       }
+
       // 税种与申报表
       // var tempString=""
       // let preTaxReturnsVerity = params.details.some(item => {
@@ -488,43 +542,23 @@ export default {
       //   this.$Message.error('请上传'+   `${this.dictTaxCategorysMap.get(tempString)}`  +'的预申报表!');
       //   return;
       // }
-      this.loading = true;
-      inputData(params).then((res)=>{
-        if(res.data == "流程启动失败") {
-          this.$Message.error("启动流程失败")
+
+
+      // payableTax 应缴税额
+      // lateFeePayable  应缴滞纳金
+      // taxPaid  实缴税额
+      // overduePayment 实缴滞纳金
+      this.data.map((item,index)=>{
+        if(item.payableTax!=item.taxPaid || item.taxPaid!=item.overduePayment){
+          this.taxModal=true
+          params.status=3
+          this.tempPatams=params
+          return
         }else{
-          this.$Message.success('操作成功')
+          params.status=0
+          this.tempPatams=params
+          this.taxModalOk()
         }
-        this.form={
-          companyId: '',
-          companyName: '',
-          tin: '',
-          countryCode: '',
-          currency: '',
-          applicantName: '',
-          remarks: '',
-          currentHandler: '',
-          financialReport: '',
-          financialReportPath: '',
-          fileName:"",
-          oriName:"",
-          status:0
-        }
-        this.data=[{ taxPeriod: '',
-                taxDict: '',
-                payableTax: 0,
-                lateFeePayable: 0,
-                applTaxPayment: 0,
-                deadline: '',
-                taxPaid: 0,
-                overduePayment: 0,
-                paymentTime: '',
-                taxReturns: "",
-                remarks: '',
-                status:0
-              }]
-      }).finally(() => {
-        this.loading = false;
       })
     },
     init() {
@@ -1008,7 +1042,7 @@ export default {
           applicantName: '',
           remarks: '',
           currentHandler: '',
-          
+
           financialReport: '',
           financialReportPath: '',
           fileName:"",

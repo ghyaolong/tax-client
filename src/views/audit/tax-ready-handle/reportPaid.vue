@@ -91,6 +91,13 @@
     <div style="margin-top:30px">
         <Button type="primary" @click="handleSubmit">提交</Button>
     </div>
+    <Modal
+      v-model="taxModal"
+      title="注意!"
+      @on-ok="taxModalOk"
+      @on-cancel="taxModalCancel">
+      <p>应缴税额和实缴税额,应缴滞纳金和实缴滞纳金。金额不相等,是否继续提交?</p>
+    </Modal>
   </div>
 </template>
 
@@ -103,6 +110,7 @@ import { dictType } from '@/libs/constance.js'
 export default {
   data() {
     return {
+      taxModal:false,
       dataDetils:{},
       details:[],
       auditLogVoList:[],
@@ -301,48 +309,9 @@ export default {
     }
   },
   methods:{
-    renderTaxDict(h,params) {
-      if(this.dictTaxCategorysMap) {
-        return h("div",this.dictTaxCategorysMap.get(params.row.taxDict))
-      }
 
-    },
-    /* 表格日期选择框渲染函数 */
-    renderDatePicker(h, params) {
-      return h('DatePicker', {
-        props: {
-          type: params.column.key === 'taxPeriod' ? 'month' : 'date',
-          value: params.row[params.column.key]
-        },
-        on: {
-          'on-change': val => {
-            this.details[params.index][params.column.key] = val;
-          }
-        }
-      })
-    },
-    // 操作
-    handleSubmit(){
-      console.log("adasd",this.dataDetils)
-
-      var tempAll = 0;
-      this.dataDetils.details.forEach((item,index)=>{
-        tempAll = parseFloat(item.taxPaid) + parseFloat(item.overduePayment);
-      })
-      if(tempAll==0){
-          this.$Message.error('实际缴纳税款不能为空,请输入实缴税额或实缴滞纳金');
-          return;
-      }
-      // //实际缴纳日期
-      let sjjnrqi = this.dataDetils.details.some(item => {
-        return !item.paymentTime
-      })
-      if (sjjnrqi) {
-        this.$Message.error('请选择实际缴纳日期');
-        return;
-      }
-
-
+    // 确定
+    taxModalOk() {
       let params = {
         operateApprove:'0',
         comment:"上报实缴",
@@ -382,6 +351,65 @@ export default {
       }).finally(() => {
         // this.loading = false;
       })
+    },
+
+    // 取消
+    taxModalCancel() {
+      this.taxModal=false
+    },
+
+    renderTaxDict(h,params) {
+      if(this.dictTaxCategorysMap) {
+        return h("div",this.dictTaxCategorysMap.get(params.row.taxDict))
+      }
+
+    },
+    /* 表格日期选择框渲染函数 */
+    renderDatePicker(h, params) {
+      return h('DatePicker', {
+        props: {
+          type: params.column.key === 'taxPeriod' ? 'month' : 'date',
+          value: params.row[params.column.key]
+        },
+        on: {
+          'on-change': val => {
+            this.details[params.index][params.column.key] = val;
+          }
+        }
+      })
+    },
+    // 操作
+    handleSubmit(){
+      console.log("adasd",this.dataDetils)
+      const that =this
+      var tempAll = 0;
+      this.dataDetils.details.forEach((item,index)=>{
+        tempAll = parseFloat(item.taxPaid) + parseFloat(item.overduePayment);
+      })
+      if(tempAll==0){
+          this.$Message.error('实际缴纳税款不能为空,请输入实缴税额或实缴滞纳金');
+          return;
+      }
+      // //实际缴纳日期
+      let sjjnrqi = this.dataDetils.details.some(item => {
+        return !item.paymentTime
+      })
+      if (sjjnrqi) {
+        this.$Message.error('请选择实际缴纳日期');
+        return;
+      }
+
+      this.dataDetils.details.map((item,index)=>{
+        if(item.payableTax!=item.taxPaid || item.lateFeePayable!=item.overduePayment){
+          that.taxModal=true
+          that.dataDetils.status=3
+          return
+        }else{
+          that.dataDetils.status=0
+          that.taxModalOk()
+        }
+      })
+
     },
     /* 表格栏输入框渲染函数 */
     renderInput(h, params) {
