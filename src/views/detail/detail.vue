@@ -25,6 +25,7 @@
             </Form-item>
             <Form-item label="税金类型" prop="taxType">
               <Select v-model="searchForm.taxType" style="width:200px">
+                <Option value="ALL">实缴税金/实缴滞纳金</Option>
                 <Option value="PAID">实缴税金</Option>
                 <Option value="LATEFEE">实缴滞纳金</Option>
               </Select>
@@ -50,7 +51,7 @@
                 ></Option>
               </Select>
             </Form-item>
-            <Form-item label="实缴时期" prop="selectDateTime">
+            <Form-item label="实缴期间" prop="selectDateTime">
               <DatePicker type="daterange" v-model="selectDateTime" format="yyyy-MM" clearable @on-change="selectDateRangeTime" placeholder="选择起始时间" style="width: 200px"></DatePicker>
             </Form-item>
             <Form-item style="margin-left:-35px;" class="br">
@@ -139,13 +140,13 @@ export default {
           render:this.rendertaxPaidALL
         },
         {
-          title:"实缴纳税金",
+          title:"实缴滞纳金",
           width:150,
           key:"overduePaymentAll",
           render:this.renderoverduePaymentAll
         },
         {
-          title:"税金小计",
+          title:"实缴纳税款",
           width:150,
           // render:(h,params) => {
           //   return h('div', params.row.taxPaidALL + params.row.overduePaymentAll)
