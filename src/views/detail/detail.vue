@@ -107,7 +107,8 @@ export default {
         taxType:'' , //税金类型
       },
       formRules:{
-        companyName:[{required:true,message:"请选择"}]
+        companyName:[{required:true,message:"请选择"}],
+        taxDict:[{required:true,message:"请选择"}]
       },
       startTaxPeriod:"",  // 所属期间开始日期
       endTaxPeriod:"",  // 所属期间结束日期
