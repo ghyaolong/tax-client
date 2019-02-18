@@ -17,7 +17,7 @@
             <Form-item label="税种" prop="taxDict">
               <Select v-model="searchForm.taxDict" style="width:200px" multiple>
                 <Option v-for="(item,index) in taxDictList"
-                  :value="item.id"
+                  :value="item.code"
                   :label="item.name"
                   :key="item.id"
                 ></Option>
