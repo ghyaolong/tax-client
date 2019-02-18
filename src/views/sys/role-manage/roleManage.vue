@@ -36,7 +36,7 @@
               <Input v-model="roleForm.code" placeholder="请输入" :maxlength="20"/>
             </FormItem>
             <FormItem label="角色对应节点" prop="processKey" :label-width="100">
-              <Select v-model="roleForm.processKey"  >
+              <Select v-model="roleForm.processKey" multiple >
                 <Option value="none" key="none">无</Option>
                 <Option value="approvalProcess" key="approvalProcess">税金申报申请</Option>
                 <Option value="reviewProcess" key="reviewProcess">复核申报</Option>
@@ -106,7 +106,7 @@ export default {
       roleForm: {
         code: "",
         name: "",
-        processKey: ""
+        processKey: []
       },
       roleFormValidate: {
         name: [{ required: true, message: "角色名称不能为空", trigger: "blur" }],
@@ -299,7 +299,7 @@ export default {
           reportPaid:"上报实缴"
         }
         tempKeys.map((item,index)=>{
-          string += `${obj[item]}`
+          string += `${obj[item]}/`
         })
         return string
       }
@@ -372,7 +372,7 @@ export default {
       let tempObj = {
         code: this.roleForm.code,
         name: this.roleForm.name,
-        processKey: this.roleForm.processKey
+        processKey: this.roleForm.processKey.join(",")
       }
       if(JSON.stringify(this.tempObj)==JSON.stringify(tempObj)) {
         this.roleModalVisible = false;
@@ -382,7 +382,7 @@ export default {
           if (valid) {
             this.submitLoading = true;
             let roleFn = this.modalType === 0 ? addRole : editRole;
-            this.roleForm.processKey=this.roleForm.processKey
+            this.roleForm.processKey=this.roleForm.processKey.join(",")
             roleFn(this.roleForm).then(res => {
               this.submitLoading = false;
               this.$Message.success("操作成功");
@@ -403,6 +403,7 @@ export default {
       this.roleModalVisible = true;
     },
     edit(v) {
+      console.log("v",v)
       this.tempObj ={
         code: v.code,
         name: v.name,
@@ -418,7 +419,7 @@ export default {
       }
       let str = JSON.stringify(v);
       let roleInfo = JSON.parse(str);
-      // roleInfo.processKey = roleInfo.processKey.split(",")
+      roleInfo.processKey = roleInfo.processKey.split(",")
       this.roleForm = roleInfo
       this.roleModalVisible = true;
     },
