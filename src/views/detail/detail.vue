@@ -6,16 +6,16 @@
         <Row>
           <Form ref="searchForm" :model="searchForm" inline :label-width="100" class="search-form">
             <Form-item label="公司名称" prop="companyName">
-              <Select v-model="searchForm.companyName" style="width:200px">
+              <Select v-model="searchForm.companyName" style="width:200px" multiple>
                 <Option v-for="(item,index) in conpanyList"
-                  :value="item.name"
+                  :value="item.id"
                   :label="item.name"
                   :key="item.id"
                 ></Option>
               </Select>
             </Form-item>
             <Form-item label="税种" prop="taxDict">
-              <Select v-model="searchForm.taxDict" style="width:200px">
+              <Select v-model="searchForm.taxDict" style="width:200px" multiple>
                 <Option v-for="(item,index) in taxDictList"
                   :value="item.id"
                   :label="item.name"
@@ -40,7 +40,12 @@
               </Select>
             </Form-item>
             <Form-item label="纳税所属期" prop="selectDateTaxPeriod">
-              <DatePicker type="daterange" v-model="selectDateTaxPeriod" format="yyyy-MM" clearable @on-change="selectDateRangeTaxPeriod" placeholder="选择起始时间" style="width: 200px"></DatePicker>
+              <DatePicker
+              type="daterange"
+               v-model="selectDateTaxPeriod"
+               :disabled="disabledDateTime"
+               format="yyyy-MM"
+               clearable @on-change="selectDateRangeTaxPeriod" placeholder="选择起始时间" style="width: 200px"></DatePicker>
             </Form-item>
             <Form-item label="国家" prop="countryCode">
               <Select v-model="searchForm.countryCode" style="width:200px">
@@ -52,7 +57,13 @@
               </Select>
             </Form-item>
             <Form-item label="实缴期间" prop="selectDateTime">
-              <DatePicker type="daterange" v-model="selectDateTime" format="yyyy-MM" clearable @on-change="selectDateRangeTime" placeholder="选择起始时间" style="width: 200px"></DatePicker>
+              <DatePicker type="daterange"
+               v-model="selectDateTime"
+               format="yyyy-MM"
+               clearable
+               :disabled="disabledDateTaxPeriod"
+               @on-change="selectDateRangeTime"
+               placeholder="选择起始时间" style="width: 200px"></DatePicker>
             </Form-item>
             <Form-item style="margin-left:-35px;" class="br">
               <Button @click="handleSearch" type="primary" icon="ios-search">搜索</Button>
@@ -75,7 +86,7 @@
 
 
 <script>
-import { getDetail,getDictListDataByType,getCompanyListData } from '@/api/index.js';
+import { getDetail,getDictListDataByType,getCompanyList } from '@/api/index.js';
 import {getStore } from '@/libs/storage';
 export default {
   data(){
@@ -87,10 +98,11 @@ export default {
       taxDictList:[], // 税种
       conpanyList:[], // 公司
       currencyList:JSON.parse(getStore("currencyList")), // 币种
+      userInfo: JSON.parse(getStore("userInfo")),
       searchForm:{
-        companyName:"",// 公司
+        companyName:[],// 公司
         currency:"", // 币种
-        taxDict:"", // 税种
+        taxDict:[], // 税种
         countryCode:"",  // 国家
         taxType:'' , //税金类型
       },
@@ -100,6 +112,8 @@ export default {
       endTime:"",  // 实缴期间结束日期
       selectDateTaxPeriod:"", // 所属期间
       selectDateTime:"",  // 实缴时期
+      disabledDateTaxPeriod:false,
+      disabledDateTime:false,
       columns:[
         {
           title:"纳税所属期",
@@ -268,18 +282,9 @@ export default {
     },
     // 获取公司
     getAllCompany() {
-      let params = {
-        pageVo: {
-          pageNumber: 1,
-          pageSize: 99999
-        },
-        companyVo: {
-          name: "",
-          tin: ""
-        }
-      };
-      getCompanyListData(params).then((res)=>{
-        this.conpanyList=res.data && res.data.list
+      let userId = this.userInfo.id
+      getCompanyList(userId).then((res)=>{
+        this.conpanyList=res.data
       })
     },
     selectDateRangeTaxPeriod(val) {
@@ -294,9 +299,9 @@ export default {
     getAllList(){
       let params ={
         countryCode:this.searchForm.countryCode, // 国家
-        companyName:this.searchForm.companyName,  // 公司名称
+        companyIds:this.searchForm.companyName && this.searchForm.companyName.join(","),  // 公司名称
         currency:this.searchForm.currency,  // 币种
-        taxDict:this.searchForm.taxDict,  // 税种
+        taxDicts:this.searchForm.taxDict && this.searchForm.taxDict.join(","),  // 税种
         startTaxPeriod:this.startTaxPeriod, // 纳税所属期
         endTaxPeriod:this.endTaxPeriod,// 纳税所属期
         startTime:this.startTime,// 实缴时期
@@ -405,6 +410,26 @@ export default {
     this.getAllCompany()
     // this.getAllCurrency()
     this.getAllList()
+  },
+  watch:{
+    selectDateTaxPeriod:function(oldV,newValue) {
+      if(oldV[0]=="" && oldV[1]==""){
+        this.disabledDateTaxPeriod=false
+        return
+      }else{
+        this.disabledDateTaxPeriod=true
+        return
+      }
+    },
+    selectDateTime:function(oldVs,newValue){
+      if(oldVs[0]=="" && oldVs[1]==""){
+        this.disabledDateTime=false
+        return
+      }else{
+        this.disabledDateTime=true
+        return
+      }
+    }
   }
 }
 </script>

@@ -419,7 +419,7 @@ export default {
       }
       let str = JSON.stringify(v);
       let roleInfo = JSON.parse(str);
-      roleInfo.processKey = roleInfo.processKey.split(",")
+      roleInfo.processKey = roleInfo.processKey && roleInfo.processKey.split(",")
       this.roleForm = roleInfo
       this.roleModalVisible = true;
     },

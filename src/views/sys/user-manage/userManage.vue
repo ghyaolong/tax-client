@@ -436,7 +436,6 @@ export default {
     },
     cancelUser() {
       this.userModalVisible = false;
-      this.allCompanys=[]
     },
     submitUser() {
       this.$refs.userForm.validate(valid => {
@@ -504,14 +503,16 @@ export default {
       this.userModalVisible = true;
     },
     edit(v) {
+      const that=this
       getUnAssignCompany().then(res => {
+        let tempA=[]
         for(let i=0;i<res.data.length;i++) {
-            this.allCompanys.push(res.data[i])
+            tempA.push(res.data[i])
         }
         this.tempUserObk = v
         this.modalType = 1;
         this.modalTitle = "编辑用户";
-        this.$refs.userForm.resetFields();
+        this.allCompanys=tempA
 
         let str = JSON.stringify(v);
         let userInfo = JSON.parse(str);
@@ -536,7 +537,9 @@ export default {
         }
         console.log("dasdasdasdasd",this.allCompanys)
         this.userForm.companys = selectCompanyIds;
-        this.userModalVisible = true;
+        setTimeout(function(){
+          that.userModalVisible = true;
+        },1000)
       })
     },
     enable(v) {

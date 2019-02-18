@@ -209,9 +209,9 @@ export default {
           pageNumber: this.pageNumber,
           pageSize: this.pageSize
         },
-        companyIds: this.companyIds.join(","),
+        companyIds: this.companyIds && this.companyIds.join(","),
         materialTypeDict: this.materialTypeDict,
-        taxDicts:this.taxDicts.join(","),
+        taxDicts:this.taxDicts && this.taxDicts.join(","),
         searchVo: {
           startDate: this.startDate && new Date(this.startDate).format("yyyy-MM-dd"),
           endDate: this.endDate && new Date(this.endDate).format("yyyy-MM-dd")
