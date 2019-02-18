@@ -4,7 +4,7 @@
       <Col>
       <Card>
         <Row>
-          <Form ref="searchForm" :model="searchForm" inline :label-width="100" class="search-form">
+          <Form ref="searchForm" :model="searchForm" inline :label-width="100" class="search-form" :rules="formRules">
             <Form-item label="公司名称" prop="companyName">
               <Select v-model="searchForm.companyName" style="width:200px" multiple>
                 <Option v-for="(item,index) in conpanyList"
@@ -105,6 +105,9 @@ export default {
         taxDict:[], // 税种
         countryCode:"",  // 国家
         taxType:'' , //税金类型
+      },
+      formRules:{
+        companyName:[{required:true,message:"请选择"}]
       },
       startTaxPeriod:"",  // 所属期间开始日期
       endTaxPeriod:"",  // 所属期间结束日期
@@ -243,6 +246,8 @@ export default {
       this.endTime=""  // 实缴期间结束日期
       this.selectDateTaxPeriod="" // 所属期间
       this.selectDateTime=""  // 实缴时期
+      this.disabledDateTaxPeriod=false
+      this.disabledDateTime=false
     },
     // 获取国家
     getAllCountry() {
@@ -297,21 +302,25 @@ export default {
     },
     // 获取全部
     getAllList(){
-      let params ={
-        countryCode:this.searchForm.countryCode, // 国家
-        companyIds:this.searchForm.companyName && this.searchForm.companyName.join(","),  // 公司名称
-        currency:this.searchForm.currency,  // 币种
-        taxDicts:this.searchForm.taxDict && this.searchForm.taxDict.join(","),  // 税种
-        startTaxPeriod:this.startTaxPeriod, // 纳税所属期
-        endTaxPeriod:this.endTaxPeriod,// 纳税所属期
-        startTime:this.startTime,// 实缴时期
-        endTime:this.endTime,// 实缴时期
-        taxType:this.searchForm.taxType//税金类型
-      }
-      getDetail(params).then((res)=>{
-        // this.data= res.data
-        this.data=this.checkGroupByCompany(res.data)
-      })
+      this.$refs['searchForm'].validate((valid) => {
+                   if (valid) {
+                     let params ={
+                       countryCode:this.searchForm.countryCode, // 国家
+                       companyIds:this.searchForm.companyName && this.searchForm.companyName.join(","),  // 公司名称
+                       currency:this.searchForm.currency,  // 币种
+                       taxDicts:this.searchForm.taxDict && this.searchForm.taxDict.join(","),  // 税种
+                       startTaxPeriod:this.startTaxPeriod, // 纳税所属期
+                       endTaxPeriod:this.endTaxPeriod,// 纳税所属期
+                       startTime:this.startTime,// 实缴时期
+                       endTime:this.endTime,// 实缴时期
+                       taxType:this.searchForm.taxType//税金类型
+                     }
+                     getDetail(params).then((res)=>{
+                       // this.data= res.data
+                       this.data=this.checkGroupByCompany(res.data)
+                     })
+                   }
+               })
     },
     // 处理数据按公司分类
     checkGroupByCompany(dataList){
@@ -409,11 +418,11 @@ export default {
     this.getAlltaxDict()
     this.getAllCompany()
     // this.getAllCurrency()
-    this.getAllList()
+    // this.getAllList()
   },
   watch:{
     selectDateTaxPeriod:function(oldV,newValue) {
-      if(oldV[0]=="" && oldV[1]==""){
+      if(oldV[0]=="" && oldV[1]=="" || !oldV){
         this.disabledDateTaxPeriod=false
         return
       }else{
@@ -422,7 +431,7 @@ export default {
       }
     },
     selectDateTime:function(oldVs,newValue){
-      if(oldVs[0]=="" && oldVs[1]==""){
+      if(oldVs[0]=="" && oldVs[1]=="" || !oldVs){
         this.disabledDateTime=false
         return
       }else{
