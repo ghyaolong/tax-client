@@ -359,7 +359,7 @@ export default {
                           this.handleLook(params.row)
                         }
                       }
-                    },params.row.serialNumber)
+                    },params.row.businessFlowNumber)
           }
           // width: 110
         },

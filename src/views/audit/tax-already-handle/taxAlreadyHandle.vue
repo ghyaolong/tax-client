@@ -258,7 +258,7 @@ export default {
           key: "id",
           // width: 110
           render: (h, params) => {
-            let flowNum = params.row.flowNum;
+            let flowNum = params.row.businessFlowNumber;
             return h(
               "div",
               {
