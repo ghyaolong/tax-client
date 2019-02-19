@@ -67,14 +67,14 @@
           <Form-item label="财务报表" prop="financialReportPath">
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
+            :accept="fileTypeString"
             name="file" :data="{materialTypeDict: 'FINANCE_REPORT',taxDict:'none',currency:selectCurrencyCode}"
             :show-upload-list="false" :on-success="financeUploadSuc" class="upload-box">
               <Input type="text" readonly v-model="form.fileName" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
               <!-- <span style="padding-left: 10px;" v-if="form.financialReport">已上传</span> -->
             </Upload>
-            <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg 文件</span>
+            <span style="color:red">只能上传 {{fileTypeString}} 文件</span>
           </Form-item>
         </Form>
         <Spin size="large" fix v-if="loading"></Spin>
@@ -101,7 +101,7 @@
         <Form label-position="left" :label-width="100">
           <FormItem label="预申报表">
             <Upload action="/api/file/upload"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
+            :accept="fileTypeString"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'PRE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.preTaxReturnsPathFileName" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
@@ -110,7 +110,7 @@
           </FormItem>
           <FormItem label="申报表" v-if="routeType === 'taxReplenishment'">
             <Upload action="/api/file/upload"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
+            :accept="fileTypeString"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.taxReturnsPathFileName" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
@@ -119,7 +119,7 @@
           </FormItem>
           <FormItem label="完税申报表" v-if="routeType === 'taxReplenishment'">
             <Upload action="/api/file/upload"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
+            :accept="fileTypeString"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'DONE_TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.paymentCertificatePathFileName" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
@@ -128,7 +128,7 @@
           </FormItem>
           <FormItem label="其它" v-if="routeType === 'taxReplenishment'">
             <Upload action="/api/file/upload"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
+            :accept="fileTypeString"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'OTHER'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.otherUploadFileName" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
@@ -136,7 +136,7 @@
             </Upload>
           </FormItem>
       </Form>
-      <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg 文件</span>
+      <span style="color:red">只能上传 {{fileTypeString}} 文件</span>
     </Modal>
     <Modal
         :closable="false"
@@ -205,6 +205,7 @@ export default {
       fileName: '',
       filePath: '',
       operationLoading: false,
+      fileTypeString:getStore("fileTypeString"),
       accessToken: getStore('accessToken'),
       showUploadModal: false,
       form: {
@@ -577,8 +578,8 @@ export default {
 
     // 真是提交
     submitTrue() {
-      this.form.applicantName=this.userInfo.username  // 用户名
-      this.form.applicantId=this.userInfo.id // 用户id
+      // this.form.applicantName=this.userInfo.username  // 用户名
+      // this.form.applicantId=this.userInfo.id // 用户id
       this.form.executeType=1; // 提交
       this.form.oriName=this.form.fileName
       this.form.countryName = this.dictCountrys && this.dictCountrys.filter((item)=>{return item.code==this.form.countryCode})[0].name;
@@ -774,6 +775,12 @@ export default {
         this.form.serialNumber = params.serialNumber;
         this.form.companyId = params.companyId;
         this.form.companyName = params.companyName;
+        this.form.applicantName= params.applicantName;
+        this.form.applicantId = params.applicantId;
+        this.form.deploymentId= params.deploymentId;
+        this.form.filePath = params.filePath;
+        this.form.saveTime = params.createTime;
+        this.form.businessFlowNumber = params.businessFlowNumber;
         this.form.tin = params.tin;
         this.form.countryCode = params.countryCode;
         this.form.currentHandler=params.currentHandler;

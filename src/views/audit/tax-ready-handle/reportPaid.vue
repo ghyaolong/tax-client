@@ -319,6 +319,8 @@ export default {
         userId:this.userInfo.id,
         currentHandler:this.dataDetils.applicantId,
         bean:{
+            businessFlowNumber:this.dataDetils.businessFlowNumber,
+            saveTime:this.dataDetils.createTime,
             details:this.dataDetils.details,
             applicantId: this.dataDetils.applicantId,
             applicantName: this.dataDetils.applicantName,

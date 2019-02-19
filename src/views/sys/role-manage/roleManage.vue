@@ -36,15 +36,15 @@
               <Input v-model="roleForm.code" placeholder="请输入" :maxlength="20"/>
             </FormItem>
             <FormItem label="角色对应节点" prop="processKey" :label-width="100">
-              <Select v-model="roleForm.processKey" multiple >
-                <Option value="none" key="none">无</Option>
-                <Option value="approvalProcess" key="approvalProcess">税金申报申请</Option>
-                <Option value="reviewProcess" key="reviewProcess">复核申报</Option>
-                <Option value="checkEntity" key="checkEntity">核查公司</Option>
-                <Option value="examineEntity" key="examineEntity">审查公司</Option>
-                <Option value="checkPay" key="checkPay">支付审批</Option>
-                <Option value="approvalPay" key="approvalPay">审批支付</Option>
-                <Option value="uploadPayFile" key="uploadPayFile">上传文件</Option>
+              <Select v-model="roleForm.processKey" multiple @on-change="selectOnchange">
+                <Option value="none" key="none" :disabled="noneDisabled">无</Option>
+                <Option value="approvalProcess" key="approvalProcess" :disabled="optionDisabled">税金申报申请</Option>
+                <Option value="reviewProcess" key="reviewProcess" :disabled="optionDisabled">复核申报</Option>
+                <Option value="checkEntity" key="checkEntity" :disabled="optionDisabled">核查公司</Option>
+                <Option value="examineEntity" key="examineEntity" :disabled="optionDisabled">审查公司</Option>
+                <Option value="checkPay" key="checkPay" :disabled="optionDisabled">支付审批</Option>
+                <Option value="approvalPay" key="approvalPay" :disabled="optionDisabled">审批支付</Option>
+                <Option value="uploadPayFile" key="uploadPayFile" :disabled="optionDisabled">上传文件</Option>
               </Select>
             </FormItem>
           </Form>
@@ -102,6 +102,8 @@ export default {
       modalType: 0,
       roleModalVisible: false,
       permModalVisible: false,
+      optionDisabled:false,
+      noneDisabled:false,
       modalTitle: "",
       roleForm: {
         code: "",
@@ -581,10 +583,27 @@ export default {
     },
     cancelPermEdit() {
       this.permModalVisible = false;
+    },
+    selectOnchange(val) {
+      console.log("val",val)
+      // optionDisabled:false,
+      // noneDisabled:false,
+      if(val.join(",").indexOf("none")){
+        this.optionDisabled=false
+        this.noneDisabled=true
+      }else{
+        this.optionDisabled=true
+        this.noneDisabled=false
+      }
     }
   },
   mounted() {
     this.init();
+  },
+  watch:{
+    // this.roleForm.processKey:function(old,neValue) {
+    //   console.log("old",old)
+    // }
   }
 };
 </script>

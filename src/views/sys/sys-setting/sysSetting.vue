@@ -15,7 +15,7 @@
              <Input  v-model="formItem.property" disabled  style="width:200px" onReady></Input >
          </FormItem>
          <FormItem label="参数名称">
-             <Input  v-model="formItem.propertyName" disabled  style="width:200px"></Input >
+             <Input  v-model="formItem.propertyName"  style="width:200px"></Input >
          </FormItem>
          <FormItem label="参数大小">
              <Input  v-model="formItem.propertyValue" placeholder="请输入" style="width:200px"></Input >
