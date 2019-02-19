@@ -585,14 +585,15 @@ export default {
       this.permModalVisible = false;
     },
     selectOnchange(val) {
-      console.log("val",val)
-      // optionDisabled:false,
-      // noneDisabled:false,
       if(val.join(",").indexOf("none")){
         this.optionDisabled=false
         this.noneDisabled=true
       }else{
         this.optionDisabled=true
+        this.noneDisabled=false
+      }
+      if(val.join(",")=="") {
+        this.optionDisabled=false
         this.noneDisabled=false
       }
     }

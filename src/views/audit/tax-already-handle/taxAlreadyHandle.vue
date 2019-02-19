@@ -258,7 +258,7 @@ export default {
           key: "id",
           // width: 110
           render: (h, params) => {
-            let flowNum = params.row.businessFlowNumber;
+            let flowNum = params.row.taxApplicationVo.businessFlowNumber;
             return h(
               "div",
               {
