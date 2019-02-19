@@ -457,3 +457,15 @@ export const getCompanyList=params=>{
 export const inputData=params=>{
   return postRequest("/tax/inputData",params)
 }
+// 获取参数列表
+export const getAllSysConfig=(params)=>{
+  return getRequest("/sysConfig/getAll")
+}
+// 编辑参数设置
+export const editSysConfig=params=>{
+  return postRequest("/sysConfig/editConfig",params)
+}
+// 获取上传文件类型
+export const getFileType=params=>{
+  return getRequest(`/sysConfig/getMsg/${params}`)
+}

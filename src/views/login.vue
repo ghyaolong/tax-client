@@ -42,7 +42,8 @@ import {
   weiboLogin,
   getJWT,
   sendSms,
-  smsLogin
+  smsLogin,
+  getFileType
 } from "@/api/index";
 import util from "@/libs/util.js";
 export default {
@@ -166,6 +167,11 @@ export default {
                   name: "home_index"
                 });
               });
+
+              getFileType("fileType").then((res)=>{
+                this.setStore("fileTypeString", res.data&&res.data.propertyValue);
+              })
+
             }).catch(err => {
               // this.showErrorMsg(err.errMsg);
             }).finally(() => {

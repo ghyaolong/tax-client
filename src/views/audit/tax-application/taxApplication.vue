@@ -67,14 +67,14 @@
           <Form-item label="财务报表" prop="financialReportPath">
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
+            :accept="fileTypeString"
             name="file" :data="{materialTypeDict: 'FINANCE_REPORT',taxDict:'none',currency:selectCurrencyCode}"
             :show-upload-list="false" :on-success="financeUploadSuc" class="upload-box" >
               <Input type="text" readonly v-model="form.fileName" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
               <!-- <span style="padding-left: 10px;" v-if="form.financialReport">已上传</span> -->
             </Upload>
-            <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg 文件</span>
+            <span style="color:red">只能上传 {{fileTypeString}} 文件</span>
           </Form-item>
         </Form>
         <Spin size="large" fix v-if="loading"></Spin>
@@ -109,7 +109,7 @@
           <FormItem label="预申报表">
             <Upload action="/api/file/upload"
             style="float:left"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
+            :accept="fileTypeString"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'PRE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc" ref="updateFile">
               <Input type="text" readonly v-model="fileUploadForm.preTaxReturnsPathFileName" />
               <Button icon="ios-cloud-upload-outline" v-if="isCommissioner">上传文件</Button>
@@ -120,7 +120,7 @@
           <FormItem label="申报表" v-if="routeType === 'taxReplenishments'">
             <Upload action="/api/file/upload"
             style="float:left"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
+            :accept="fileTypeString"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.taxReturnsPathFileName" />
               <Button icon="ios-cloud-upload-outline"  v-if="isCommissioner">上传文件</Button>
@@ -131,7 +131,7 @@
           <FormItem label="完税申报表" v-if="routeType === 'taxReplenishments'">
             <Upload action="/api/file/upload"
             style="float:left"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
+            :accept="fileTypeString"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'DONE_TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.paymentCertificatePathFileName" />
               <Button icon="ios-cloud-upload-outline"  v-if="isCommissioner">上传文件</Button>
@@ -142,7 +142,7 @@
           <FormItem label="其它" v-if="routeType === 'taxReplenishments'">
             <Upload action="/api/file/upload"
             style="float:left"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
+            :accept="fileTypeString"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'OTHER'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.otherUploadFileName" />
               <Button icon="ios-cloud-upload-outline"  v-if="isCommissioner">上传文件</Button>
@@ -151,7 +151,7 @@
             <Button  v-if="isCommissioner">删除</Button>
           </FormItem>
       </Form>
-      <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg 文件</span>
+      <span style="color:red">只能上传 {{fileTypeString}} 文件</span>
     </Modal>
   </Row>
 </template>
@@ -179,6 +179,7 @@ export default {
     return {
       selectCurrencyCode:"", // 选择的税种code
       colSelectCurrencyCode:"", // 行选择的税种code
+      fileTypeString:getStore('fileTypeString'),
       isRouterAlive: true,
       loading: false,
       priviewModal: false,

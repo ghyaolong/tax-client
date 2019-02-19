@@ -245,7 +245,7 @@
             <Input type="text" disabled v-model="fileUploadForm.taxReturnsPathFileName" style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}" name="file"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
+            :accept="fileTypeString"
             :data="{materialTypeDict: 'TAX_REPORT',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
               <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile' && isCommissioner">上传文件</Button>
@@ -257,7 +257,7 @@
             <Input type="text" disabled v-model="fileUploadForm.paymentCertificatePathFileName" style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}" name="file"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
+            :accept="fileTypeString"
             :data="{materialTypeDict: 'DONE_TAX_REPORT',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
               <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile' && isCommissioner">上传文件</Button>
@@ -269,7 +269,7 @@
             <Input type="text" disabled  v-model="fileUploadForm.otherUploadFileName"  style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}" name="file"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
+            :accept="fileTypeString"
             :data="{materialTypeDict: 'OTHER',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
               <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile' && isCommissioner">上传文件</Button>
@@ -283,7 +283,7 @@
           <Button type="primary" style="width: 100px;margin-left:20px" @click="tempSubmitOk" v-if="currentLinkType=='uploadPayFile'">确定</Button>
           <Button type="primary" style="width: 100px;margin-left:20px" @click="fileuploadFormCancel" v-if="currentLinkType!='uploadPayFile'">确定</Button>
       </footer>
-      <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg 文件</span>
+      <span style="color:red">只能上传 {{fileTypeString}} 文件</span>
     </Modal>
   </div>
 </template>
@@ -302,6 +302,7 @@ export default {
       dictTaxCategorysMap:"",
       selectCurrencyCode:"", // 选择的币种
       colSelectCurrencyCode:"", // 行选择的税种code
+      fileTypeString:getStore("fileTypeString"),
       showUploadModal:false,
       accessToken: getStore('accessToken'),
       isCommissioner:getStore('isCommissioner'),
