@@ -549,7 +549,7 @@ export default {
 
       let str = JSON.stringify(v);
       let userInfo = JSON.parse(str);
-      userInfo.sex=userInfo.sex+""
+      // userInfo.sex=userInfo.sex+""
       this.userForm = userInfo;
       let selectRolesId = [];
       this.userForm.roles && this.userForm.roles.forEach(function(e) {
