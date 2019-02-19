@@ -43,23 +43,20 @@
         :closable="false"
         class-name="preview-modal-inline"
         v-model="showUploadModal">
-        <Form label-position="left" :label-width="100" :modal="fileUploadForm" ref="showUploadRefs">
+        <Form label-position="left" :label-width="100" :modal="fileUploadForm" :rules="fileUploadFormRules" ref="showUploadRefs">
           <FormItem label="预申报表" prop="preTaxReturnsPath">
             <Input type="text" disabled v-model="fileUploadForm.preTaxReturnsPathFileName" style="width:150px;float:left"/>
-            <!-- <Upload action="/api/file/upload" :headers="{accessToken: accessToken}" name="file"
-            :data="{materialTypeDict: 'PRE_TAX_REPORT'}" :show-upload-list="false"
-            :on-success="uploadSuc" style="float:left">
-              <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
-            </Upload> -->
             <Button   @click.stop="priviewFile(fileUploadForm.preTaxReturnsPath)">预览</Button>
             <!-- <Button   @click.stop="uploadFile(fileUploadForm.preTaxReturnsPath)">下载</Button> -->
           </FormItem>
           <FormItem label="申报表" prop="taxReturnsPath">
             <Input type="text" disabled v-model="fileUploadForm.taxReturnsPathFileName" style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
-            :data="{materialTypeDict: 'TAX_REPORT'}" :show-upload-list="false"
-             style="float:left">
-              <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
+            :headers="{accessToken: accessToken}" name="file"
+            :accept="fileTypeString"
+            :data="{materialTypeDict: 'TAX_REPORT',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
+            :on-success="uploadSuc" style="float:left">
+              <Button icon="ios-cloud-upload-outline">上传文件</Button>
             </Upload>
             <Button  @click.stop="priviewFile(fileUploadForm.taxReturnsPath)">预览</Button>
             <!-- <Button  @click.stop="uploadFile(fileUploadForm.taxReturnsPath)">下载</Button> -->
@@ -67,10 +64,11 @@
           <FormItem label="完税申报表" prop="paymentCertificatePath">
             <Input type="text" disabled v-model="fileUploadForm.paymentCertificatePathFileName" style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
-             name="file"
-            :data="{materialTypeDict: 'DONE_TAX_REPORT'}" :show-upload-list="false"
-             style="float:left">
-              <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
+            :headers="{accessToken: accessToken}" name="file"
+            :accept="fileTypeString"
+            :data="{materialTypeDict: 'DONE_TAX_REPORT',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
+            :on-success="uploadSuc" style="float:left">
+              <Button icon="ios-cloud-upload-outline">上传文件</Button>
             </Upload>
             <Button  @click.stop="priviewFile(fileUploadForm.paymentCertificatePath)">预览</Button>
             <!-- <Button  @click.stop="uploadFile(fileUploadForm.paymentCertificatePath)">下载</Button> -->
@@ -78,15 +76,21 @@
           <FormItem label="其它" prop="otherUploadId">
             <Input type="text" disabled  v-model="fileUploadForm.otherUploadFileName"  style="width:150px;float:left"/>
             <Upload action="/api/file/upload"
-             name="file"
-            :data="{materialTypeDict: 'OTHER'}" :show-upload-list="false"
-             style="float:left">
-              <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile'">上传文件</Button>
+            :headers="{accessToken: accessToken}" name="file"
+            :accept="fileTypeString"
+            :data="{materialTypeDict: 'OTHER',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
+            :on-success="uploadSuc" style="float:left">
+              <Button icon="ios-cloud-upload-outline">上传文件</Button>
             </Upload>
             <Button @click.stop="priviewFile(fileUploadForm.otherUploadId)">预览</Button>
             <!-- <Button  @click.stop="uploadFile(fileUploadForm.otherUploadId)">下载</Button> -->
           </FormItem>
       </Form>
+      <footer class="vertical-center" slot="footer">
+          <Button style="width: 100px;"  @click="fileuploadFormCancel">取消</Button>
+          <Button type="primary" style="width: 100px;margin-left:20px" @click="tempSubmitOk" >确定</Button>
+      </footer>
+      <span style="color:red">只能上传 {{fileTypeString}} 文件</span>
     </Modal>
     <div style="margin-top:30px">
         <Button type="primary" @click="handleSubmit">提交</Button>
@@ -116,6 +120,10 @@ export default {
       auditLogVoList:[],
       currentLinkType:"ABCDAS",
       showUploadModal:false,
+      fileTypeString:getStore("fileTypeString"),
+      accessToken: getStore('accessToken'),
+      colSelectCurrencyCode:"", // 行选择的税种code
+      selectCurrencyCode:"", // 选择的币种
       fileUploadForm:{
         preTaxReturns:"",
         preTaxReturnsPath:"",
@@ -125,6 +133,7 @@ export default {
         paymentCertificatePath:"",
         otherUpload:"",
         otherUploadId:"",
+        index:""
       },
       auditLogVoListColumns:[
         {
@@ -274,7 +283,9 @@ export default {
                   click:()=>{
                     console.log("adasdadasd",  this.dataDetils)
                     console.log('paramsparams',params)
+                    this.colSelectCurrencyCode=this.dataDetils.details[params.index].taxDict
                     this.fileUploadForm = {
+                      uploadFileIndex:params.index,
                       preTaxReturns:this.dataDetils.details[params.index].preTaxReturns,
                       preTaxReturnsPath:this.dataDetils.details[params.index].preTaxReturnsPath,
                       preTaxReturnsPathFileName:this.dataDetils.details[params.index].preTaxReturnsPathFileName,
@@ -291,7 +302,7 @@ export default {
                     this.showUploadModal = true
                   }
                 }
-              }, '操作')
+              }, '操作补全')
             }
           },
           {
@@ -305,16 +316,66 @@ export default {
       dictCurrencys:[],
       dictCurrencysMap:"",
       dictTaxCategorys:[],
-      dictTaxCategorysMap:''
+      dictTaxCategorysMap:'',
+      fileUploadFormRules:{
+        preTaxReturnsPath:[{required:true,message:"请上传",trigger: 'blur'}],
+        taxReturnsPath:[{required:true,message:"请上传",trigger: 'blur'}],
+        paymentCertificatePath:[{required:true,message:"请上传",trigger: 'blur'}],
+      },
     }
   },
   methods:{
-
+    // 取消
+    fileuploadFormCancel() {
+      this.showUploadModal = false
+    },
+    tempSubmitOk(){
+      let indexs = this.fileUploadForm.uploadFileIndex;
+      this.dataDetils.details[indexs].preTaxReturns = this.fileUploadForm.preTaxReturns
+      this.dataDetils.details[indexs].preTaxReturnsPath = this.fileUploadForm.preTaxReturnsPath
+      this.dataDetils.details[indexs].preTaxReturnsPathFileName = this.fileUploadForm.preTaxReturnsPathFileName
+      this.dataDetils.details[indexs].taxReturns = this.fileUploadForm.taxReturns
+      this.dataDetils.details[indexs].taxReturnsPath = this.fileUploadForm.taxReturnsPath
+      this.dataDetils.details[indexs].taxReturnsPathFileName = this.fileUploadForm.taxReturnsPathFileName
+      this.dataDetils.details[indexs].paymentCertificate = this.fileUploadForm.paymentCertificate
+      this.dataDetils.details[indexs].paymentCertificatePath = this.fileUploadForm.paymentCertificatePath
+      this.dataDetils.details[indexs].paymentCertificatePathFileName = this.fileUploadForm.paymentCertificatePathFileName
+      this.dataDetils.details[indexs].otherUpload = this.fileUploadForm.otherUpload
+      this.dataDetils.details[indexs].otherUploadId = this.fileUploadForm.otherUploadId
+      this.dataDetils.details[indexs].otherUploadFileName = this.fileUploadForm.otherUploadFileName
+      this.showUploadModal=false
+    },
+    uploadSuc(res) {
+      console.log('1231231',res)
+      let key = {
+        'PRE_TAX_REPORT': 'preTaxReturns',
+        'TAX_REPORT': 'taxReturns',
+        'DONE_TAX_REPORT': 'paymentCertificate',
+        'OTHER': 'otherUpload'
+      }[res.data.materialTypeDict];
+      if(res.data.materialTypeDict=="OTHER") {
+        this.fileUploadForm[key] = res.data.id;
+        this.fileUploadForm[key + 'Id'] = res.data.fileName;
+        this.fileUploadForm[key + 'FileName'] = res.data.oriName;
+      }else{
+        this.fileUploadForm[key] = res.data.id;
+        this.fileUploadForm[key + 'Path'] = res.data.fileName;
+        this.fileUploadForm[key + 'Path' + 'FileName'] = res.data.oriName
+      }
+    },
     // 确定
     taxModalOk() {
+
+      let tempObj = this.dataDetils.details
+      for(let i=0;i<tempObj.length;i++) {
+        if(!tempObj[i].taxReturns || !tempObj[i].paymentCertificate || !tempObj[i].preTaxReturns) {
+          this.$Message.error(`税种 ${this.dictTaxCategorysMap.get(tempObj[i].taxDict)} 资料未补全`);
+          return
+        }
+      }
       let params = {
         operateApprove:'0',
-        comment:"上报实缴",
+        comment:"上报实缴,并补全资料",
         taskId:this.dataDetils.serialNumber,
         userId:this.userInfo.id,
         currentHandler:this.dataDetils.applicantId,
@@ -496,6 +557,7 @@ export default {
       let type = this.$route.params.type;
       const dataDetilInfo = this.$route.params.params && this.$route.params.params
       console.log("0000",this.$route.params.params)
+      this.selectCurrencyCode = dataDetilInfo.currency
       this.dataDetils = dataDetilInfo
       this.details = dataDetilInfo.details
       this.auditLogVoList = dataDetilInfo.auditLogVoList

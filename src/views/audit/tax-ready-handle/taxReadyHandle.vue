@@ -248,7 +248,7 @@
             :accept="fileTypeString"
             :data="{materialTypeDict: 'TAX_REPORT',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
-              <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile' && isCommissioner">上传文件</Button>
+              <!-- <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile' && isCommissioner">上传文件</Button> -->
             </Upload>
             <Button  @click.stop="priviewFile(fileUploadForm.taxReturnsPath)">预览</Button>
             <!-- <Button  @click.stop="uploadFile(fileUploadForm.taxReturnsPath)">下载</Button> -->
@@ -260,7 +260,7 @@
             :accept="fileTypeString"
             :data="{materialTypeDict: 'DONE_TAX_REPORT',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
-              <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile' && isCommissioner">上传文件</Button>
+              <!-- <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile' && isCommissioner">上传文件</Button> -->
             </Upload>
             <Button  @click.stop="priviewFile(fileUploadForm.paymentCertificatePath)">预览</Button>
             <!-- <Button  @click.stop="uploadFile(fileUploadForm.paymentCertificatePath)">下载</Button> -->
@@ -272,7 +272,7 @@
             :accept="fileTypeString"
             :data="{materialTypeDict: 'OTHER',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
-              <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile' && isCommissioner">上传文件</Button>
+              <!-- <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile' && isCommissioner">上传文件</Button> -->
             </Upload>
             <Button @click.stop="priviewFile(fileUploadForm.otherUploadId)">预览</Button>
             <!-- <Button  @click.stop="uploadFile(fileUploadForm.otherUploadId)">下载</Button> -->
@@ -386,7 +386,7 @@ export default {
         },
         {
           title: '操作',
-          width: 200,
+          width: 250,
           align: "center",
           render: (h, params) => {
             if(params.row.status==3){
@@ -525,7 +525,7 @@ export default {
                         }
                       }
                     },
-                    "上报实缴"
+                    "上报实缴,并补全资料"
                   ),
                   h(
                     "Button",
@@ -613,7 +613,7 @@ export default {
           checkPay:'支付审批',
           approvalPay:'审批支付',
           uploadPayFile:'上传文件',
-          reportPaid:"上报实缴"
+          reportPaid:"上报实缴,并补全资料"
         }
         return obj[key]
       }

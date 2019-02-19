@@ -403,13 +403,16 @@ export default {
         viewerIds:tempviewerIds.join(",")
       }
       submitUserListByRole(params).then((res)=>{
-        if (result.status == "0") {
+        if (res.status == "0") {
+          this.$Message.success(res.data)
           this.modalTaxes = false;
           this.userListModel = false;
+          this.getCompanyList();
         }
       })
     },
     taxationUserListSelectionChange(val){
+      console.log("val",val)
       this.taxationIds=val
     },
     reviewerUserListSelectionChange(val){
@@ -504,8 +507,39 @@ export default {
     cancelSubmit() {
       this.modalVisible = false;
     },
-    checkPeople(item){
-      this.tempItem = item
+    checkPeople(v){
+      this.tempItem = v
+      console.log("v",v)
+      var temptaxationIdsArry=v.taxationIds.split(",")
+      var tempreviewerIdsArry=v.reviewerIds.split(",")
+      var tempviewerIdsArry=v.viewerIds.split(",")
+      debugger
+      for(let i=0;i<temptaxationIdsArry.length;i++) {
+        let tempItem = temptaxationIdsArry[i]
+        this.taxationUserList.forEach((item,index)=>{
+          console.log("item",item)
+          if(item.id==tempItem){
+            item._checked=true
+          }
+        })
+      }
+      console.log("aaaaaaaa",this.taxationUserList)
+      for(let i=0;i<tempreviewerIdsArry.length;i++) {
+        let tempItem = tempreviewerIdsArry[i]
+        this.reviewerUserList.forEach((item,index)=>{
+          if(item.id==tempItem){
+            item._checked=true
+          }
+        })
+      }
+      for(let i=0;i<tempviewerIdsArry.length;i++) {
+        let tempItem = tempviewerIdsArry[i]
+        this.viewerUserList.forEach((item,index)=>{
+          if(item.id==tempItem){
+            item._checked=true
+          }
+        })
+      }
       this.userListModel=true
     },
     handleSubmit() {
@@ -567,33 +601,6 @@ export default {
       let str = JSON.stringify(v);
       let data = JSON.parse(str);
 
-      var temptaxationIdsArry=v.taxationIds.split(",")
-      var tempreviewerIdsArry=v.reviewerIds.split(",")
-      var tempviewerIdsArry=v.viewerIds.split(",")
-      for(let i=0;i<temptaxationIdsArry.length;i++) {
-        let tempItem = temptaxationIdsArry[i]
-        this.taxationUserList.forEach((item,index)=>{
-          if(item.id==tempItem){
-            item._checked=true
-          }
-        })
-      }
-      for(let i=0;i<tempreviewerIdsArry.length;i++) {
-        let tempItem = tempreviewerIdsArry[i]
-        this.reviewerUserList.forEach((item,index)=>{
-          if(item.id==tempItem){
-            item._checked=true
-          }
-        })
-      }
-      for(let i=0;i<tempviewerIdsArry.length;i++) {
-        let tempItem = tempviewerIdsArry[i]
-        this.viewerUserList.forEach((item,index)=>{
-          if(item.id==tempItem){
-            item._checked=true
-          }
-        })
-      }
 
       this.form = data;
       this.modalVisible = true;
