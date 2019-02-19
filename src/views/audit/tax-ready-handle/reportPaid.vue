@@ -397,6 +397,7 @@ export default {
             filePath:this.dataDetils.filePath,
             financialReport: this.dataDetils.financialReport,
             financialReportPath:this.dataDetils.financialReportPath,
+            oriName:this.dataDetils.oriName,
             id: this.dataDetils.id,
             remarks: this.dataDetils.remarks,
             serialNumber: this.dataDetils.serialNumber,
