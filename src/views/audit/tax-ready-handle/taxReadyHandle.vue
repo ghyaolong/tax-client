@@ -373,7 +373,7 @@ export default {
           title: '保存时间',
           key: "saveTime",
           render: (h, params) => {
-            return h('div', params.row.createTime && new Date(params.row.createTime).format())
+            return h('div', params.row.saveTime && new Date(params.row.saveTime).format())
           }
           // width: 110
         },

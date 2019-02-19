@@ -67,6 +67,25 @@
               <Button type="primary" style="width: 100px;margin-left:8px" :loading="savePassLoading" @click="handleSubmitTaxe">保存</Button>
           </footer>
         </Modal>
+        <Modal title="分配人员" v-model="userListModel" :mask-closable='false' :width="700">
+          <main>
+            <Tabs :animated="false">
+                <TabPane label="税务专员">
+                  <Table border ref="taxationUserListSelectionChange" :columns="userListTable" @on-selection-change="taxationUserListSelectionChange" :data="taxationUserList"></Table>
+                </TabPane>
+                <TabPane label="审核人">
+                  <Table border ref="reviewerUserListSelectionChange" :columns="userListTable" @on-selection-change="reviewerUserListSelectionChange" :data="reviewerUserList"></Table>
+                </TabPane>
+                <TabPane label="查看人">
+                  <Table border ref="viewerUserListSelectionChange" :columns="userListTable" @on-selection-change="viewerUserListSelectionChange" :data="viewerUserList"></Table>
+                </TabPane>
+            </Tabs>
+          </main>
+          <footer class="vertical-center" slot="footer">
+              <Button @click="handleReset" style="width: 100px;">取消</Button>
+              <Button type="primary" style="width: 100px;margin-left:8px"  @click="handleSubmitUserlist">保存</Button>
+          </footer>
+        </Modal>
     </div>
 </template>
 
@@ -77,7 +96,9 @@ import {
   addCompany,
   editCompany,
   deleteCompany,
-  getDictListDataByType
+  getDictListDataByType,
+  getUserListByRoleCode,
+  submitUserListByRole
 } from "@/api/index";
 import { dictType } from "@/libs/constance.js";
 import circleLoading from "../../my-components/circle-loading.vue";
@@ -90,6 +111,7 @@ export default {
     return {
       taxesTypes: [],
       savePassLoading: false,
+      userListModel:false,
       columns4: [
         {
           type: "selection",
@@ -104,6 +126,15 @@ export default {
           title: "税种代码",
           key: "code"
         }
+      ],
+      userListTable:[
+        {
+          type: "selection",
+          width: 60,
+          align: "center"
+        },
+        {title:"姓名",key:"username"},
+        {title:"角色名称",key:"realName"}
       ],
       taxesList: [],
       modalTaxes: false,
@@ -217,9 +248,27 @@ export default {
           key: "action",
           align: "center",
           fixed:"right",
-          width: 240,
+          width: 300,
           render: (h, params) => {
             return h("div", [
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginRight: "5px"
+                  },
+                  on: {
+                    click: () => {
+                      this.checkPeople(params.row);
+                    }
+                  }
+                },
+                "分配人员"
+              ),
               h(
                 "Button",
                 {
@@ -285,7 +334,14 @@ export default {
       currentRows: [],
       companyId: "",
       dictCurrencysMap:"",
-      dictCountrysMap:""
+      dictCountrysMap:"",
+      taxationUserList:[],
+      reviewerUserList:[],
+      viewerUserList:[],
+      taxationIds:"",
+      reviewerIds:"",
+      viewerIds:"",
+      tempItem:""
     };
   },
   methods: {
@@ -323,6 +379,44 @@ export default {
     },
     handleReset() {
       this.modalTaxes = false;
+      this.userListModel = false;
+    },
+    handleSubmitUserlist() {
+      console.log("this.taxationIds",this.taxationIds)
+      var temptaxationIds=[]
+      var tempreviewerIds=[]
+      var tempviewerIds=[]
+      this.taxationIds && this.taxationIds.map((item,index)=>{
+        temptaxationIds.push(item.id)
+      })
+      this.reviewerIds && this.reviewerIds.map((item,index)=>{
+        tempreviewerIds.push(item.id)
+      })
+      this.viewerIds && this.viewerIds.map((item,index)=>{
+        tempviewerIds.push(item.id)
+      })
+
+      let params ={
+        id:this.tempItem && this.tempItem.id,
+        taxationIds:temptaxationIds.join(","),
+        reviewerIds:tempreviewerIds.join(","),
+        viewerIds:tempviewerIds.join(",")
+      }
+      submitUserListByRole(params).then((res)=>{
+        if (result.status == "0") {
+          this.modalTaxes = false;
+          this.userListModel = false;
+        }
+      })
+    },
+    taxationUserListSelectionChange(val){
+      this.taxationIds=val
+    },
+    reviewerUserListSelectionChange(val){
+      this.reviewerIds=val
+    },
+    viewerUserListSelectionChange(val){
+      this.viewerIds=val
     },
     handleSubmitTaxe() {
       let vm = this;
@@ -342,6 +436,7 @@ export default {
         if (result.status == "0") {
           this.$Message.success(result.data);
           this.modalTaxes = false;
+          this.userListModel = false;
           this.getCompanyList();
         }
       }).catch(res => {
@@ -357,6 +452,15 @@ export default {
     init() {
       this.getCompanyList();
       this.getDictData();
+      getUserListByRoleCode("ROLE_COMMISSIONER_OF_TAX").then((res)=>{
+        this.taxationUserList=res.data
+      })
+      getUserListByRoleCode("ROLE_REVIEWER").then((res)=>{
+        this.reviewerUserList=res.data
+      })
+      getUserListByRoleCode("VIEW").then((res)=>{
+        this.viewerUserList=res.data
+      })
     },
     changePage(v) {
       this.pageNumber = v;
@@ -399,6 +503,10 @@ export default {
     },
     cancelSubmit() {
       this.modalVisible = false;
+    },
+    checkPeople(item){
+      this.tempItem = item
+      this.userListModel=true
     },
     handleSubmit() {
       this.$refs.form.validate(valid => {
@@ -458,6 +566,35 @@ export default {
       v.writeOffTime = v.writeOffTime && new Date(v.writeOffTime).format("yyyy-MM-dd")
       let str = JSON.stringify(v);
       let data = JSON.parse(str);
+
+      var temptaxationIdsArry=v.taxationIds.split(",")
+      var tempreviewerIdsArry=v.reviewerIds.split(",")
+      var tempviewerIdsArry=v.viewerIds.split(",")
+      for(let i=0;i<temptaxationIdsArry.length;i++) {
+        let tempItem = temptaxationIdsArry[i]
+        this.taxationUserList.forEach((item,index)=>{
+          if(item.id==tempItem){
+            item._checked=true
+          }
+        })
+      }
+      for(let i=0;i<tempreviewerIdsArry.length;i++) {
+        let tempItem = tempreviewerIdsArry[i]
+        this.reviewerUserList.forEach((item,index)=>{
+          if(item.id==tempItem){
+            item._checked=true
+          }
+        })
+      }
+      for(let i=0;i<tempviewerIdsArry.length;i++) {
+        let tempItem = tempviewerIdsArry[i]
+        this.viewerUserList.forEach((item,index)=>{
+          if(item.id==tempItem){
+            item._checked=true
+          }
+        })
+      }
+
       this.form = data;
       this.modalVisible = true;
     },

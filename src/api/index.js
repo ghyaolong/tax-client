@@ -469,3 +469,11 @@ export const editSysConfig=params=>{
 export const getFileType=params=>{
   return getRequest(`/sysConfig/getMsg/${params}`)
 }
+// 获取角色下的人员
+export const getUserListByRoleCode=params=>{
+  return getRequest(`/user/getUsers/${params}`)
+}
+// 分配人员
+export const submitUserListByRole=params=>{
+  return postRequest("/company/assignUsers",params)
+}

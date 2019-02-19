@@ -263,8 +263,7 @@ export default {
               "div",
               {
                 style: {
-                  textAlign: "left",
-                  marginLeft:"120px"
+                  textAlign: "center",
                 }
               },
               [
