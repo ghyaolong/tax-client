@@ -466,7 +466,7 @@ export default {
       this.dataDetils.details.map((item,index)=>{
         if(item.payableTax!=item.taxPaid || item.lateFeePayable!=item.overduePayment){
           that.taxModal=true
-          that.dataDetils.status=3
+          that.dataDetils.status=5
           return
         }else{
           that.dataDetils.status=0

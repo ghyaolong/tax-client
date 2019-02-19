@@ -551,7 +551,7 @@ export default {
       this.data.map((item,index)=>{
         if(item.payableTax!=item.taxPaid || item.taxPaid!=item.overduePayment){
           this.taxModal=true
-          params.status=3
+          params.status=5
           this.tempPatams=params
           return
         }else{
