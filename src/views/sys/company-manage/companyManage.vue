@@ -160,7 +160,6 @@ export default {
           align: "center"
         },
         {title:"姓名",key:"username"},
-        {title:"角色名称",key:"realName"}
       ],
       taxesList: [],
       modalTaxes: false,
@@ -447,6 +446,17 @@ export default {
       this.viewerIds && this.viewerIds.map((item,index)=>{
         tempviewerIds.push(item.id)
       })
+
+      if(temptaxationIds.length>1) {
+        this.$Message.error("只能选择一个税务专员")
+        return
+      }
+
+      if(tempreviewerIds.length>1) {
+        this.$Message.error("只能选择一个审核人")
+        return
+      }
+
 
       let params ={
         id:this.tempItem && this.tempItem.id,
