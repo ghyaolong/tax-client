@@ -662,6 +662,8 @@ export default {
         userId:this.userInfo.id,
         currentHandler:'',
         bean:{
+            businessFlowNumber:this.tempInfoValue.businessFlowNumber,
+            saveTime:this.tempInfoValue.saveTime,
             details:this.tempInfoValue.details,
             applicantId: this.tempInfoValue.applicantId,
             applicantName: this.tempInfoValue.applicantName,
