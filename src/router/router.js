@@ -77,7 +77,7 @@ export const otherRouter = {
         { path: 'resubmit', title: '编辑-税金申请', name: 'resubmit', component: () => import('@/views/audit/tax-ready-handle/huixianshujuyemian') },
         { path: 'details', title: '统计分析', name: 'details', component: () => import('@/views/detail/detail') },
         { path: 'reportPaid', title: '上报实缴', name: 'reportPaid', component: () => import('@/views/audit/tax-ready-handle/reportPaid') },
-        {path:"sysSetting",title:"系统设置",name:"sysSetting",component:() => import('@/views/sys/sys-setting/sysSetting')}
+        // {path:"sysSetting",title:"系统设置",name:"sysSetting",component:() => import('@/views/sys/sys-setting/sysSetting')}
     ]
 };
 
