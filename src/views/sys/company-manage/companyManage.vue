@@ -8,6 +8,15 @@
 <template>
     <div class="search">
         <Row>
+          <Form ref="searchForm" :model="searchForm" inline :label-width="120" class="search-form">
+              <Form-item label="E编码" prop="eCode">
+                <Input type="text" v-model="searchForm.eCode" clearable placeholder="请输入E编码" style="width: 200px" :maxlength="20"/>
+              </Form-item>
+              <Form-item style="margin-left:-35px;" class="br">
+                <Button @click="handleSearch" type="primary" icon="ios-search">搜索</Button>
+                <Button @click="handleResetSearch" >重置</Button>
+              </Form-item>
+          </Form>
             <Col>
                 <Card>
                     <Row class="operation">
@@ -126,6 +135,9 @@ export default {
       taxesTypes: [],
       savePassLoading: false,
       userListModel:false,
+      searchForm:{
+        eCode:""
+      },
       columns4: [
         {
           type: "selection",
@@ -359,6 +371,32 @@ export default {
     };
   },
   methods: {
+    handleSearch(){
+      this.loading = true;
+      let params = {
+        pageVo: {
+          pageNumber: this.pageNumber,
+          pageSize: this.pageSize
+        },
+        companyVo: {
+          name: "",
+          tin: "",
+          eCode:this.searchForm.eCode
+        }
+      };
+      getCompanyListData(params)
+        .then(res => {
+          this.loading = false;
+          this.data = res.data.list;
+          this.total = res.data.totalElements;
+        })
+        .catch(() => {
+          this.loading = false;
+        });
+    },
+    handleResetSearch(){
+      this.searchForm.eCode=''
+    },
     fetchTaxes() {
       let vm = this;
       vm.taxesList = [];
