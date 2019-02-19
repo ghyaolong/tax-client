@@ -38,13 +38,13 @@
             <FormItem label="角色对应节点" prop="processKey" :label-width="100">
               <Select v-model="roleForm.processKey" multiple @on-change="selectOnchange">
                 <Option value="none" key="none" :disabled="noneDisabled">无</Option>
-                <Option value="approvalProcess" key="approvalProcess" :disabled="optionDisabled">税金申报申请</Option>
-                <Option value="reviewProcess" key="reviewProcess" :disabled="optionDisabled">复核申报</Option>
-                <Option value="checkEntity" key="checkEntity" :disabled="optionDisabled">核查公司</Option>
-                <Option value="examineEntity" key="examineEntity" :disabled="optionDisabled">审查公司</Option>
-                <Option value="checkPay" key="checkPay" :disabled="optionDisabled">支付审批</Option>
-                <Option value="approvalPay" key="approvalPay" :disabled="optionDisabled">审批支付</Option>
-                <Option value="uploadPayFile" key="uploadPayFile" :disabled="optionDisabled">上传文件</Option>
+                <Option value="approvalProcess" key="approvalProcess" :disabled="optionDisabled">发起申请</Option>
+                <Option value="reviewProcess" key="reviewProcess" :disabled="optionDisabled">税金核查1</Option>
+                <Option value="checkEntity" key="checkEntity" :disabled="optionDisabled">税金核查2</Option>
+                <Option value="examineEntity" key="examineEntity" :disabled="optionDisabled">税金核查3</Option>
+                <Option value="checkPay" key="checkPay" :disabled="optionDisabled">资金审视</Option>
+                <Option value="approvalPay" key="approvalPay" :disabled="optionDisabled">税金审批</Option>
+                <Option value="reportPaid" key="reportPaid" :disabled="optionDisabled">上报实缴，并补全资料</Option>
               </Select>
             </FormItem>
           </Form>
@@ -291,14 +291,13 @@ export default {
         let string=""
         let obj = {
           none:'无',
-          approvalProcess:'税金申报申请',
-          reviewProcess:'复核申报',
-          checkEntity:'核查公司',
-          examineEntity:'审查公司',
-          checkPay:'支付审批',
-          approvalPay:'审批支付',
-          uploadPayFile:'上传文件',
-          reportPaid:"上报实缴"
+          approvalProcess:'发起申请',
+          reviewProcess:'税金核查1',
+          checkEntity:'税金核查2',
+          examineEntity:'税金核查3',
+          checkPay:'资金审视',
+          approvalPay:'税金审批',
+          reportPaid:"上报实缴，并补全资料"
         }
         tempKeys.map((item,index)=>{
           string += `${obj[item]}/`
