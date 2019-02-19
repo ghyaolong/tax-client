@@ -71,13 +71,27 @@
           <main>
             <Tabs :animated="false">
                 <TabPane label="税务专员">
-                  <Table border ref="taxationUserListSelectionChange" :columns="userListTable" @on-selection-change="taxationUserListSelectionChange" :data="taxationUserList"></Table>
+                  <Table border
+                  ref="taxationUserListSelectionChange"
+                  :columns="userListTable"
+                  @on-selection-change="taxationUserListSelectionChange"
+                  :data="taxationUserList"></Table>
                 </TabPane>
                 <TabPane label="审核人">
-                  <Table border ref="reviewerUserListSelectionChange" :columns="userListTable" @on-selection-change="reviewerUserListSelectionChange" :data="reviewerUserList"></Table>
+                  <Table
+                  border
+                  ref="reviewerUserListSelectionChange"
+                  :columns="userListTable"
+                   @on-selection-change="reviewerUserListSelectionChange"
+                   :data="reviewerUserList"></Table>
                 </TabPane>
                 <TabPane label="查看人">
-                  <Table border ref="viewerUserListSelectionChange" :columns="userListTable" @on-selection-change="viewerUserListSelectionChange" :data="viewerUserList"></Table>
+                  <Table
+                  border
+                  ref="viewerUserListSelectionChange"
+                  :columns="userListTable"
+                  @on-selection-change="viewerUserListSelectionChange"
+                  :data="viewerUserList"></Table>
                 </TabPane>
             </Tabs>
           </main>
@@ -513,20 +527,33 @@ export default {
       var temptaxationIdsArry=v.taxationIds.split(",")
       var tempreviewerIdsArry=v.reviewerIds.split(",")
       var tempviewerIdsArry=v.viewerIds.split(",")
-      debugger
+      var tempTaxationList = JSON.parse(JSON.stringify(this.taxationUserList))
+      var tempReviewerUserList = JSON.parse(JSON.stringify(this.reviewerUserList))
+      var tempViewerUserList = JSON.parse(JSON.stringify(this.viewerUserList))
+
+      tempTaxationList.forEach((item,index)=>{
+        item._checked=false
+      })
+
+      tempReviewerUserList.forEach((item,index)=>{
+        item._checked=false
+      })
+
+      tempViewerUserList.forEach((item,index)=>{
+        item._checked=false
+      })
+
       for(let i=0;i<temptaxationIdsArry.length;i++) {
         let tempItem = temptaxationIdsArry[i]
-        this.taxationUserList.forEach((item,index)=>{
-          console.log("item",item)
+        tempTaxationList.forEach((item,index)=>{
           if(item.id==tempItem){
             item._checked=true
           }
         })
       }
-      console.log("aaaaaaaa",this.taxationUserList)
       for(let i=0;i<tempreviewerIdsArry.length;i++) {
         let tempItem = tempreviewerIdsArry[i]
-        this.reviewerUserList.forEach((item,index)=>{
+        tempReviewerUserList.forEach((item,index)=>{
           if(item.id==tempItem){
             item._checked=true
           }
@@ -534,12 +561,15 @@ export default {
       }
       for(let i=0;i<tempviewerIdsArry.length;i++) {
         let tempItem = tempviewerIdsArry[i]
-        this.viewerUserList.forEach((item,index)=>{
+        tempViewerUserList.forEach((item,index)=>{
           if(item.id==tempItem){
             item._checked=true
           }
         })
       }
+      this.taxationUserList=tempTaxationList
+      this.reviewerUserList=tempReviewerUserList
+      this.viewerUserList=tempViewerUserList
       this.userListModel=true
     },
     handleSubmit() {
