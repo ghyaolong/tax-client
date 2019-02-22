@@ -564,19 +564,19 @@ export default {
       var  overduePayment=0 //实缴滞纳金合计
       var  taxsjsk=0 // 实缴税款合计
       for(let i=0;i<tempData.length;i++) {
-          payableTaxALL+=tempData[i].payableTax
-          lateFeePayable+=tempData[i].lateFeePayable
-          applTaxPayment=payableTaxALL+lateFeePayable
-          taxPaid+=tempData[i].taxPaid
-          overduePayment+=tempData[i].overduePayment
-          taxsjsk=taxPaid+overduePayment
+          payableTaxALL+=parseFloat(tempData[i].payableTax?tempData[i].payableTax:0)
+          lateFeePayable+=parseFloat(tempData[i].lateFeePayable?tempData[i].lateFeePayable:0)
+          applTaxPayment=parseFloat(payableTaxALL)+parseFloat(lateFeePayable)
+          taxPaid+=parseFloat(tempData[i].taxPaid?tempData[i].taxPaid:0)
+          overduePayment+=parseFloat(tempData[i].overduePayment?tempData[i].overduePayment:0)
+          taxsjsk=parseFloat(taxPaid)+parseFloat(overduePayment)
       }
-      this.payableTaxAll=payableTaxALL               //应缴税额合计
-      this.lateFeePayableALL=lateFeePayable                      //应缴滞纳金合计
-      this.applTaxPaymentAll=applTaxPayment                   //申请缴纳税款合计
-      this.taxPaidAll=taxPaid                        //实缴税额合计    taxPaid
-      this.overduePaymentAll= overduePayment                     // 实缴滞纳金合计   overduePayment
-      this.actualTaxPayment=taxsjsk               //实际缴纳税款合计
+      this.payableTaxAll=payableTaxALL.toFixed(2)               //应缴税额合计
+      this.lateFeePayableALL=lateFeePayable.toFixed(2)                      //应缴滞纳金合计
+      this.applTaxPaymentAll=applTaxPayment.toFixed(2)                   //申请缴纳税款合计
+      this.taxPaidAll=taxPaid.toFixed(2)                        //实缴税额合计    taxPaid
+      this.overduePaymentAll= overduePayment.toFixed(2)                     // 实缴滞纳金合计   overduePayment
+      this.actualTaxPayment=taxsjsk.toFixed(2)               //实际缴纳税款合计
       this.infoList=val.auditLogVoList
       this.showTaxes = true;
     },

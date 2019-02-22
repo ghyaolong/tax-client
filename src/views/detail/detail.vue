@@ -76,7 +76,7 @@
           :loading="loading"
           border
           :columns="columns"
-          :data="data" ref="table" sortable="custom"></Table>
+          :data="data" ref="table" ></Table>
         </Row>
       </Card>
       </Col>
@@ -148,27 +148,20 @@ export default {
         },
         {
           title:'币种',
-          width:100,
           key:"currency"
         },
         {
           title:"实缴税金",
-          width:150,
           key:"taxPaidALL",
           render:this.rendertaxPaidALL
         },
         {
           title:"实缴滞纳金",
-          width:150,
           key:"overduePaymentAll",
           render:this.renderoverduePaymentAll
         },
         {
           title:"实缴纳税款",
-          width:150,
-          // render:(h,params) => {
-          //   return h('div', params.row.taxPaidALL + params.row.overduePaymentAll)
-          // }
           render:this.renderSJXJ
         }
       ]
@@ -260,14 +253,6 @@ export default {
     getAlltaxDict() {
       getDictListDataByType('2').then((res)=>{
         this.taxDictList = res.data
-        res.data.map((item,index)=>{
-          this.columns.push({
-            title:item.name,
-            key:item.code,
-            width:150,
-            render:this.renderSZHJ
-          })
-        })
       })
     },
     // // 获取币种
@@ -318,6 +303,7 @@ export default {
                      }
                      getDetail(params).then((res)=>{
                        // this.data= res.data
+                       this.columns.push({title:"121212"})
                        this.data=this.checkGroupByCompany(res.data)
                      })
                    }

@@ -409,9 +409,10 @@ export default {
       const that = this
       dbrwAudit(params).then(res=>{
         that.$Message.success("操作成功")
-        this.dataDetils={}
-        this.details = []
-        this.auditLogVoList = []
+        // this.dataDetils={}
+        // this.details = []
+        // this.auditLogVoList = []
+        this.$router.push({name: 'home_index'});
       }).finally(() => {
         // this.loading = false;
       })

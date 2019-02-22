@@ -441,7 +441,6 @@ export default {
       this.$refs.userForm.validate(valid => {
         if (valid) {
           let params = {
-            realName: this.userForm.realName,
             username: this.userForm.username,
             password: this.userForm.password,
             workNumber: this.userForm.workNumber,
