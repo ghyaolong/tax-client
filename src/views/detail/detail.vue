@@ -15,7 +15,7 @@
               </Select>
             </Form-item>
             <Form-item label="税种" prop="taxDict">
-              <Select v-model="searchForm.taxDict" style="width:200px" multiple>
+              <Select v-model="searchForm.taxDict" style="width:200px" multiple @on-change="selectOnchange" label-in-value>
                 <Option v-for="(item,index) in taxDictList"
                   :value="item.code"
                   :label="item.name"
@@ -99,6 +99,7 @@ export default {
       conpanyList:[], // 公司
       currencyList:JSON.parse(getStore("currencyList")), // 币种
       userInfo: JSON.parse(getStore("userInfo")),
+      tempColunms:[],
       searchForm:{
         companyName:[],// 公司
         currency:"", // 币种
@@ -118,6 +119,49 @@ export default {
       selectDateTime:"",  // 实缴时期
       disabledDateTaxPeriod:false,
       disabledDateTime:false,
+      constColumns:[
+        {
+          title:"纳税所属期",
+          key:"taxPeriod",
+          render:(h,params) => {
+            if(params.row.taxPeriod) {
+              return h('div', params.row.taxPeriod)
+            }else{
+              return h('div', "合计")
+            }
+          }
+        },
+        {
+          title:"实缴时期",
+          key:"paymentTime"
+        },
+        {
+          title:'公司名称',
+          key:"companyName"
+        },
+        {
+          title:"国家",
+          key:"countryName"
+        },
+        {
+          title:'币种',
+          key:"currency"
+        },
+        {
+          title:"实缴税金",
+          key:"taxPaidALL",
+          render:this.rendertaxPaidALL
+        },
+        {
+          title:"实缴滞纳金",
+          key:"overduePaymentAll",
+          render:this.renderoverduePaymentAll
+        },
+        {
+          title:"实缴纳税款",
+          render:this.renderSJXJ
+        }
+      ],
       columns:[
         {
           title:"纳税所属期",
@@ -168,6 +212,19 @@ export default {
     }
   },
   methods:{
+    selectOnchange(val,label) {
+      console.log("val",val)
+      var tempList=[]
+      for(let i=0;i<val.length;i++) {
+        tempList.push({
+            title:val[i].label,
+            key:val[i].value
+        })
+      }
+      this.tempColunms=tempList
+      console.log("1212",tempList)
+    },
+
     // 渲染实缴税金合计
     rendertaxPaidALL(h, params) {
       debugger;
@@ -301,9 +358,10 @@ export default {
                        endTime:this.endTime,// 实缴时期
                        taxType:this.searchForm.taxType//税金类型
                      }
+                     this.columns=this.constColumns.concat(this.tempColunms)
                      getDetail(params).then((res)=>{
                        // this.data= res.data
-                       this.columns.push({title:"121212"})
+                       this.tempColunms=[]
                        this.data=this.checkGroupByCompany(res.data)
                      })
                    }
