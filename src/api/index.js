@@ -435,8 +435,8 @@ export const resSubmit=params=>{
   return postRequest('/process/resubmit',params)
 }
 // 已办任务--导出
-export const exportObj=params=>{
-  return postRequest('/process/exportExcel',params)
+export const exportExcel=params=>{
+  return getRequest(`/process/exportExcel/${params.procInstId}/${params.userId}`)
 }
 
 // 统计详情
