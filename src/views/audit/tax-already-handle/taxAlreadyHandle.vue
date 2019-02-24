@@ -433,9 +433,9 @@ export default {
       // window.location.href = `/api/process/exportExcel/${Base64.encode(string)}`
       let procInstId = this.exportObj.procInstId
       let userId = this.userInfo.id
-      // window.location.href=`process/exportExcel/${procInstId}/${userId}`
+      window.location.href=`/api/process/exportExcel/${procInstId}/${userId}`
       // window.open(`process/exportExcel/${procInstId}/${userId}`)
-      exportExcel({procInstId:procInstId,userId:userId})
+      // exportExcel({procInstId:procInstId,userId:userId})
     },
     filterMethod (value, option) {
           return option.toUpperCase().indexOf(value.toUpperCase()) !== -1;
