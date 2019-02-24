@@ -400,33 +400,40 @@ export default {
   },
   methods: {
     handleExport() {
-      console.log(this.exportObj)
-      let tempObj = this.exportObj.taxApplicationVo
-      let tempInfo = this.exportObj.auditLogVoList
-      tempInfo.map((item,index)=>{
-        item.auditDate = item.auditDate && new Date(item.auditDate).format()
-      })
-      tempObj.details.map((item,index)=>{
-          item.deadline = item.deadline && new Date(item.deadline).format()
-          item.paymentTime = item.paymentTime && new Date(item.paymentTime).format()
-          item.applTaxPayment = item.payableTax + item.lateFeePayable
-          item.actualTaxPayment = item.taxPaid + item.overduePayment
-      })
-      let params ={
-        companyName: tempObj.companyName,
-        tin: tempObj.tin,
-        countryCode: tempObj.countryCode,
-        applicantName: tempObj.applicantName,
-        remarks: tempObj.remarks,
-        currency: tempObj.currency,
-        details:tempObj.details,
-        auditLogVoList:tempInfo
-      }
+      console.log("this.exportObj",this.exportObj)
+      // console.log(this.exportObj)
+      // let tempObj = this.exportObj.taxApplicationVo
+      // let tempInfo = this.exportObj.auditLogVoList
+      // tempInfo.map((item,index)=>{
+      //   item.auditDate = item.auditDate && new Date(item.auditDate).format()
+      // })
+      // tempObj.details.map((item,index)=>{
+      //     item.deadline = item.deadline && new Date(item.deadline).format()
+      //     item.paymentTime = item.paymentTime && new Date(item.paymentTime).format()
+      //     item.applTaxPayment = item.payableTax + item.lateFeePayable
+      //     item.actualTaxPayment = item.taxPaid + item.overduePayment
+      // })
+      // let params ={
+      //   companyName: tempObj.companyName,
+      //   tin: tempObj.tin,
+      //   countryCode: tempObj.countryCode,
+      //   applicantName: tempObj.applicantName,
+      //   remarks: tempObj.remarks,
+      //   currency: tempObj.currency,
+      //   details:tempObj.details,
+      //   auditLogVoList:tempInfo
+      // }
+
       // exportObj(params)
       // var stating = `/api/process/exportExcel?companyName=${params.companyName}&tin=${params.tin}&countryCode=${params.countryCode}&applicantName=${params.applicantName}&remarks=${params.remarks}&currency=${params.currency}&details=${params.details}&auditLogVoList=${params.auditLogVoList}`
       // console.log(JSON.stringify(params))
-      var string = JSON.stringify(params);
-      window.location.href = `/api/process/exportExcel/${Base64.encode(string)}`
+
+
+      // var string = JSON.stringify(params);
+      // window.location.href = `/api/process/exportExcel/${Base64.encode(string)}`
+      let procInstId = this.exportObj.procInstId
+      let userId = this.userInfo.id
+      window.location.href=`/exportExcel/${procInstId}/${userId}`
     },
     filterMethod (value, option) {
           return option.toUpperCase().indexOf(value.toUpperCase()) !== -1;
