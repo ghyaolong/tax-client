@@ -234,10 +234,10 @@ export default {
         var tempSubmit=0
         this.data.map((item,index)=>{
           if(item.taxPaidALL) {
-            tempSubmit += item.taxPaidALL
+            tempSubmit += parseFloat(item.taxPaidALL)
           }
         })
-        return h('div', tempSubmit)
+        return h('div', tempSubmit.toFixed(2))
       }
     },
     // 渲染实缴纳税金合计
@@ -248,24 +248,25 @@ export default {
         var tempSubmit=0
         this.data.map((item,index)=>{
           if(item.overduePaymentAll) {
-            tempSubmit += item.overduePaymentAll
+            tempSubmit += parseFloat(item.overduePaymentAll)
           }
         })
-        return h('div', tempSubmit)
+        return h('div', tempSubmit.toFixed(2))
       }
     },
     // 渲染税金小计合计
     renderSJXJ(h,params) {
       if(params.row.taxPaidALL || params.row.overduePaymentAll) {
-        return h('div', params.row.taxPaidALL + params.row.overduePaymentAll)
+        let tempAll = parseFloat(params.row.taxPaidALL) + parseFloat(params.row.overduePaymentAll)
+        return h('div', tempAll.toFixed(2))
       }else{
         var tempSubmit=0
         this.data.map((item,index)=>{
           if(item.taxPaidALL || item.overduePaymentAll) {
-            tempSubmit += item.taxPaidALL + item.overduePaymentAll
+            tempSubmit += parseFloat(item.taxPaidALL) + parseFloat(item.overduePaymentAll)
           }
         })
-        return h('div', tempSubmit)
+        return h('div', tempSubmit.toFixed(2))
       }
     },
     renderSZHJ(h,params) {
@@ -358,7 +359,9 @@ export default {
                        endTime:this.endTime,// 实缴时期
                        taxType:this.searchForm.taxType//税金类型
                      }
-                     this.columns=this.constColumns.concat(this.tempColunms)
+                     if(this.tempColunms.length>=1){
+                       this.columns=this.constColumns.concat(this.tempColunms)
+                     }
                      getDetail(params).then((res)=>{
                        // this.data= res.data
                        this.tempColunms=[]
@@ -403,19 +406,19 @@ export default {
         item.data.map((items,indexs)=>{
           // 按实缴税金查询
           if(this.searchForm.taxType=="PAID"){
-            taxPaidALL += items.taxPaid  //实缴税金的和
+            taxPaidALL += parseFloat(items.taxPaid)  //实缴税金的和
           }else if(this.searchForm.taxType=="LATEFEE") {
-            overduePaymentAll += items.overduePayment   // 实缴纳税金的和
+            overduePaymentAll += parseFloat(items.overduePayment)   // 实缴纳税金的和
           }else{
-            taxPaidALL += items.taxPaid,
-            overduePaymentAll += items.overduePayment
+            taxPaidALL += parseFloat(items.taxPaid),
+            overduePaymentAll += parseFloat(items.overduePayment)
           }
         })
         this.taxDictList.map((items,indexs)=>{
           item[items.code]=0
         })
-        item.taxPaidALL=taxPaidALL
-        item.overduePaymentAll=overduePaymentAll
+        item.taxPaidALL=parseFloat(taxPaidALL).toFixed(2)
+        item.overduePaymentAll=parseFloat(overduePaymentAll).toFixed(2)
       })
 
       //
@@ -433,18 +436,22 @@ export default {
       }
 
       submit.map((item,index)=>{
+        var tempValue = 0
         for(let key in item) {
           let tempObj = item['taxDictLists']
           for(let keys in tempObj) {
             if(key==keys) {
               tempObj[keys].map((items,indexs)=>{
                 if(this.searchForm.taxType=="PAID") {
-                  item[key] += items.taxPaid
+                  tempValue += parseFloat(items.taxPaid)
+                  item[key] = tempValue === 0 ? "": tempValue.toFixed(2)
                 }else if(this.searchForm.taxType=="LATEFEE") {
-                  item[key] +=  items.overduePayment
+                  tempValue += parseFloat(items.overduePayment)
+                  item[key] = tempValue === 0 ? "": tempValue.toFixed(2)
                 }else{
-                  item[key] += (items.taxPaid + items.overduePayment)
-
+                  tempValue += parseFloat(items.taxPaid) + parseFloat(items.overduePayment)
+                  item[key] = tempValue ===0 ? "":tempValue.toFixed(2)
+                  console.log("asdasd",item[key])
                 }
               })
             }
