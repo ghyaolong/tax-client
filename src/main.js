@@ -51,6 +51,7 @@ new Vue({
         currentPageName: ''
     },
     mounted() {
+      
         // 初始化菜单
         util.initRouter(this);
         this.currentPageName = this.$route.name;
