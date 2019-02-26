@@ -30,7 +30,7 @@
                 <Option value="LATEFEE">实缴滞纳金</Option>
               </Select>
             </Form-item>
-            <Form-item label="币种" prop="currency">
+            <!-- <Form-item label="币种" prop="currency">
               <Select v-model="searchForm.currency" style="width:200px">
                 <Option v-for="(item,index) in currencyList"
                   :value="item.code"
@@ -38,7 +38,7 @@
                   :key="item.id"
                 ></Option>
               </Select>
-            </Form-item>
+            </Form-item> -->
             <Form-item label="纳税所属期" prop="selectDateTaxPeriod">
               <DatePicker
               type="daterange"
@@ -47,7 +47,7 @@
                format="yyyy-MM"
                clearable @on-change="selectDateRangeTaxPeriod" placeholder="选择起始时间" style="width: 200px"></DatePicker>
             </Form-item>
-            <Form-item label="国家" prop="countryCode">
+            <!-- <Form-item label="国家" prop="countryCode">
               <Select v-model="searchForm.countryCode" style="width:200px">
                 <Option v-for="(item,index) in countryList"
                   :value="item.code"
@@ -55,7 +55,7 @@
                   :key="item.id"
                 ></Option>
               </Select>
-            </Form-item>
+            </Form-item> -->
             <Form-item label="实缴期间" prop="selectDateTime">
               <DatePicker type="daterange"
                v-model="selectDateTime"
@@ -125,14 +125,14 @@ export default {
           key:"taxPeriod",
           render:(h,params) => {
             if(params.row.taxPeriod) {
-              return h('div', params.row.taxPeriod)
+              return h('div', params.row.taxPeriod && params.row.taxPeriod.replace(/-01$/,""))
             }else{
               return h('div', "合计")
             }
           }
         },
         {
-          title:"实缴时期",
+          title:"实际缴纳日期",
           key:"paymentTime"
         },
         {
@@ -169,14 +169,14 @@ export default {
           key:"taxPeriod",
           render:(h,params) => {
             if(params.row.taxPeriod) {
-              return h('div', params.row.taxPeriod)
+              return h('div', params.row.taxPeriod && params.row.taxPeriod.replace(/-01$/,""))
             }else{
               return h('div', "合计")
             }
           }
         },
         {
-          title:"实缴时期",
+          title:"实际缴纳日期",
           width:150,
           key:"paymentTime"
         },
@@ -450,7 +450,7 @@ export default {
                   item[key] = tempValue === 0 ? "": tempValue.toFixed(2)
                 }else{
                   tempValue += parseFloat(items.taxPaid) + parseFloat(items.overduePayment)
-                  item[key] = tempValue ===0 ? "":tempValue.toFixed(2)
+                  item[key] = tempValue === 0 ? "":tempValue.toFixed(2)
                   console.log("asdasd",item[key])
                 }
               })

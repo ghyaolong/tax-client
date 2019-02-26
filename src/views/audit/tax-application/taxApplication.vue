@@ -64,17 +64,17 @@
             </Select>
           </Form-item>
           <br/>
-          <Form-item label="财务报表" prop="financialReportPath">
+          <Form-item label="财务报表" prop="financialReportPath" >
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}"
             :accept="fileTypeString"
             name="file" :data="{materialTypeDict: 'FINANCE_REPORT',taxDict:'none',currency:selectCurrencyCode}"
             :show-upload-list="false" :on-success="financeUploadSuc" class="upload-box" >
               <Input type="text" readonly v-model="form.fileName" />
-              <Button icon="ios-cloud-upload-outline">上传文件</Button>
-              <!-- <span style="padding-left: 10px;" v-if="form.financialReport">已上传</span> -->
+              <Button icon="ios-cloud-upload-outline">上传财务报表</Button>
             </Upload>
             <span style="color:red">只能上传 {{fileTypeString}} 文件</span>
+            <Button @click="delFileCWBB" style="margin-left:10px">删除财务报表</Button>
           </Form-item>
         </Form>
         <Spin size="large" fix v-if="loading"></Spin>
@@ -417,23 +417,31 @@ export default {
       userInfo:{},
       dictTaxCategorysMap:"",
       delFileName:"",
-      delFileNameIndex:""
+      delFileNameIndex:"",
     }
   },
   methods: {
-    // 文件上传之前文件大小校验
-    // finleBeforeUpload(file) {
-    //   // console.log(file)
-    //   if(file) {
-    //     let fileSize= file.size
-    //     if(fileSize/1024/1024 >4 ) {
-    //       this.$Message.error('上传文件不能大于4MB');
-    //       return false
-    //     }else{
-    //       return true
-    //     }
-    //   }
-    // },
+    // 删除财务报表
+    delFileCWBB() {
+      const that=this
+      if(this.form.financialReportPath!="") {
+        delFile(this.form.financialReportPath).then((res)=>{
+          if(res.status==0) {
+            that.$Message.success(res.data)
+            this.form.financialReport = "";
+            this.form.financialReportPath = "";
+            this.form.fileName = ""
+          }else{
+            that.$Message.error(res.errMsg)
+          }
+        })
+      }else{
+        this.$Message.error("没有文件!")
+      }
+
+    },
+
+
     // 真是提交
     submitTrue() {
       this.form.applicantName=this.userInfo.username  // 用户名
@@ -552,16 +560,29 @@ export default {
     },
     // 删除预申报表
     handleDelFile() {
-      console.log("aaaaaaaa",this.delFileName)
-      console.log("bbbb",this.delFileNameIndex)
       const that=this
-      let tempFileName = this.delFileName.preTaxReturnsPath;
-      let tempIndex = this.delFileNameIndex;
-      if(tempFileName) {
-        delFile(tempFileName).then((res)=>{
-          console.log("del",res)
-        })
+      if(this.fileUploadForm.preTaxReturnsPath) {
+        delFile(this.fileUploadForm.preTaxReturnsPath).then((res)=>{
+          if(res.status==0) {
+            that.$Message.success(res.data)
+            that.fileUploadForm.preTaxReturnsPath = "";
+            that.fileUploadForm.preTaxReturns = "";
+            that.fileUploadForm.preTaxReturnsPathFileName = ""
+          }else{
+            that.$Message.error(res.errMsg)
+          }
+          })
+      }else{
+        that.$Message.error("没有文件")
       }
+      // const that=this
+      // let tempFileName = this.delFileName.preTaxReturnsPath;
+      // let tempIndex = this.delFileNameIndex;
+      // if(tempFileName) {
+      //   delFile(tempFileName).then((res)=>{
+      //     console.log("del",res)
+      //   })
+      // }
     },
     // table下面添加table
     addTable() {

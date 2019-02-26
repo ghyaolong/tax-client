@@ -152,13 +152,13 @@
                 <tr v-for="(item,index) in tableList[0].details" :key="item.id">
                   <td >{{item.taxPeriod}}</td>
                   <td >{{dictTaxCategorysMap.get(item.taxDict)}}</td>
-                  <td >{{item.payableTax}}</td>
-                  <td >{{item.lateFeePayable}}</td>
-                  <td >{{item.payableTax+item.lateFeePayable}}</td>
+                  <td >{{`${item.payableTax && item.payableTax.toFixed(2)}`}}</td>
+                  <td >{{`${item.lateFeePayable && item.lateFeePayable.toFixed(2)}` }}</td>
+                  <td >{{`${(item.payableTax+item.lateFeePayable).toFixed(2)}`}}</td>
                   <td >{{`${item.deadline && new Date(item.deadline).format()}`}}</td>
-                  <td >{{item.taxPaid}}</td>
-                  <td>{{item.overduePayment}}</td>
-                  <td>{{item.taxPaid + item.overduePayment}}</td>
+                  <td >{{`${item.taxPaid && item.taxPaid.toFixed(2)}`}}</td>
+                  <td>{{`${item.overduePayment && item.overduePayment.toFixed(2)}`}}</td>
+                  <td>{{`${(item.taxPaid + item.overduePayment).toFixed(2)}`}}</td>
                   <td >{{ `${item.paymentTime ? new Date(item.paymentTime).format(): ''}` }}</td>
                   <td >
                     <span class="myspan" @click="handleupLoad(tableList[0],index)">资料补全</span>

@@ -71,10 +71,11 @@
             name="file" :data="{materialTypeDict: 'FINANCE_REPORT',taxDict:'none',currency:selectCurrencyCode}"
             :show-upload-list="false" :on-success="financeUploadSuc" class="upload-box">
               <Input type="text" readonly v-model="form.fileName" />
-              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline">上传财务报表</Button>
               <!-- <span style="padding-left: 10px;" v-if="form.financialReport">已上传</span> -->
             </Upload>
             <span style="color:red">只能上传 {{fileTypeString}} 文件</span>
+            <Button @click="delFileCWBB" style="margin-left:10px">删除财务报表</Button>
           </Form-item>
         </Form>
         <Spin size="large" fix v-if="loading"></Spin>
@@ -107,6 +108,7 @@
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
               <!-- <Button v-if="fileUploadForm.preTaxReturns" @click.stop="filePriview(fileUploadForm.preTaxReturnsPath)">预览</Button> -->
             </Upload>
+            <Button   @click="handleDelFile">删除</Button>
           </FormItem>
           <FormItem label="申报表" v-if="routeType === 'taxReplenishment'">
             <Upload action="/api/file/upload"
@@ -185,7 +187,8 @@ import {
   taxEdit,    // 税金申请编辑
   getReviewer,   // 获取当前登录用户的上级审核人
   previewFile,   // 文件预览
-  resSubmit
+  resSubmit,
+  delFile
 } from '@/api/index'
 import { dictType } from '@/libs/constance.js'
 import { getStore } from '@/libs/storage';
@@ -448,6 +451,58 @@ export default {
     //     }
     //   }
     // },
+    // 删除预申报表
+    handleDelFile() {
+      const that=this
+      var uploadColomunIndex = this.fileUploadForm.uploadColomunIndex;
+      let tempFilePath = this.data[uploadColomunIndex].preTaxReturnsPath
+      if(tempFilePath) {
+        delFile(tempFilePath).then((res)=>{
+          if(res.status==0) {
+            that.$Message.success(res.data)
+            that.data[uploadColomunIndex].preTaxReturnsPath = "";
+            that.data[uploadColomunIndex].preTaxReturns = "";
+            that.data[uploadColomunIndex].preTaxReturnsPathFileName = ""
+            that.fileUploadForm.uploadColomunIndex=""
+            that.$forceUpdate()
+          }else{
+            that.$Message.error(res.errMsg)
+          }
+          })
+      }else if(this.fileUploadForm.preTaxReturnsPath){
+        delFile(this.fileUploadForm.preTaxReturnsPath).then((res)=>{
+          if(res.status==0) {
+            that.$Message.success(res.data)
+            that.fileUploadForm.preTaxReturnsPath = "";
+            that.fileUploadForm.preTaxReturns = "";
+            that.fileUploadForm.preTaxReturnsPathFileName = ""
+          }else{
+            that.$Message.error(res.errMsg)
+          }
+          })
+      }else{
+        that.$Message.error("没有文件")
+      }
+
+
+
+    },
+    delFileCWBB() {
+      const that=this
+      delFile(this.form.financialReportPath).then((res)=>{
+        if(res.status==0){
+          that.$Message.success(res.data)
+          this.form.financialReport = "";
+          this.form.financialReportPath = "";
+          this.form.fileName = ""
+        }else{
+          that.$Message.error(res.errMsg)
+        }
+      })
+    },
+
+
+
     // 放弃
     resubmit() {
       this.form.applicantName=this.userInfo.username  // 用户名

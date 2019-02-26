@@ -27,7 +27,7 @@
          <tr>
            <td width="82" >财务报表</td>
            <td colspan="5" style="border-right-color:#fff">{{dataDetils.oriName}}</td>
-           <td style="border-right-color:#fff" class="myspan" @click="priviewFile(dataDetils.financialReportPath)">预览</td>
+           <td style="border-right-color:#fff" class="myspan" @click.stop="priviewFile(dataDetils.financialReportPath)">预览</td>
            <!-- <td class="myspan" @click="uploadFile(dataDetils.financialReportPath)">下载</td> -->
          </tr>
        </tbody>
@@ -59,6 +59,7 @@
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
             </Upload>
             <Button  @click.stop="priviewFile(fileUploadForm.taxReturnsPath)">预览</Button>
+            <Button  @click.stop="delFiles(fileUploadForm.taxReturnsPath,'1')">删除</Button>
             <!-- <Button  @click.stop="uploadFile(fileUploadForm.taxReturnsPath)">下载</Button> -->
           </FormItem>
           <FormItem label="完税申报表" prop="paymentCertificatePath">
@@ -71,6 +72,7 @@
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
             </Upload>
             <Button  @click.stop="priviewFile(fileUploadForm.paymentCertificatePath)">预览</Button>
+            <Button  @click.stop="delFiles(fileUploadForm.paymentCertificatePath,'2')">删除</Button>
             <!-- <Button  @click.stop="uploadFile(fileUploadForm.paymentCertificatePath)">下载</Button> -->
           </FormItem>
           <FormItem label="其它" prop="otherUploadId">
@@ -83,6 +85,7 @@
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
             </Upload>
             <Button @click.stop="priviewFile(fileUploadForm.otherUploadId)">预览</Button>
+            <Button  @click.stop="delFiles(fileUploadForm.otherUploadId,'3')">删除</Button>
             <!-- <Button  @click.stop="uploadFile(fileUploadForm.otherUploadId)">下载</Button> -->
           </FormItem>
       </Form>
@@ -107,7 +110,7 @@
 
 <script>
 import fileLoadPath from '@/api/fileload';
-import { taxReadyHandle,getReviewer,dbrwAudit,lookLiuchengtu,getAllCompany,getUserListData,getDictListDataByType } from '@/api/index.js'
+import { taxReadyHandle,getReviewer,dbrwAudit,lookLiuchengtu,getAllCompany,getUserListData,getDictListDataByType,delFile } from '@/api/index.js'
 import { getStore } from '@/libs/storage';
 import Cookies from "js-cookie";
 import { dictType } from '@/libs/constance.js'
@@ -325,6 +328,124 @@ export default {
     }
   },
   methods:{
+
+    delFiles(filepath,type) {
+      const that= this
+      var indexs = this.fileUploadForm.uploadFileIndex;
+      // 申报表
+      if(type=="1") {
+        if(filepath){
+          delFile(filepath).then((res)=>{
+            if(res.status==0) {
+              that.$Message.success(res.data)
+              that.fileUploadForm.taxReturns = ""
+              that.fileUploadForm.taxReturnsPath =""
+              that.fileUploadForm.taxReturnsPathFileName =""
+              that.dataDetils.details[indexs].taxReturns = ""
+              that.dataDetils.details[indexs].taxReturnsPath = ""
+              that.dataDetils.details[indexs].taxReturnsPathFileName = ""
+              that.fileUploadForm.uploadColomunIndex=""
+              that.$forceUpdate()
+            }else{
+              that.$Message.error(res.errMsg)
+            }
+          })
+        }else if(this.fileUploadForm.taxReturnsPath){
+          if(res.status==0) {
+            that.$Message.success(res.data)
+            that.fileUploadForm.taxReturns = ""
+            that.fileUploadForm.taxReturnsPath =""
+            that.fileUploadForm.taxReturnsPathFileName =""
+            that.dataDetils.details[indexs].taxReturns = ""
+            that.dataDetils.details[indexs].taxReturnsPath = ""
+            that.dataDetils.details[indexs].taxReturnsPathFileName = ""
+            that.$forceUpdate()
+          }else{
+            that.$Message.error(res.errMsg)
+          }
+        }else{
+          this.$Message.error("没有文件")
+        }
+      }
+      // 完税申报表
+      if(type=="2") {
+        if(filepath){
+          delFile(filepath).then((res)=>{
+            if(res.status==0) {
+              that.$Message.success(res.data)
+              that.fileUploadForm.paymentCertificate = ""
+              that.fileUploadForm.paymentCertificatePath =""
+              that.fileUploadForm.paymentCertificatePathFileName =""
+              that.dataDetils.details[indexs].paymentCertificate = ""
+              that.dataDetils.details[indexs].paymentCertificatePath = ""
+              that.dataDetils.details[indexs].paymentCertificatePathFileName = ""
+              that.fileUploadForm.uploadColomunIndex=""
+              that.$forceUpdate()
+            }else{
+              that.$Message.error(res.errMsg)
+            }
+          })
+        }else if(this.fileUploadForm.paymentCertificatePath){
+          if(res.status==0) {
+            that.$Message.success(res.data)
+            that.fileUploadForm.paymentCertificate = ""
+            that.fileUploadForm.paymentCertificatePath =""
+            that.fileUploadForm.paymentCertificatePathFileName =""
+            that.dataDetils.details[indexs].paymentCertificate = ""
+            that.dataDetils.details[indexs].paymentCertificatePath = ""
+            that.dataDetils.details[indexs].paymentCertificatePathFileName = ""
+            that.$forceUpdate()
+          }else{
+            that.$Message.error(res.errMsg)
+          }
+        }else{
+          this.$Message.error("没有文件")
+        }
+      }
+
+
+      // 其他
+      if(type=="3") {
+        if(filepath){
+          delFile(filepath).then((res)=>{
+            if(res.status==0) {
+              that.$Message.success(res.data)
+              this.fileUploadForm.otherUpload = ""
+              this.fileUploadForm.otherUploadId =""
+              this.fileUploadForm.otherUploadFileName=""
+              this.dataDetils.details[indexs].otherUpload = ""
+              this.dataDetils.details[indexs].otherUploadId = ""
+              this.dataDetils.details[indexs].otherUploadFileName = ""
+              that.fileUploadForm.uploadColomunIndex=""
+              that.$forceUpdate()
+            }else{
+              that.$Message.error(res.errMsg)
+            }
+          })
+        }else if(this.fileUploadForm.otherUploadId){
+          if(res.status==0) {
+            that.$Message.success(res.data)
+            this.fileUploadForm.otherUpload = ""
+            this.fileUploadForm.otherUploadId =""
+            this.fileUploadForm.otherUploadFileName=""
+            this.fileUploadForm.otherUpload = ""
+            this.fileUploadForm.otherUploadId =""
+            this.fileUploadForm.otherUploadFileName=""
+            this.dataDetils.details[indexs].otherUpload = ""
+            this.dataDetils.details[indexs].otherUploadId = ""
+            this.dataDetils.details[indexs].otherUploadFileName = ""
+            that.$forceUpdate()
+          }else{
+            that.$Message.error(res.errMsg)
+          }
+        }else{
+          this.$Message.error("没有文件")
+        }
+      }
+
+
+    },
+
     // 取消
     fileuploadFormCancel() {
       this.showUploadModal = false
