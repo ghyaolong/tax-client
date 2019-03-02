@@ -97,7 +97,7 @@
                   <td width="120">备注</td>
                 </tr>
                 <tr v-for="(item,index) in tableList[0].details" :key="item.id">
-                  <td >{{item.taxPeriod}}</td>
+                  <td >{{`${item.taxPeriod && rendertaxPeriodDate(item.taxPeriod)}`}}</td>
                   <td >{{dictTaxCategorysMap.get(item.taxDict)}}</td>
                   <td >{{`${item.payableTax && item.payableTax.toFixed(2)}`}}</td>
                   <td >{{`${item.lateFeePayable && item.lateFeePayable.toFixed(2)}`}}</td>
@@ -399,6 +399,14 @@ export default {
     };
   },
   methods: {
+    // 处理所属日期问题
+    rendertaxPeriodDate(value) {
+      var tempDate=""
+      if(value) {
+        tempDate = value.split("-")
+        return tempDate[0]+'-'+tempDate[1]
+      }
+    },
     handleExport() {
       console.log("this.exportObj",this.exportObj)
       // console.log(this.exportObj)

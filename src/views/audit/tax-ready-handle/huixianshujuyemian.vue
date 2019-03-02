@@ -26,6 +26,9 @@
       color: #57a3f3 !important;
     }
   }
+  .ivu-input-number-input {
+    text-align: center !important;
+  }
 </style>
 <template>
   <Row>
@@ -75,8 +78,8 @@
               <!-- <span style="padding-left: 10px;" v-if="form.financialReport">已上传</span> -->
             </Upload>
             <span style="color:red">只能上传 {{fileTypeString}} 文件</span>
-            <Button @click="delFileCWBB" style="margin-left:10px">删除财务报表</Button>
           </Form-item>
+          <Button @click="delFileCWBB" >删除财务报表</Button>
         </Form>
         <Spin size="large" fix v-if="loading"></Spin>
       </Row>
@@ -105,7 +108,7 @@
             :accept="fileTypeString"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'PRE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.preTaxReturnsPathFileName" />
-              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline">{{`${fileUploadForm.preTaxReturnsPathFileName?"已上传":"上传文件"}`}}</Button>
               <!-- <Button v-if="fileUploadForm.preTaxReturns" @click.stop="filePriview(fileUploadForm.preTaxReturnsPath)">预览</Button> -->
             </Upload>
             <Button   @click="handleDelFile">删除</Button>
@@ -115,7 +118,7 @@
             :accept="fileTypeString"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.taxReturnsPathFileName" />
-              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline">{{`${fileUploadForm.taxReturnsPathFileName?"已上传":"上传文件"}`}}</Button>
               <!-- <div v-if="fileUploadForm.taxReturns"><Button @click.stop="filePriview(fileUploadForm.taxReturnsPath)">预览</Button></div> -->
             </Upload>
           </FormItem>
@@ -124,7 +127,7 @@
             :accept="fileTypeString"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'DONE_TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.paymentCertificatePathFileName" />
-              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline">{{`${fileUploadForm.paymentCertificatePathFileName?"已上传":"上传文件"}`}}</Button>
               <!-- <div v-if="fileUploadForm.paymentCertificate"><Button @click.stop="filePriview(fileUploadForm.paymentCertificatePath)">预览</Button></div> -->
             </Upload>
           </FormItem>
@@ -133,7 +136,7 @@
             :accept="fileTypeString"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'OTHER'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.otherUploadFileName" />
-              <Button icon="ios-cloud-upload-outline">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline">{{`${fileUploadForm.otherUploadFileName?"已上传":"上传文件"}`}}</Button>
               <!-- <div v-if="fileUploadForm.otherUploadId"><Button @click.stop="filePriview(fileUploadForm.otherUploadIdPath)">预览</Button></div> -->
             </Upload>
           </FormItem>

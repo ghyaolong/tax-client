@@ -9,7 +9,7 @@
                     <Row>
                         <Form ref="searchForm" :model="searchForm" inline :label-width="120" class="search-form">
                             <Form-item label="用户名" prop="username">
-                              <Input type="text" v-model="searchForm.username" clearable placeholder="请输入用户名" style="width: 200px" :maxlength="20"/>
+                              <Input type="text" v-model="searchForm.username" clearable placeholder="请输入用户名" style="width: 200px" />
                             </Form-item>
                             <Form-item label="E编码" prop="eCode">
                               <Input type="text" v-model="searchForm.eCode" clearable placeholder="请输入E编码" style="width: 200px" :maxlength="20"/>
@@ -68,7 +68,7 @@
         <Modal :title="modalTitle" v-model="userModalVisible" :mask-closable='false' :width="500" :styles="{top: '30px'}" @on-cancel="cancelUser">
             <Form ref="userForm" :model="userForm" :label-width="70" :rules="userFormValidate">
                 <FormItem label="姓名" prop="username">
-                    <Input v-model="userForm.username" :maxlength="15" autocomplete="off" />
+                    <Input v-model="userForm.username"  autocomplete="off" />
                 </FormItem>
                 <FormItem label="密码" prop="password" v-if="modalType===0" :error="errorPass">
                     <Input type="password" v-model="userForm.password" autocomplete="off" :maxlength="20"/>

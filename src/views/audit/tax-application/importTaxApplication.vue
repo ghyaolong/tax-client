@@ -26,6 +26,9 @@
       color: #57a3f3 !important;
     }
   }
+  .ivu-input-number-input {
+    text-align: center !important;
+  }
 </style>
 <template>
   <Row>
@@ -296,10 +299,10 @@ export default {
           render: (h, params) => {
             return h('div', {
               domProps: {
-                innerText: parseFloat(params.row.taxPaid) + parseFloat(params.row.overduePayment)
+                innerText: `${parseFloat(params.row.taxPaid?params.row.taxPaid:0)+ parseFloat(params.row.overduePayment?params.row.overduePayment:0)}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1")
               }
             })
-            return h('div', parseFloat(this.data[params.index].taxPaid) + parseFloat(this.data[params.index].overduePayment))
+            return h('div', `${parseFloat(this.data[params.index].taxPaid?this.data[params.index].taxPaid:0) + parseFloat(this.data[params.index].overduePayment?this.data[params.index].overduePayment:0)}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1"))
           }
         },
         {
