@@ -224,7 +224,7 @@ export default {
         {
           title: '所属期间',
           key: "taxPeriod",
-          width: 160,
+          // width: 160,
           align: 'center',
           // render: this.renderSelect
           render: this.renderDatePicker
@@ -233,28 +233,28 @@ export default {
           title: '税种',
           key: "taxDict",
           align: 'center',
-          width: 160,
+          // width: 160,
           render: this.renderSelect
         },
         {
           title: '应缴税额',
           key: "payableTax",
           align: 'center',
-          width: 120,
+          // width: 120,
           render: this.renderInput
         },
         {
           title: '应缴滞纳金',
           key: "lateFeePayable",
           align: 'center',
-          width: 120,
+          // width: 120,
           render: this.renderInput
         },
         {
           title: '申请缴纳税款',
           key: "applTaxPayment",
           align: 'center',
-          width: 120,
+          // width: 120,
           // render: this.renderInput
           render: (h, params) => {
             return h('div', {
@@ -268,7 +268,7 @@ export default {
         {
           title: '缴款截止日期',
           key: "deadline",
-          width: 160,
+          // width: 160,
           align: 'center',
           render: this.renderDatePicker
         },
@@ -276,7 +276,7 @@ export default {
           title: '实缴税额',
           key: "taxPaid",
           align: 'center',
-          width: 120,
+          // width: 120,
           render: this.renderInput
           // render: (h, params) => {
           //   return h('div', params.row.taxPaid)
@@ -286,7 +286,7 @@ export default {
           title: '实缴滞纳金',
           key: "overduePayment",
           align: 'center',
-          width: 120,
+          // width: 120,
           render: this.renderInput
           // render: (h, params) => {
           //   return h('div', params.row.overduePayment)
@@ -295,7 +295,7 @@ export default {
         {
           title: '实际缴纳税款',
           align: 'center',
-          width: 120,
+          // width: 120,
           render: (h, params) => {
             return h('div', {
               domProps: {
@@ -309,7 +309,7 @@ export default {
           title: '实际缴纳日期',
           key: "paymentTime",
           align: 'center',
-          width: 160,
+          // width: 160,
           render:this.renderDatePicker
           // render: (h, params) => {
           //   return h('div', "")
@@ -384,7 +384,7 @@ export default {
           title: '备注',
           key: "remarks",
           align: 'center',
-          width: 160,
+          // width: 160,
           render: this.renderInput
         },
       ],

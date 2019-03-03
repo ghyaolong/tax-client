@@ -76,8 +76,8 @@
               <Button type="primary" style="width: 100px;margin-left:8px" :loading="savePassLoading" @click="handleSubmitTaxe">保存</Button>
           </footer>
         </Modal>
-        <Modal title="分配人员" v-model="userListModel" :mask-closable='false' :width="700">
-          <main>
+        <Modal title="分配人员" v-model="userListModel" :mask-closable='false' :width="700" >
+          <main style="max-height: 500px;overflow: auto;">
             <Tabs :animated="false">
                 <TabPane label="税务专员">
                   <Table border
@@ -207,26 +207,26 @@ export default {
         },
         {
           type: "index",
-          width: 60,
+          // width: 60,
           align: "center"
         },
         {
           title: "公司名称",
           key: "name",
           sortable: true,
-          width: 200
+          // width: 200
         },
         {
           title: "税务识别号码",
           key: "tin",
           sortable: true,
-          width: 140
+          // width: 140
         },
         {
           title: "成立日期",
           key: "establishmentTime",
           sortable: true,
-          width: 160,
+          // width: 160,
           render: (h, params) => {
             return h("div", params.row.establishmentTime && new Date(params.row.establishmentTime).format());
           }
@@ -235,7 +235,7 @@ export default {
           title: "注销日期",
           key: "writeOffTime",
           sortable: true,
-          width: 160,
+          // width: 160,
           render: (h, params) => {
             return h("div", params.row.writeOffTime && new Date(params.row.writeOffTime).format());
           }
@@ -244,21 +244,21 @@ export default {
           title: "所属国家",
           key: "countryCode",
           sortable: true,
-          width:100,
+          // width:100,
           render:this.renderName
         },
         {
           title: "币种",
           key: "currencyCode",
           sortable: true,
-          width:100,
+          // width:100,
           render:this.renderCurrencysName
         },
         {
           title:"是否分配",
           key:"isAssign",
           sortable: true,
-          width:100,
+          // width:100,
           render: (h, params) => {
             return h('div', params.row.isAssign && params.row.isAssign==1?"已分配":"未分配")
           }
@@ -266,14 +266,14 @@ export default {
         {
           title: "备注",
           key: "remarks",
-          width:150
+          // width:150
         },
         {
           title: "操作",
           key: "action",
           align: "center",
           fixed:"right",
-          width: 300,
+          minWidth: 300,
           render: (h, params) => {
             return h("div", [
               h(

@@ -109,7 +109,11 @@ export default {
           title: '所属期间',
           key: "taxPeriod",
           render:(h,params)=>{
-            return h("div",params.row.taxPeriod && params.row.taxPeriod.replace(/(.*)-01/,"$1"))
+              if(params.row.taxPeriod=="taxPeriod"){
+                return h('div',"")
+              }else{
+                return h("div",params.row.taxPeriod && params.row.taxPeriod.replace(/(.*)-01/,"$1"))
+              }
           }
           // width: 110
         },

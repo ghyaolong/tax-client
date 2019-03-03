@@ -731,6 +731,5 @@ export default {
     color:rgb(45, 140, 240);
     padding: 2px;
   }
-
 }
 </style>
