@@ -3,7 +3,7 @@
     <Row>
       <Col>
       <Card>
-        <Form inline :label-width="120" class="search-form">
+        <Form inline :label-width="120" class="search-form" :rules="rules" ref="searchForm">
           <Form-item label="公司名称" prop="companyIds">
             <Select v-model="companyIds" filterable style="width: 200px" multiple  label-in-value>
               <Option v-for="item in companyList" :value="item.id" :key="item.id" :label="item.name">
@@ -84,6 +84,9 @@ export default {
         'TAX_REPORT': '税务申报表',
         'DONE_TAX_REPORT': '完税凭证',
         'OTHER': '其他报表'
+      },
+      rules:{
+        companyIds:[{required:true,message:"请选择公司!"}]
       },
       columns: [
         {
@@ -203,31 +206,35 @@ export default {
   },
   methods: {
     init() {
-      this.initPageData();
+      // this.initPageData();
       this.initCompanyList();
     },
     initPageData() {
-      this.loading = true;
-      let params = {
-        pageVo: {
-          pageNumber: this.pageNumber,
-          pageSize: this.pageSize
-        },
-        companyIds: this.companyIds && this.companyIds.join(","),
-        materialTypeDict: this.materialTypeDict,
-        taxDicts:this.taxDicts && this.taxDicts.join(","),
-        searchVo: {
-          startDate: this.startDate && new Date(this.startDate).format("yyyy-MM-dd"),
-          endDate: this.endDate && new Date(this.endDate).format("yyyy-MM-dd")
+      this.$refs['searchForm'].validate((valid)=>{
+        if(valid) {
+          this.loading = true;
+          let params = {
+            pageVo: {
+              pageNumber: this.pageNumber,
+              pageSize: this.pageSize
+            },
+            companyIds: this.companyIds && this.companyIds.join(","),
+            materialTypeDict: this.materialTypeDict,
+            taxDicts:this.taxDicts && this.taxDicts.join(","),
+            searchVo: {
+              startDate: this.startDate && new Date(this.startDate).format("yyyy-MM-dd"),
+              endDate: this.endDate && new Date(this.endDate).format("yyyy-MM-dd")
+            }
+          }
+          getFilesList(params).then(res => {
+            if(res.data) {
+              this.total = res.data.total && res.data.total;
+              this.data = res.data.list && res.data.list;
+            }
+          }).finally(() => {
+            this.loading = false;
+          })
         }
-      }
-      getFilesList(params).then(res => {
-        if(res.data) {
-          this.total = res.data.total && res.data.total;
-          this.data = res.data.list && res.data.list;
-        }
-      }).finally(() => {
-        this.loading = false;
       })
     },
     /* 获取公司列表 */
