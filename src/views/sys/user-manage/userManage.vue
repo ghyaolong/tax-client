@@ -385,7 +385,7 @@ export default {
       getUserListData(params).then(res => {
         this.loading = false;
         this.data = res.data.list;
-        this.total = res.data.total;
+        this.total = res.data.totalElements;
       });
     },
     handleSearch() {
