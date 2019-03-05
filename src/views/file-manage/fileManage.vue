@@ -3,11 +3,10 @@
     <Row>
       <Col>
       <Card>
-        <Form inline :label-width="120" class="search-form" :rules="rules" ref="searchForm">
+        <Form inline :label-width="120" class="search-form" :rules="ruless" ref="searchForm" :model="searchFormData">
           <Form-item label="公司名称" prop="companyIds">
-            <Select v-model="companyIds" filterable style="width: 200px" multiple  label-in-value>
-              <Option v-for="item in companyList" :value="item.id" :key="item.id" :label="item.name">
-              </Option>
+            <Select v-model="searchFormData.companyIds" filterable style="width: 200px" multiple  label-in-value>
+              <Option v-for="item in companyList" :value="item.id" :key="item.id" :label="item.name"></Option>
             </Select>
           </Form-item>
           <Form-item label="资料类型" prop="materialTypeDict">
@@ -85,8 +84,11 @@ export default {
         'DONE_TAX_REPORT': '完税凭证',
         'OTHER': '其他报表'
       },
-      rules:{
-        companyIds:[{required:true,message:"请选择公司!"}]
+      searchFormData:{
+        companyIds:[]
+      },
+      ruless:{
+        companyIds:[{ required: true, type: 'array', min: 1, message: '请选择公司!', trigger: 'change' },]
       },
       columns: [
         {
@@ -180,7 +182,7 @@ export default {
       total: 0,
       startDate: "",
       endDate: "",
-      companyIds: [],
+      // companyIds: [],
       materialTypeDict: '',
       companyList: [],
       priviewFilePath:'',
@@ -218,7 +220,7 @@ export default {
               pageNumber: this.pageNumber,
               pageSize: this.pageSize
             },
-            companyIds: this.companyIds && this.companyIds.join(","),
+            companyIds: this.searchFormData.companyIds && this.searchFormData.companyIds.join(","),
             materialTypeDict: this.materialTypeDict,
             taxDicts:this.taxDicts && this.taxDicts.join(","),
             searchVo: {
@@ -266,11 +268,11 @@ export default {
       this.pageSize = 10;
       this.startDate = "";
       this.endDate = "";
-      this.companyIds = [];
+      this.searchFormData.companyIds = [];
       this.materialTypeDict = '';
       this.taxDicts=[]
       // 重新加载数据
-      this.initPageData();
+      // this.initPageData();
     },
     priviewFile(v) {
       console.log("adasda",v)

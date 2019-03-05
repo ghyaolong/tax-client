@@ -110,7 +110,8 @@
 
 <script>
 import fileLoadPath from '@/api/fileload';
-import { taxReadyHandle,getReviewer,dbrwAudit,lookLiuchengtu,getAllCompany,getUserListData,getDictListDataByType,delFile } from '@/api/index.js'
+import { taxReadyHandle,
+  getFileType,getReviewer,dbrwAudit,lookLiuchengtu,getAllCompany,getUserListData,getDictListDataByType,delFile } from '@/api/index.js'
 import { getStore } from '@/libs/storage';
 import Cookies from "js-cookie";
 import { dictType } from '@/libs/constance.js'
@@ -750,6 +751,9 @@ export default {
     init() {
       this.inintPage()
       this.addTable()
+      getFileType("fileType").then((res)=>{
+        this.setStore("fileTypeString", res.data&&res.data.propertyValue);
+      })
     }
   },
   mounted(){

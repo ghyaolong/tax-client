@@ -169,7 +169,8 @@ import {
   taxEdit,    // 税金申请编辑
   getReviewer,   // 获取当前登录用户的上级审核人
   previewFile,   // 文件预览
-  resSubmit
+  resSubmit,
+  getFileType
 } from '@/api/index'
 import { dictType } from '@/libs/constance.js'
 import { getStore } from '@/libs/storage';
@@ -560,6 +561,9 @@ export default {
       this.getDictData()
       this.addColumn()
       this.addTable();
+      getFileType("fileType").then((res)=>{
+        this.setStore("fileTypeString", res.data&&res.data.propertyValue);
+      })
     },
     // 删除预申报表
     handleDelFile() {

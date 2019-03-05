@@ -191,7 +191,8 @@ import {
   getReviewer,   // 获取当前登录用户的上级审核人
   previewFile,   // 文件预览
   resSubmit,
-  delFile
+  delFile,
+  getFileType
 } from '@/api/index'
 import { dictType } from '@/libs/constance.js'
 import { getStore } from '@/libs/storage';
@@ -754,6 +755,9 @@ export default {
 
       // this.addColumn()
       this.addTable();
+      getFileType("fileType").then((res)=>{
+        this.setStore("fileTypeString", res.data&&res.data.propertyValue);
+      })
     },
     // table下面添加table
     addTable() {
