@@ -65,6 +65,7 @@ const app = {
             }
         },
         closePage(state, name) {
+          debugger;
             state.cachePage.forEach((item, index) => {
                 if (item === name) {
                     state.cachePage.splice(index, 1);

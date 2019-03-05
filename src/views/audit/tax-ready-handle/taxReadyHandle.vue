@@ -289,7 +289,11 @@
 </template>
 
 <script>
-import { taxReadyHandle,getReviewer,dbrwAudit,lookLiuchengtu,getAllCompany,getUserListData,getDictListDataByType } from '@/api/index.js'
+import { taxReadyHandle,
+  getReviewer,
+  dbrwAudit,
+  getOnlyCompanyList,
+  lookLiuchengtu,getAllCompany,getUserListData,getDictListDataByType,getOnlyUserList } from '@/api/index.js'
 import Cookies from "js-cookie";
 import { getStore } from '@/libs/storage';
 import fileLoadPath from '@/api/fileload';
@@ -1017,15 +1021,16 @@ export default {
   created:function(){
     this.userInfo = JSON.parse(Cookies.get("userInfo"));
     // 获取全部公司
-    getAllCompany()
-      .then(res => {
-        var tempArry = []
-        res.data.map((item)=>{
-          tempArry.push(item.name)
-        })
-        this.companyListName=tempArry
+    getAllCompany().then(res => {
         this.companyList = res.data;
       })
+    getOnlyCompanyList(this.userInfo.id).then((res)=>{
+      var tempArry = []
+      res.data.map((item)=>{
+        tempArry.push(item.name)
+      })
+      this.companyListName=tempArry
+    })
     // 获取全部用户
     let params = {
       pageVo: {
@@ -1045,14 +1050,18 @@ export default {
         endDate: ''
       }
     }
-    getUserListData(params).then(res =>{
+    getOnlyUserList(params).then(res =>{
       var tempArry = []
-      res.data.list.map((item)=>{
+      res.data.map((item)=>{
         tempArry.push(item.realName)
       })
-      this.userList = res.data.list
       this.userListName = tempArry
     })
+
+    getUserListData(params).then(res=>{
+      this.userList = res.data.list
+    })
+
   }
 }
 </script>

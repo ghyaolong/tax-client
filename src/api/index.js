@@ -477,3 +477,11 @@ export const getUserListByRoleCode=params=>{
 export const submitUserListByRole=params=>{
   return postRequest("/company/assignUsers",params)
 }
+// 代办任务单独 获取审核人
+export const getOnlyUserList=params=>{
+  return getRequest("/user/getTaxCommissioner")
+}
+// 代办任务单独 获取公司
+export const getOnlyCompanyList=params=>{
+  return getRequest(`/company/getAll/${params}`)
+}

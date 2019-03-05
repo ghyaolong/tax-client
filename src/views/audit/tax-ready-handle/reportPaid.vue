@@ -533,6 +533,7 @@ export default {
         // this.dataDetils={}
         // this.details = []
         // this.auditLogVoList = []
+        that.$store.commit("removeTag","reportPaid")
         this.$router.push({name: 'home_index'});
       }).finally(() => {
         // this.loading = false;

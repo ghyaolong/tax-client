@@ -23,8 +23,8 @@
                 ></Option>
               </Select>
             </Form-item>
-            <Form-item label="税金类型" prop="taxType">
-              <Select v-model="searchForm.taxType" style="width:200px">
+            <Form-item label="税金类型" prop="taxType" >
+              <Select v-model="searchForm.taxType" style="width:200px" @on-change="selectTaxTypeOnchange">
                 <Option value="ALL">实缴税金/实缴滞纳金</Option>
                 <Option value="PAID">实缴税金</Option>
                 <Option value="LATEFEE">实缴滞纳金</Option>
@@ -147,25 +147,25 @@ export default {
           title:'币种',
           key:"currency"
         },
-        {
-          title:"实缴税金",
-          key:"taxPaidALL",
-          render:this.rendertaxPaidALL
-        },
-        {
-          title:"实缴滞纳金",
-          key:"overduePaymentAll",
-          render:this.renderoverduePaymentAll
-        },
-        {
-          title:"实缴纳税款",
-          render:this.renderSJXJ
-        }
+        // {
+        //   title:"实缴税金",
+        //   key:"taxPaidALL",
+        //   render:this.rendertaxPaidALL
+        // },
+        // {
+        //   title:"实缴滞纳金",
+        //   key:"overduePaymentAll",
+        //   render:this.renderoverduePaymentAll
+        // },
+        // {
+        //   title:"实缴纳税款",
+        //   render:this.renderSJXJ
+        // }
       ],
       columns:[
         {
           title:"纳税所属期",
-          width:150,
+          // width:150,
           key:"taxPeriod",
           render:(h,params) => {
             if(params.row.taxPeriod) {
@@ -177,52 +177,92 @@ export default {
         },
         {
           title:"实际缴纳日期",
-          width:150,
+          // width:150,
           key:"paymentTime"
         },
         {
           title:'公司名称',
-          width:150,
+          // width:150,
           key:"companyName"
         },
         {
           title:"国家",
-          width:100,
+          // width:100,
           key:"countryName"
         },
         {
           title:'币种',
           key:"currency"
         },
-        {
-          title:"实缴税金",
-          key:"taxPaidALL",
-          render:this.rendertaxPaidALL
-        },
-        {
-          title:"实缴滞纳金",
-          key:"overduePaymentAll",
-          render:this.renderoverduePaymentAll
-        },
-        {
-          title:"实缴纳税款",
-          render:this.renderSJXJ
-        }
-      ]
+        // {
+        //   title:"实缴税金",
+        //   key:"taxPaidALL",
+        //   render:this.rendertaxPaidALL
+        // },
+        // {
+        //   title:"实缴滞纳金",
+        //   key:"overduePaymentAll",
+        //   render:this.renderoverduePaymentAll
+        // },
+        // {
+        //   title:"实缴纳税款",
+        //   render:this.renderSJXJ
+        // }
+      ],
+      taxDictListMap:""
     }
   },
   methods:{
+    selectTaxTypeOnchange(val,label){
+      let tempTaxList=this.searchForm.taxDict
+      console.log(",,,,,,",this.searchForm)
+      switch (val) {
+        case "PAID":
+        this.tempColunms.push({title:"实缴税金",key:"taxPaidALL",render:this.rendertaxPaidALL})
+        this.tempColunms.push({title:"实缴纳税款",render:this.renderSJXJ})
+          break;
+        case "LATEFEE":
+        this.tempColunms.push({title:"实缴滞纳金",key:"overduePaymentAll",render:this.renderoverduePaymentAll})
+        this.tempColunms.push({title:"实缴纳税款",render:this.renderSJXJ})
+          break;
+        default:
+        this.tempColunms.push({title:"实缴税金",key:"taxPaidALL",render:this.rendertaxPaidALL})
+        this.tempColunms.push({title:"实缴滞纳金",key:"overduePaymentAll",render:this.renderoverduePaymentAll})
+        this.tempColunms.push({title:"实缴纳税款",render:this.renderSJXJ})
+      }
+      for(let i=0;i<tempTaxList.length;i++) {
+        this.tempColunms.push({
+            title:this.taxDictListMap.get(tempTaxList[i]),
+            key:tempTaxList[i]
+        })
+      }
+    },
     selectOnchange(val,label) {
-      console.log("val",val)
-      var tempList=[]
+      // console.log("val",val)
+      let tempList=[]
+      let tempTaxType=this.searchForm.taxType
+      switch (tempTaxType) {
+        case "PAID":
+        this.tempColunms.push({title:"实缴税金",key:"taxPaidALL",render:this.rendertaxPaidALL})
+        this.tempColunms.push({title:"实缴纳税款",render:this.renderSJXJ})
+          break;
+        case "LATEFEE":
+        this.tempColunms.push({title:"实缴滞纳金",key:"overduePaymentAll",render:this.renderoverduePaymentAll})
+        this.tempColunms.push({title:"实缴纳税款",render:this.renderSJXJ})
+          break;
+        default:
+        this.tempColunms.push({title:"实缴税金",key:"taxPaidALL",render:this.rendertaxPaidALL})
+        this.tempColunms.push({title:"实缴滞纳金",key:"overduePaymentAll",render:this.renderoverduePaymentAll})
+        this.tempColunms.push({title:"实缴纳税款",render:this.renderSJXJ})
+      }
       for(let i=0;i<val.length;i++) {
-        tempList.push({
+        this.tempColunms.push({
             title:val[i].label,
             key:val[i].value
         })
       }
-      this.tempColunms=tempList
-      console.log("1212",tempList)
+      // this.tempColunms=tempList
+      // console.log("tempList",this.tempColunms)
     },
 
     // 渲染实缴税金合计
@@ -311,6 +351,11 @@ export default {
     getAlltaxDict() {
       getDictListDataByType('2').then((res)=>{
         this.taxDictList = res.data
+        let taxDictListMap = new Map()
+        res.data.map((item,index)=>{
+          taxDictListMap.set(item.code,item.name)
+        })
+        this.taxDictListMap = taxDictListMap
       })
     },
     // // 获取币种

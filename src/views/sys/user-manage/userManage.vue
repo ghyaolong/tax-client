@@ -404,7 +404,7 @@ export default {
       this.searchForm.departmentId = "";
       this.searchForm.departmentTitle = "";
       // 重新加载数据
-      this.getUserList();
+      // this.getUserList();
     },
     changeSort(e) {
       this.searchForm.sort = e.key;
