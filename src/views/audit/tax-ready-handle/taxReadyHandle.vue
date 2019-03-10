@@ -133,7 +133,7 @@
                   <td width="82" >财务报表</td>
                   <td colspan="5" style="border-right-color:#fff">{{tableList[0].oriName}}</td>
                   <td style="border-right-color:#fff" class="myspan" @click="priviewFile(tableList[0].financialReportPath)">预览</td>
-                  <!-- <td class="myspan" @click="uploadFile(tableList[0].financialReportPath)">下载</td> -->
+                  <td class="myspan" @click.stop="uploadFile(tableList[0].financialReportPath)">下载</td>
                 </tr>
                 <tr>
                   <td width="82">所属期间</td>
@@ -239,7 +239,7 @@
           <FormItem label="预申报表" prop="preTaxReturnsPath">
             <Input type="text" disabled v-model="fileUploadForm.preTaxReturnsPathFileName" style="width:150px;float:left"/>
             <Button   @click.stop="priviewFile(fileUploadForm.preTaxReturnsPath)">预览</Button>
-            <!-- <Button   @click.stop="uploadFile(fileUploadForm.preTaxReturnsPath)">下载</Button> -->
+            <Button   @click.stop="uploadFile(fileUploadForm.preTaxReturnsPath)">下载</Button>
           </FormItem>
           <FormItem label="申报表" prop="taxReturnsPath">
             <Input type="text" disabled v-model="fileUploadForm.taxReturnsPathFileName" style="width:150px;float:left"/>
@@ -251,7 +251,7 @@
               <!-- <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile' && isCommissioner">上传文件</Button> -->
             </Upload>
             <Button  @click.stop="priviewFile(fileUploadForm.taxReturnsPath)">预览</Button>
-            <!-- <Button  @click.stop="uploadFile(fileUploadForm.taxReturnsPath)">下载</Button> -->
+            <Button  @click.stop="uploadFile(fileUploadForm.taxReturnsPath)">下载</Button>
           </FormItem>
           <FormItem label="完税申报表" prop="paymentCertificatePath">
             <Input type="text" disabled v-model="fileUploadForm.paymentCertificatePathFileName" style="width:150px;float:left"/>
@@ -263,7 +263,7 @@
               <!-- <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile' && isCommissioner">上传文件</Button> -->
             </Upload>
             <Button  @click.stop="priviewFile(fileUploadForm.paymentCertificatePath)">预览</Button>
-            <!-- <Button  @click.stop="uploadFile(fileUploadForm.paymentCertificatePath)">下载</Button> -->
+            <Button  @click.stop="uploadFile(fileUploadForm.paymentCertificatePath)">下载</Button>
           </FormItem>
           <FormItem label="其它" prop="otherUploadId">
             <Input type="text" disabled  v-model="fileUploadForm.otherUploadFileName"  style="width:150px;float:left"/>
@@ -275,7 +275,7 @@
               <!-- <Button icon="ios-cloud-upload-outline" v-if="currentLinkType=='uploadPayFile' && isCommissioner">上传文件</Button> -->
             </Upload>
             <Button @click.stop="priviewFile(fileUploadForm.otherUploadId)">预览</Button>
-            <!-- <Button  @click.stop="uploadFile(fileUploadForm.otherUploadId)">下载</Button> -->
+            <Button  @click.stop="uploadFile(fileUploadForm.otherUploadId)">下载</Button>
           </FormItem>
       </Form>
       <footer class="vertical-center" slot="footer">

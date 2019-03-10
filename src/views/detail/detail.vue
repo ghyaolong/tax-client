@@ -214,6 +214,7 @@ export default {
   },
   methods:{
     selectTaxTypeOnchange(val,label){
+      this.tempColunms=[]
       let tempTaxList=this.searchForm.taxDict
       console.log(",,,,,,",this.searchForm)
       switch (val) {
@@ -241,20 +242,21 @@ export default {
       // console.log("val",val)
       let tempList=[]
       let tempTaxType=this.searchForm.taxType
-      switch (tempTaxType) {
-        case "PAID":
-        this.tempColunms.push({title:"实缴税金",key:"taxPaidALL",render:this.rendertaxPaidALL})
-        this.tempColunms.push({title:"实缴纳税款",render:this.renderSJXJ})
-          break;
-        case "LATEFEE":
-        this.tempColunms.push({title:"实缴滞纳金",key:"overduePaymentAll",render:this.renderoverduePaymentAll})
-        this.tempColunms.push({title:"实缴纳税款",render:this.renderSJXJ})
-          break;
-        default:
-        this.tempColunms.push({title:"实缴税金",key:"taxPaidALL",render:this.rendertaxPaidALL})
-        this.tempColunms.push({title:"实缴滞纳金",key:"overduePaymentAll",render:this.renderoverduePaymentAll})
-        this.tempColunms.push({title:"实缴纳税款",render:this.renderSJXJ})
-      }
+      this.tempColunms=[]
+        switch (tempTaxType) {
+          case "PAID":
+          this.tempColunms.push({title:"实缴税金",key:"taxPaidALL",render:this.rendertaxPaidALL})
+          this.tempColunms.push({title:"实缴纳税款",render:this.renderSJXJ})
+            break;
+          case "LATEFEE":
+          this.tempColunms.push({title:"实缴滞纳金",key:"overduePaymentAll",render:this.renderoverduePaymentAll})
+          this.tempColunms.push({title:"实缴纳税款",render:this.renderSJXJ})
+            break;
+          default:
+          this.tempColunms.push({title:"实缴税金",key:"taxPaidALL",render:this.rendertaxPaidALL})
+          this.tempColunms.push({title:"实缴滞纳金",key:"overduePaymentAll",render:this.renderoverduePaymentAll})
+          this.tempColunms.push({title:"实缴纳税款",render:this.renderSJXJ})
+        }
       for(let i=0;i<val.length;i++) {
         this.tempColunms.push({
             title:val[i].label,
