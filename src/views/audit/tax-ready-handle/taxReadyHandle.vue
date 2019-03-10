@@ -112,7 +112,7 @@
           <main v-if="tableList.length>0">
              <table width="1182" height="625" class="taxesTables">
                 <tbody>
-                  <tr>
+                  <tr id="page1">
                   <td colspan="12" width="1124" style="text-align:center;font-size:22px;font-weight:bold;">税金申请表单</td>
                 </tr>
                 <tr>
@@ -146,10 +146,10 @@
                   <td width="80">应缴滞纳金</td>
                   <td width="100">申请缴纳税款</td>
                   <td width="100">缴款截止日期</td>
-                  <td width="80">实缴税额</td>
-                  <td width="80">实缴滞纳金</td>
-                  <td width="100">实际缴纳税款</td>
-                  <td width="100">实际缴纳时间</td>
+                  <td width="80" v-if="tableList[0].currentLink!='reportPaid'">实缴税额</td>
+                  <td width="80" v-if="tableList[0].currentLink!='reportPaid'">实缴滞纳金</td>
+                  <td width="100" v-if="tableList[0].currentLink!='reportPaid'">实际缴纳税款</td>
+                  <td width="100" v-if="tableList[0].currentLink!='reportPaid'">实际缴纳时间</td>
                   <td width="100">附件</td>
                   <td width="120">备注</td>
                 </tr>
@@ -160,10 +160,10 @@
                   <td >{{`${item.lateFeePayable && item.lateFeePayable.toFixed(2)}` }}</td>
                   <td >{{`${(item.payableTax+item.lateFeePayable).toFixed(2)}`}}</td>
                   <td >{{`${item.deadline && new Date(item.deadline).format()}`}}</td>
-                  <td >{{`${item.taxPaid && item.taxPaid.toFixed(2)}`}}</td>
-                  <td>{{`${item.overduePayment && item.overduePayment.toFixed(2)}`}}</td>
-                  <td>{{`${(item.taxPaid + item.overduePayment).toFixed(2)}`}}</td>
-                  <td >{{ `${item.paymentTime ? new Date(item.paymentTime).format(): ''}` }}</td>
+                  <td v-if="tableList[0].currentLink!='reportPaid'">{{`${item.taxPaid && item.taxPaid.toFixed(2)}`}}</td>
+                  <td v-if="tableList[0].currentLink!='reportPaid'">{{`${item.overduePayment && item.overduePayment.toFixed(2)}`}}</td>
+                  <td v-if="tableList[0].currentLink!='reportPaid'">{{`${(item.taxPaid + item.overduePayment).toFixed(2)}`}}</td>
+                  <td v-if="tableList[0].currentLink!='reportPaid'">{{ `${item.paymentTime ? new Date(item.paymentTime).format(): ''}` }}</td>
                   <td >
                     <span class="myspan" @click="handleupLoad(tableList[0],index)">资料补全</span>
                   </td>
@@ -176,14 +176,14 @@
                   <td >{{ lateFeePayableALL }}</td>
                   <td >{{ applTaxPaymentAll }}</td>
                   <td ></td>
-                  <td >{{ taxPaidAll }}</td>
-                  <td >{{ overduePaymentAll }}</td>
-                  <td >{{ actualTaxPayment }}</td>
-                  <td ></td>
-                  <td ></td>
-                  <td></td>
+                  <td v-if="tableList[0].currentLink!='reportPaid'">{{ taxPaidAll }}</td>
+                  <td v-if="tableList[0].currentLink!='reportPaid'">{{ overduePaymentAll }}</td>
+                  <td v-if="tableList[0].currentLink!='reportPaid'">{{ actualTaxPayment }}</td>
+                  <td v-if="tableList[0].currentLink!='reportPaid'"></td>
+                  <td v-if="tableList[0].currentLink!='reportPaid'"></td>
+                  <td v-if="tableList[0].currentLink!='reportPaid'"></td>
                 </tr>
-                <tr class="centerHeight">
+                <tr class="centerHeight" >
                   <td ></td>
                   <td ></td>
                   <td ></td>
@@ -192,39 +192,39 @@
                   <td ></td>
                   <td ></td>
                   <td ></td>
-                  <td ></td>
-                  <td ></td>
-                  <td ></td>
-                  <td ></td>
+                  <td v-if="tableList[0].currentLink!='reportPaid'"></td>
+                  <td v-if="tableList[0].currentLink!='reportPaid'"></td>
+                  <td v-if="tableList[0].currentLink!='reportPaid'"></td>
+                  <td v-if="tableList[0].currentLink!='reportPaid'"></td>
                 </tr>
-                <tr class="center">
-                  <td ></td>
-                  <td >任务</td>
-                  <td >角色名称</td>
-                  <td >姓名</td>
-                  <td >审批结果</td>
-                  <td >意见</td>
-                  <td >审批时间</td>
-                  <td ></td>
-                  <td ></td>
-                  <td ></td>
-                  <td ></td>
-                  <td ></td>
-                </tr>
-                <tr class="center"  v-for="row in shenpiyijian" :key="row.id">
-                  <td ></td>
-                  <td >{{row.taskName}}</td>
-                  <td >{{row.roleName}}</td>
-                  <td >{{row.name}}</td>
-                  <td >{{row.auditResult}}</td>
-                  <td >{{row.advice}}</td>
-                  <td >{{`${row.auditDate && new Date(row.auditDate).format()}`}}</td>
-                  <td ></td>
-                  <td ></td>
-                  <td ></td>
-                  <td ></td>
-                  <td ></td>
-                </tr>
+                  <tr class="center" >
+                    <td ></td>
+                    <td >任务</td>
+                    <td >角色名称</td>
+                    <td >姓名</td>
+                    <td >审批结果</td>
+                    <td >意见</td>
+                    <td >审批时间</td>
+                    <td ></td>
+                    <td v-if="tableList[0].currentLink!='reportPaid'"></td>
+                    <td v-if="tableList[0].currentLink!='reportPaid'"></td>
+                    <td v-if="tableList[0].currentLink!='reportPaid'"></td>
+                    <td v-if="tableList[0].currentLink!='reportPaid'"></td>
+                  </tr>
+                  <tr class="center"  v-for="row in shenpiyijian" :key="row.id">
+                    <td ></td>
+                    <td >{{row.taskName}}</td>
+                    <td >{{row.roleName}}</td>
+                    <td >{{row.name}}</td>
+                    <td >{{row.auditResult}}</td>
+                    <td >{{row.advice}}</td>
+                    <td >{{`${row.auditDate && new Date(row.auditDate).format()}`}}</td>
+                    <td ></td>
+                    <td v-if="tableList[0].currentLink!='reportPaid'"></td>
+                    <td v-if="tableList[0].currentLink!='reportPaid'"></td>
+                    <td v-if="tableList[0].currentLink!='reportPaid'"></td>
+                    <td v-if="tableList[0].currentLink!='reportPaid'"></td>
+                  </tr>
               </tbody>
               </table>
           </main>
@@ -620,7 +620,20 @@ export default {
     },
     // 打印
     handleDayin() {
-      window.print();
+      var printStr = "<html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'></head><body >";
+      var content = "";
+
+      var str = document.getElementById('page1').innerHTML;     //获取需要打印的页面元素 ，page1元素设置样式page-break-after:always，意思是从下一行开始分割。
+      content = content + str;
+      str = document.getElementById('page2').innerHTML;     //获取需要打印的页面元素
+      content = content + str;
+
+          printStr = printStr+content+"</body></html>";
+          var pwin=window.open("Print.htm","print"); //如果是本地测试，需要先新建Print.htm，如果是在域中使用，则不需要
+          pwin.document.write(printStr);
+          pwin.document.close();                   //这句很重要，没有就无法实现
+          pwin.print();
+      // window.print();
     },
     filterMethod (value, option) {
           return option.toUpperCase().indexOf(value.toUpperCase()) !== -1;
