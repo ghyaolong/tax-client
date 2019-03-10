@@ -491,13 +491,13 @@ export default {
               tempObj[keys].map((items,indexs)=>{
                 if(this.searchForm.taxType=="PAID") {
                   tempValue += parseFloat(items.taxPaid)
-                  item[key] = tempValue === 0 ? "": tempValue.toFixed(2)
+                  item[key] = (tempValue === 0 ? "": tempValue.toFixed(2))
                 }else if(this.searchForm.taxType=="LATEFEE") {
                   tempValue += parseFloat(items.overduePayment)
-                  item[key] = tempValue === 0 ? "": tempValue.toFixed(2)
+                  item[key] = (tempValue === 0 ? "": tempValue.toFixed(2))
                 }else{
                   tempValue += parseFloat(items.taxPaid) + parseFloat(items.overduePayment)
-                  item[key] = tempValue === 0 ? "":tempValue.toFixed(2)
+                  item[key] = (tempValue === 0 ? "":tempValue.toFixed(2))
                   console.log("asdasd",item[key])
                 }
               })
@@ -509,6 +509,14 @@ export default {
 
       })
       console.log("submit",submit)
+      submit.forEach((item,index)=>{
+        for(let key in item) {
+          if(item[key]==0) {
+            item[key]=""
+          }
+          // console.log("key",key)
+        }
+      })
        return submit
     }
   },
