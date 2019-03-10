@@ -136,8 +136,12 @@
                 <tr>
                   <td width="82" >财务报表</td>
                   <td colspan="5" style="border-right-color:#fff">{{tableList[0].oriName}}</td>
-                  <td style="border-right-color:#fff" class="myspan" @click="priviewFile(tableList[0].financialReportPath)">预览</td>
-                  <td class="myspan" @click.stop="uploadFile(tableList[0].financialReportPath)">下载</td>
+                  <td>
+                    <span style="border-right-color:#fff" class="myspan" @click="priviewFile(tableList[0].financialReportPath)">预览</span>
+                    <span class="myspan" @click.stop="uploadFile(tableList[0].financialReportPath)">下载</span>
+                  </td>
+                  <!-- <td style="border-right-color:#fff" class="myspan" @click="priviewFile(tableList[0].financialReportPath)">预览</td>
+                  <td class="myspan" @click.stop="uploadFile(tableList[0].financialReportPath)">下载</td> -->
                 </tr>
                 <tr>
                   <td width="82">所属期间</td>
