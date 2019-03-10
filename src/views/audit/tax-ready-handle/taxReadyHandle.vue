@@ -14,6 +14,10 @@
 .uploadFile-input {
   width: 200px;
 }
+.my-button {
+  float: left;
+  width: 100px;
+}
 </style>
 
 <template>
@@ -225,6 +229,8 @@
               </table>
           </main>
           <footer class="vertical-center" slot="footer">
+            <Button v-if="this.tempInfoValue.currentLink=='reportPaid'"  class="my-button" @click="handleDayin">打印</Button>
+            <!-- <Button v-if="this.tempInfoValue.currentLink=='reportPaid'"  class="my-button" @click="handleExport">导出</Button> -->
             <Button style="width: 100px;" @click="fileInfoFormCancel">取消</Button>
             <Button type="primary" style="width: 100px;margin-left:20px" @click="fileUploadFormSubmit" v-if="currentLinkType=='uploadPayFile'">提交</Button>
             <Button type="primary" style="width: 100px;margin-left:20px" @click="fileInfoFormCancel" v-if="currentLinkType!='uploadPayFile'">确定</Button>
@@ -603,6 +609,19 @@ export default {
     //     }
     //   }
     // },
+    // 导出
+    handleExport(){
+        console.log("this.exportObj",this.tempInfoValue)
+        let procInstId = this.tempInfoValue.procInstId
+        let userId = this.userInfo.id
+        window.location.href=`/api/process/exportExcel/${procInstId}/${userId}`
+        // window.open(`process/exportExcel/${procInstId}/${userId}`)
+        // exportExcel({procInstId:procInstId,userId:userId})
+    },
+    // 打印
+    handleDayin() {
+      window.print();
+    },
     filterMethod (value, option) {
           return option.toUpperCase().indexOf(value.toUpperCase()) !== -1;
     },
