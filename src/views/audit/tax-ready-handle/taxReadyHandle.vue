@@ -112,7 +112,7 @@
           <main v-if="tableList.length>0">
              <table width="1182" height="625" class="taxesTables">
                 <tbody>
-                  <tr id="page1">
+                <tr >
                   <td colspan="12" width="1124" style="text-align:center;font-size:22px;font-weight:bold;">税金申请表单</td>
                 </tr>
                 <tr>
@@ -632,20 +632,20 @@ export default {
     },
     // 打印
     handleDayin() {
-      // var printStr = "<html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'></head><body >";
-      // var content = "";
-      //
-      // var str = document.getElementById('page1').innerHTML;     //获取需要打印的页面元素 ，page1元素设置样式page-break-after:always，意思是从下一行开始分割。
-      // content = content + str;
-      // str = document.getElementById('page2').innerHTML;     //获取需要打印的页面元素
-      // content = content + str;
-      //
-      //     printStr = printStr+content+"</body></html>";
-      //     var pwin=window.open("Print.htm","print"); //如果是本地测试，需要先新建Print.htm，如果是在域中使用，则不需要
-      //     pwin.document.write(printStr);
-      //     pwin.document.close();                   //这句很重要，没有就无法实现
-      //     pwin.print();
-      window.print();
+      var printStr = "<html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'></head><body >";
+      var content = "";
+
+      var str = document.getElementById('page1').innerHTML;     //获取需要打印的页面元素 ，page1元素设置样式page-break-after:always，意思是从下一行开始分割。
+      content = content + str;
+      str = document.getElementById('page2').innerHTML;     //获取需要打印的页面元素
+      content = content + str;
+
+          printStr = printStr+content+"</body></html>";
+          var pwin=window.open("Print.htm","print"); //如果是本地测试，需要先新建Print.htm，如果是在域中使用，则不需要
+          pwin.document.write(printStr);
+          pwin.document.close();                   //这句很重要，没有就无法实现
+          pwin.print();
+      // window.print();
     },
     filterMethod (value, option) {
           return option.toUpperCase().indexOf(value.toUpperCase()) !== -1;

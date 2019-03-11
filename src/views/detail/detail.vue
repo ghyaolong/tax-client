@@ -25,7 +25,7 @@
             </Form-item>
             <Form-item label="税金类型" prop="taxType" >
               <Select v-model="searchForm.taxType" style="width:200px" @on-change="selectTaxTypeOnchange">
-                <Option value="ALL">实缴税金/实缴滞纳金</Option>
+                <Option value="ALL">实际缴纳税款</Option>
                 <Option value="PAID">实缴税金</Option>
                 <Option value="LATEFEE">实缴滞纳金</Option>
               </Select>
@@ -220,16 +220,16 @@ export default {
       switch (val) {
         case "PAID":
         this.tempColunms.push({title:"实缴税金",key:"taxPaidALL",render:this.rendertaxPaidALL})
-        this.tempColunms.push({title:"实缴纳税款",render:this.renderSJXJ})
+        this.tempColunms.push({title:"实际缴纳税款",render:this.renderSJXJ})
           break;
         case "LATEFEE":
         this.tempColunms.push({title:"实缴滞纳金",key:"overduePaymentAll",render:this.renderoverduePaymentAll})
-        this.tempColunms.push({title:"实缴纳税款",render:this.renderSJXJ})
+        this.tempColunms.push({title:"实际缴纳税款",render:this.renderSJXJ})
           break;
         default:
         this.tempColunms.push({title:"实缴税金",key:"taxPaidALL",render:this.rendertaxPaidALL})
         this.tempColunms.push({title:"实缴滞纳金",key:"overduePaymentAll",render:this.renderoverduePaymentAll})
-        this.tempColunms.push({title:"实缴纳税款",render:this.renderSJXJ})
+        this.tempColunms.push({title:"实际缴纳税款",render:this.renderSJXJ})
       }
       for(let i=0;i<tempTaxList.length;i++) {
         this.tempColunms.push({
@@ -246,16 +246,16 @@ export default {
         switch (tempTaxType) {
           case "PAID":
           this.tempColunms.push({title:"实缴税金",key:"taxPaidALL",render:this.rendertaxPaidALL})
-          this.tempColunms.push({title:"实缴纳税款",render:this.renderSJXJ})
+          this.tempColunms.push({title:"实际缴纳税款",render:this.renderSJXJ})
             break;
           case "LATEFEE":
           this.tempColunms.push({title:"实缴滞纳金",key:"overduePaymentAll",render:this.renderoverduePaymentAll})
-          this.tempColunms.push({title:"实缴纳税款",render:this.renderSJXJ})
+          this.tempColunms.push({title:"实际缴纳税款",render:this.renderSJXJ})
             break;
           default:
           this.tempColunms.push({title:"实缴税金",key:"taxPaidALL",render:this.rendertaxPaidALL})
           this.tempColunms.push({title:"实缴滞纳金",key:"overduePaymentAll",render:this.renderoverduePaymentAll})
-          this.tempColunms.push({title:"实缴纳税款",render:this.renderSJXJ})
+          this.tempColunms.push({title:"实际缴纳税款",render:this.renderSJXJ})
         }
       for(let i=0;i<val.length;i++) {
         this.tempColunms.push({
