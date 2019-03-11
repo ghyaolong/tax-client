@@ -298,14 +298,15 @@ export default {
     },
     // 渲染税金小计合计
     renderSJXJ(h,params) {
+      debugger;
       if(params.row.taxPaidALL || params.row.overduePaymentAll) {
-        let tempAll = parseFloat(params.row.taxPaidALL) + parseFloat(params.row.overduePaymentAll)
+        let tempAll = parseFloat(params.row.taxPaidALL==""?0:params.row.taxPaidALL) + parseFloat(params.row.overduePaymentAll==""?0:params.row.overduePaymentAll)
         return h('div', tempAll.toFixed(2))
       }else{
         var tempSubmit=0
         this.data.map((item,index)=>{
           if(item.taxPaidALL || item.overduePaymentAll) {
-            tempSubmit += parseFloat(item.taxPaidALL) + parseFloat(item.overduePaymentAll)
+            tempSubmit += parseFloat(item.taxPaidALL==""?0:item.taxPaidALL) + parseFloat(item.overduePaymentAll==""?0:item.overduePaymentAll)
           }
         })
         return h('div', tempSubmit.toFixed(2))
