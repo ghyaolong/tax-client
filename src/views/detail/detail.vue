@@ -220,15 +220,15 @@ export default {
       switch (val) {
         case "PAID":
         this.tempColunms.push({title:"实缴税金",key:"taxPaidALL",render:this.rendertaxPaidALL})
-        this.tempColunms.push({title:"实际缴纳税款",render:this.renderSJXJ})
+        // this.tempColunms.push({title:"实际缴纳税款",render:this.renderSJXJ})
           break;
         case "LATEFEE":
         this.tempColunms.push({title:"实缴滞纳金",key:"overduePaymentAll",render:this.renderoverduePaymentAll})
-        this.tempColunms.push({title:"实际缴纳税款",render:this.renderSJXJ})
+        // this.tempColunms.push({title:"实际缴纳税款",render:this.renderSJXJ})
           break;
         default:
-        this.tempColunms.push({title:"实缴税金",key:"taxPaidALL",render:this.rendertaxPaidALL})
-        this.tempColunms.push({title:"实缴滞纳金",key:"overduePaymentAll",render:this.renderoverduePaymentAll})
+        // this.tempColunms.push({title:"实缴税金",key:"taxPaidALL",render:this.rendertaxPaidALL})
+        // this.tempColunms.push({title:"实缴滞纳金",key:"overduePaymentAll",render:this.renderoverduePaymentAll})
         this.tempColunms.push({title:"实际缴纳税款",render:this.renderSJXJ})
       }
       for(let i=0;i<tempTaxList.length;i++) {
@@ -246,15 +246,15 @@ export default {
         switch (tempTaxType) {
           case "PAID":
           this.tempColunms.push({title:"实缴税金",key:"taxPaidALL",render:this.rendertaxPaidALL})
-          this.tempColunms.push({title:"实际缴纳税款",render:this.renderSJXJ})
+          // this.tempColunms.push({title:"实际缴纳税款",render:this.renderSJXJ})
             break;
           case "LATEFEE":
           this.tempColunms.push({title:"实缴滞纳金",key:"overduePaymentAll",render:this.renderoverduePaymentAll})
-          this.tempColunms.push({title:"实际缴纳税款",render:this.renderSJXJ})
+          // this.tempColunms.push({title:"实际缴纳税款",render:this.renderSJXJ})
             break;
           default:
-          this.tempColunms.push({title:"实缴税金",key:"taxPaidALL",render:this.rendertaxPaidALL})
-          this.tempColunms.push({title:"实缴滞纳金",key:"overduePaymentAll",render:this.renderoverduePaymentAll})
+          // this.tempColunms.push({title:"实缴税金",key:"taxPaidALL",render:this.rendertaxPaidALL})
+          // this.tempColunms.push({title:"实缴滞纳金",key:"overduePaymentAll",render:this.renderoverduePaymentAll})
           this.tempColunms.push({title:"实际缴纳税款",render:this.renderSJXJ})
         }
       for(let i=0;i<val.length;i++) {
