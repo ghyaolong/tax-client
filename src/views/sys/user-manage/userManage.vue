@@ -397,6 +397,7 @@ export default {
       this.$refs.searchForm.resetFields();
       this.searchForm.pageNumber = 1;
       this.searchForm.pageSize = 10;
+      this.eCode= ""
       this.selectDate = null;
       this.searchForm.startDate = "";
       this.searchForm.endDate = "";
@@ -431,7 +432,24 @@ export default {
     },
     handleDropdown(name) {
       if (name === "refresh") {
-        this.getUserList();
+        this.loading = true;
+          let params = {
+            pageVo: {
+              pageNumber: 1,
+              pageSize: 10
+            },
+            userVo: {
+            },
+            searchVo: {
+
+            }
+          }
+        getUserListData(params).then(res => {
+          this.loading = false;
+          this.data = res.data.list;
+          this.total = res.data.totalElements;
+          this.searchForm.pageNumber=1
+        });
       }
     },
     cancelUser() {

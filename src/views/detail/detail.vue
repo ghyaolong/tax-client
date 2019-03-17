@@ -343,6 +343,11 @@ export default {
       this.selectDateTime=""  // 实缴时期
       this.disabledDateTaxPeriod=false
       this.disabledDateTime=false
+      // getDetail({}).then((res)=>{
+      //   // this.data= res.data
+      //   // this.tempColunms=[]
+      //   this.data=[]
+      // })
     },
     // 获取国家
     getAllCountry() {
