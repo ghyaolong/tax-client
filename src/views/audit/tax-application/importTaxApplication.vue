@@ -64,17 +64,18 @@
             </Select>
           </Form-item> -->
           <br/>
-          <!-- <Form-item label="财务报表" prop="financialReportPath">
+          <Form-item label="财务报表" prop="financialReportPath">
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
+            accept=fileTypeString
             name="file" :data="{materialTypeDict: 'FINANCE_REPORT',taxDict:'none',currency:selectCurrencyCode}"
             :show-upload-list="false" :on-success="financeUploadSuc" class="upload-box" >
               <Input type="text" readonly v-model="form.fileName" />
               <Button icon="ios-cloud-upload-outline">上传文件</Button>
             </Upload>
-            <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg 文件</span>
-          </Form-item> -->
+            <span style="color:red">只能上传 {{fileTypeString}} 文件</span>
+          </Form-item>
+          <Button @click="delFileCWBB" >删除财务报表</Button>
         </Form>
         <Spin size="large" fix v-if="loading"></Spin>
       </Row>
@@ -92,7 +93,7 @@
       </Row>
     </Card>
     </Col>
-    <!-- <Modal
+    <Modal
         v-model="showUploadModal"
         width="600"
         @on-ok="uploadModalOk"
@@ -101,46 +102,46 @@
           <FormItem label="预申报表">
             <Upload action="/api/file/upload"
             style="float:left"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
+            accept="fileTypeString"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'PRE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc" ref="updateFile">
               <Input type="text" readonly v-model="fileUploadForm.preTaxReturnsPathFileName" />
-              <Button icon="ios-cloud-upload-outline" v-if="isCommissioner">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline" >{{`${fileUploadForm.preTaxReturnsPathFileName?"已上传":"上传文件"}`}}</Button>
             </Upload>
-            <Button  v-if="isCommissioner" @click="handleDelFile">删除</Button>
+            <!-- <Button  @click.stop="delFiles(fileUploadForm.preTaxReturnsPath,'01')">删除</Button> -->
           </FormItem>
-          <FormItem label="申报表" v-if="routeType === 'taxReplenishments'">
+          <FormItem label="申报表">
             <Upload action="/api/file/upload"
             style="float:left"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
-            :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
+            accept="fileTypeString"
+            :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.taxReturnsPathFileName" />
-              <Button icon="ios-cloud-upload-outline"  v-if="isCommissioner">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline" >{{`${fileUploadForm.taxReturnsPathFileName?"已上传":"上传文件"}`}}</Button>
             </Upload>
-            <Button  v-if="isCommissioner" >删除</Button>
+            <Button  @click.stop="delFiles(fileUploadForm.taxReturnsPath,'1')">删除</Button>
           </FormItem>
-          <FormItem label="完税申报表" v-if="routeType === 'taxReplenishments'">
+          <FormItem label="完税申报表" >
             <Upload action="/api/file/upload"
             style="float:left"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
-            :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'DONE_TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
+            accept="fileTypeString"
+            :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'DONE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.paymentCertificatePathFileName" />
-              <Button icon="ios-cloud-upload-outline"  v-if="isCommissioner">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline" >{{`${fileUploadForm.paymentCertificatePathFileName?"已上传":"上传文件"}`}}</Button>
             </Upload>
-            <Button  v-if="isCommissioner">删除</Button>
+            <Button  @click.stop="delFiles(fileUploadForm.paymentCertificatePath,'2')">删除</Button>
           </FormItem>
-          <FormItem label="其它" v-if="routeType === 'taxReplenishments'">
+          <FormItem label="其它" >
             <Upload action="/api/file/upload"
             style="float:left"
-            accept=".doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg"
-            :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'OTHER'}" :show-upload-list="false" :on-success="uploadSuc">
+            accept="fileTypeString"
+            :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'OTHER',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.otherUploadFileName" />
-              <Button icon="ios-cloud-upload-outline"  v-if="isCommissioner">上传文件</Button>
+              <Button icon="ios-cloud-upload-outline"  >{{`${fileUploadForm.otherUploadFileName?"已上传":"上传文件"}`}}</Button>
             </Upload>
-            <Button  v-if="isCommissioner">删除</Button>
+            <Button  @click.stop="delFiles(fileUploadForm.otherUploadId,'3')">删除</Button>
           </FormItem>
       </Form>
-      <span style="color:red">只能上传 .doc, .xlsx, .xls,.ppt,.docx,.pptx,.zip,.rar,.7-zip,.PDF,.jpg,.png,.jpeg 文件</span>
-    </Modal> -->
+     <span style="color:red">只能上传 {{fileTypeString}} 文件</span>
+    </Modal>
     <Modal
       v-model="taxModal"
       title="注意!"
@@ -182,6 +183,7 @@ export default {
       fileName: '',
       filePath: '',
       operationLoading: false,
+      fileTypeString:getStore('fileTypeString'),
       accessToken: getStore('accessToken'),
       isCommissioner:getStore('isCommissioner'),
       showUploadModal: false,
@@ -315,71 +317,71 @@ export default {
           //   return h('div', "")
           // }
         },
-        // {
-        //   title: '附件',
-        //   key: "taxReturns",
-        //   align: 'center',
-        //   width: 180,
-        //   render: (h, params) => {
-        //     return h("div", [
-        //         h(
-        //           "Button",
-        //           {
-        //             props: {
-        //               type: "primary",
-        //               size: "small"
-        //             },
-        //             style: {
-        //               marginRight: "5px"
-        //             },
-        //             on: {
-        //               click: () => {
-        //                 const that=this
-        //                 let item = this.data[params.index];
-        //                 let {preTaxReturns,
-        //                     preTaxReturnsPath,
-        //                     preTaxReturnsPathFileName,
-        //                     taxReturns,
-        //                     taxReturnsPath,
-        //                     taxReturnsPathFileName,
-        //                     paymentCertificate,
-        //                     paymentCertificatePath,
-        //                     paymentCertificatePathFileName,
-        //                     otherUploadId,
-        //                     otherUpload,
-        //                     otherUploadFileName
-        //                     } = item;
-        //                 this.fileUploadForm = {
-        //                   uploadColomunIndex: params.index,
-        //                   preTaxReturns,
-        //                   preTaxReturnsPath,
-        //                   preTaxReturnsPathFileName,
-        //                   taxReturns,
-        //                   taxReturnsPath,
-        //                   taxReturnsPathFileName,
-        //                   paymentCertificate,
-        //                   paymentCertificatePath,
-        //                   paymentCertificatePathFileName,
-        //                   otherUploadId,
-        //                   otherUpload: otherUpload,
-        //                   otherUploadFileName,
-        //                 }
-        //                 if(item.taxDict=="" || that.selectCurrencyCode=="") {
-        //                   this.$Message.warning("请选择税种和币种");
-        //                 }else{
-        //                   this.colSelectCurrencyCode =item.taxDict
-        //                   this.delFileNameIndex = params.index
-        //                   this.delFileName = item
-        //                   this.showUploadModal = true;
-        //                 }
-        //               }
-        //             }
-        //           },
-        //           "上传"
-        //         ),
-        //       ]);
-        //   }
-        // },
+        {
+          title: '附件',
+          key: "taxReturns",
+          align: 'center',
+          width: 180,
+          render: (h, params) => {
+            return h("div", [
+                h(
+                  "Button",
+                  {
+                    props: {
+                      type: "primary",
+                      size: "small"
+                    },
+                    style: {
+                      marginRight: "5px"
+                    },
+                    on: {
+                      click: () => {
+                        const that=this
+                        let item = this.data[params.index];
+                        let {preTaxReturns,
+                            preTaxReturnsPath,
+                            preTaxReturnsPathFileName,
+                            taxReturns,
+                            taxReturnsPath,
+                            taxReturnsPathFileName,
+                            paymentCertificate,
+                            paymentCertificatePath,
+                            paymentCertificatePathFileName,
+                            otherUploadId,
+                            otherUpload,
+                            otherUploadFileName
+                            } = item;
+                        this.fileUploadForm = {
+                          uploadColomunIndex: params.index,
+                          preTaxReturns,
+                          preTaxReturnsPath,
+                          preTaxReturnsPathFileName,
+                          taxReturns,
+                          taxReturnsPath,
+                          taxReturnsPathFileName,
+                          paymentCertificate,
+                          paymentCertificatePath,
+                          paymentCertificatePathFileName,
+                          otherUploadId,
+                          otherUpload: otherUpload,
+                          otherUploadFileName,
+                        }
+                        if(item.taxDict=="" || that.selectCurrencyCode=="") {
+                          this.$Message.warning("请选择税种和币种");
+                        }else{
+                          this.colSelectCurrencyCode =item.taxDict
+                          this.delFileNameIndex = params.index
+                          this.delFileName = item
+                          this.showUploadModal = true;
+                        }
+                      }
+                    }
+                  },
+                  "上传"
+                ),
+              ]);
+          }
+        },
         {
           title: '备注',
           key: "remarks",
@@ -431,6 +433,141 @@ export default {
     //     }
     //   }
     // },
+        // 删除财务报表
+    delFileCWBB() {
+      const that=this
+      if(this.form.financialReportPath!="") {
+        delFile(this.form.financialReportPath).then((res)=>{
+          if(res.status==0) {
+            that.$Message.success(res.data)
+            this.form.financialReport = "";
+            this.form.financialReportPath = "";
+            this.form.fileName = ""
+          }else{
+            that.$Message.error(res.errMsg)
+          }
+        })
+      }else{
+        this.$Message.error("没有文件!")
+      }
+
+    },
+      delFiles(filepath,type) {
+      const that= this
+      var indexs = this.fileUploadForm.uploadFileIndex;
+      // 申报表
+      if(type=="1") {
+        if(filepath){
+          delFile(filepath).then((res)=>{
+            if(res.status==0) {
+              that.$Message.success(res.data)
+              that.fileUploadForm.taxReturns = ""
+              that.fileUploadForm.taxReturnsPath =""
+              that.fileUploadForm.taxReturnsPathFileName =""
+              that.dataDetils.details[indexs].taxReturns = ""
+              that.dataDetils.details[indexs].taxReturnsPath = ""
+              that.dataDetils.details[indexs].taxReturnsPathFileName = ""
+              that.fileUploadForm.uploadColomunIndex=""
+              that.$forceUpdate()
+            }else{
+              that.$Message.error(res.errMsg)
+            }
+          })
+        }else if(this.fileUploadForm.taxReturnsPath){
+          if(res.status==0) {
+            that.$Message.success(res.data)
+            that.fileUploadForm.taxReturns = ""
+            that.fileUploadForm.taxReturnsPath =""
+            that.fileUploadForm.taxReturnsPathFileName =""
+            that.dataDetils.details[indexs].taxReturns = ""
+            that.dataDetils.details[indexs].taxReturnsPath = ""
+            that.dataDetils.details[indexs].taxReturnsPathFileName = ""
+            that.$forceUpdate()
+          }else{
+            that.$Message.error(res.errMsg)
+          }
+        }else{
+          this.$Message.error("没有文件")
+        }
+      }
+      // 完税申报表
+      if(type=="2") {
+        if(filepath){
+          delFile(filepath).then((res)=>{
+            if(res.status==0) {
+              that.$Message.success(res.data)
+              that.fileUploadForm.paymentCertificate = ""
+              that.fileUploadForm.paymentCertificatePath =""
+              that.fileUploadForm.paymentCertificatePathFileName =""
+              that.dataDetils.details[indexs].paymentCertificate = ""
+              that.dataDetils.details[indexs].paymentCertificatePath = ""
+              that.dataDetils.details[indexs].paymentCertificatePathFileName = ""
+              that.fileUploadForm.uploadColomunIndex=""
+              that.$forceUpdate()
+            }else{
+              that.$Message.error(res.errMsg)
+            }
+          })
+        }else if(this.fileUploadForm.paymentCertificatePath){
+          if(res.status==0) {
+            that.$Message.success(res.data)
+            that.fileUploadForm.paymentCertificate = ""
+            that.fileUploadForm.paymentCertificatePath =""
+            that.fileUploadForm.paymentCertificatePathFileName =""
+            that.dataDetils.details[indexs].paymentCertificate = ""
+            that.dataDetils.details[indexs].paymentCertificatePath = ""
+            that.dataDetils.details[indexs].paymentCertificatePathFileName = ""
+            that.$forceUpdate()
+          }else{
+            that.$Message.error(res.errMsg)
+          }
+        }else{
+          this.$Message.error("没有文件")
+        }
+      }
+
+
+      // 其他
+      if(type=="3") {
+        if(filepath){
+          delFile(filepath).then((res)=>{
+            if(res.status==0) {
+              that.$Message.success(res.data)
+              this.fileUploadForm.otherUpload = ""
+              this.fileUploadForm.otherUploadId =""
+              this.fileUploadForm.otherUploadFileName=""
+              this.dataDetils.details[indexs].otherUpload = ""
+              this.dataDetils.details[indexs].otherUploadId = ""
+              this.dataDetils.details[indexs].otherUploadFileName = ""
+              that.fileUploadForm.uploadColomunIndex=""
+              that.$forceUpdate()
+            }else{
+              that.$Message.error(res.errMsg)
+            }
+          })
+        }else if(this.fileUploadForm.otherUploadId){
+          if(res.status==0) {
+            that.$Message.success(res.data)
+            this.fileUploadForm.otherUpload = ""
+            this.fileUploadForm.otherUploadId =""
+            this.fileUploadForm.otherUploadFileName=""
+            this.fileUploadForm.otherUpload = ""
+            this.fileUploadForm.otherUploadId =""
+            this.fileUploadForm.otherUploadFileName=""
+            this.dataDetils.details[indexs].otherUpload = ""
+            this.dataDetils.details[indexs].otherUploadId = ""
+            this.dataDetils.details[indexs].otherUploadFileName = ""
+            that.$forceUpdate()
+          }else{
+            that.$Message.error(res.errMsg)
+          }
+        }else{
+          this.$Message.error("没有文件")
+        }
+      }
+
+
+    },
     // 确定
     taxModalOk() {
       this.loading = true;
@@ -536,15 +673,15 @@ export default {
       }
 
       // 税种与申报表
-      // var tempString=""
-      // let preTaxReturnsVerity = params.details.some(item => {
-      //   tempString= item.taxDict
-      //   return !item.preTaxReturns;
-      // });
-      // if (preTaxReturnsVerity) {
-      //   this.$Message.error('请上传'+   `${this.dictTaxCategorysMap.get(tempString)}`  +'的预申报表!');
-      //   return;
-      // }
+      var tempString=""
+      let preTaxReturnsVerity = params.details.some(item => {
+        tempString= item.taxDict
+        return !item.preTaxReturns;
+      });
+      if (preTaxReturnsVerity) {
+        this.$Message.error('请上传'+   `${this.dictTaxCategorysMap.get(tempString)}`  +'的预申报表!');
+        return;
+      }
 
 
       // payableTax 应缴税额
@@ -552,7 +689,7 @@ export default {
       // taxPaid  实缴税额
       // overduePayment 实缴滞纳金
       this.data.map((item,index)=>{
-        if(item.payableTax!=item.taxPaid || item.taxPaid!=item.overduePayment){
+        if(item.payableTax!=item.taxPaid || item.lateFeePayable!=item.overduePayment){
           this.taxModal=true
           params.status=6
           this.tempPatams=params

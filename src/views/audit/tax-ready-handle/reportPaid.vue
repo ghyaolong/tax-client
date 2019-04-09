@@ -42,8 +42,10 @@
     <Modal
         :closable="false"
         class-name="preview-modal-inline"
+        width=600       
         v-model="showUploadModal">
-        <Form label-position="left" :label-width="100" :modal="fileUploadForm" :rules="fileUploadFormRules" ref="showUploadRefs">
+      <div>
+          <Form label-position="left" :label-width="100" :modal="fileUploadForm" :rules="fileUploadFormRules" ref="showUploadRefs">
           <FormItem label="预申报表" prop="preTaxReturnsPath">
             <Input type="text" disabled v-model="fileUploadForm.preTaxReturnsPathFileName" style="width:150px;float:left"/>
             <Button   @click.stop="priviewFile(fileUploadForm.preTaxReturnsPath)">预览</Button>
@@ -89,6 +91,7 @@
             <Button  @click.stop="uploadFile(fileUploadForm.otherUploadId)">下载</Button>
           </FormItem>
       </Form>
+      </div>
       <footer class="vertical-center" slot="footer">
           <Button style="width: 100px;"  @click="fileuploadFormCancel">取消</Button>
           <Button type="primary" style="width: 100px;margin-left:20px" @click="tempSubmitOk" >确定</Button>
@@ -176,7 +179,9 @@ export default {
             align: 'center',
             render:(h,params) => {
               if(params.row.taxPeriod) {
-                return h('div', params.row.taxPeriod)
+                let tempDate = params.row.taxPeriod.split("-")
+                let submitDate = tempDate[0]+"-"+tempDate[1]
+                return h('div', submitDate)
               }
             }
             // render: this.renderSelect
@@ -191,17 +196,23 @@ export default {
           },
           {
             title: '应缴税额',
-            key: "payableTax",
+            //key: "payableTax",
             align: 'center',
             width: 120,
             // render: this.renderPayableTax
+            render:(h,params)=>{ 
+              return h("div",params.row.payableTax?`${parseFloat(params.row.payableTax)}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1"):0)
+            }
           },
           {
             title: '应缴滞纳金',
-            key: "lateFeePayable",
+            //key: "lateFeePayable",
             align: 'center',
             width: 120,
-            // render: this.renderInput
+            render:(h,params)=>{
+              return h("div",params.row.lateFeePayable?`${parseFloat(params.row.lateFeePayable)}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1"):0)
+            }
+            //render: this.renderInput
           },
           {
             title: '申请缴纳税款',
@@ -211,10 +222,10 @@ export default {
             render: (h, params) => {
               return h('div', {
                 domProps: {
-                  innerText: parseFloat(params.row.payableTax) + parseFloat(params.row.lateFeePayable)
+                  innerText: `${parseFloat(params.row.payableTax) + parseFloat(params.row.lateFeePayable)}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1")
                 }
               })
-              return h('div', parseFloat(this.data[params.index].payableTax) + parseFloat(this.data[params.index].lateFeePayable))
+              return h('div', `${parseFloat(this.data[params.index].payableTax) + parseFloat(this.data[params.index].lateFeePayable)}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1"))
             }
           },
           {
@@ -767,9 +778,11 @@ export default {
     var  overduePayment=0 //实缴滞纳金合计
     var  taxsjsk=0 // 实际缴纳税款合计
     for(let i=0;i<this.details.length;i++) {
-        payableTaxALL+=this.details[i].payableTax
-        lateFeePayable+=this.details[i].lateFeePayable
-        applTaxPayment=payableTaxALL+lateFeePayable
+        // payableTaxALL+=this.details[i].payableTax
+        payableTaxALL+= this.details[i].payableTax? parseFloat(`${this.details[i].payableTax}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1")) :0
+        lateFeePayable+=this.details[i].lateFeePayable ? parseFloat(`${this.details[i].lateFeePayable}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1")):0
+        applTaxPayment=parseFloat(payableTaxALL)+parseFloat(lateFeePayable)
+
         taxPaid=parseFloat(taxPaid)
         overduePayment=parseFloat(overduePayment)
         taxPaid+=this.details[i].taxPaid ? parseFloat(`${this.details[i].taxPaid}`.replace(/([0-9]+\.[0-9]{2})[0-9]*/,"$1")) : 0
@@ -777,9 +790,9 @@ export default {
         taxsjsk=parseFloat(taxPaid)+parseFloat(overduePayment)
     }
     // console.log("taxsjsk",taxsjsk)
-    document.getElementById("payableTaxALL").innerHTML=payableTaxALL
-    document.getElementById("lateFeePayable").innerHTML=lateFeePayable
-    document.getElementById("applTaxPayment").innerHTML=applTaxPayment
+    document.getElementById("payableTaxALL").innerHTML=payableTaxALL.toFixed(2)
+    document.getElementById("lateFeePayable").innerHTML=lateFeePayable.toFixed(2)
+    document.getElementById("applTaxPayment").innerHTML=applTaxPayment.toFixed(2)
     document.getElementById("taxPaid").innerHTML=taxPaid.toFixed(2)
     document.getElementById("overduePayment").innerHTML=overduePayment.toFixed(2)
     document.getElementById("taxsjsk").innerHTML=taxsjsk.toFixed(2)
