@@ -98,8 +98,8 @@
         width="600"
         @on-ok="uploadModalOk"
         @on-cancel="uploadModalCancel">
-        <Form label-position="left" :label-width="100">
-          <FormItem label="预申报表">
+        <Form label-position="left" :label-width="100" :rules="fileUploadFormRules" :modal="fileUploadForm">
+          <FormItem label="预申报表" prop="preTaxReturnsPath">
             <Upload action="/api/file/upload"
             style="float:left"
             accept="fileTypeString"
@@ -109,7 +109,7 @@
             </Upload>
             <!-- <Button  @click.stop="delFiles(fileUploadForm.preTaxReturnsPath,'01')">删除</Button> -->
           </FormItem>
-          <FormItem label="申报表">
+          <FormItem label="申报表" prop="taxReturnsPath">
             <Upload action="/api/file/upload"
             style="float:left"
             accept="fileTypeString"
@@ -119,7 +119,7 @@
             </Upload>
             <Button  @click.stop="delFiles(fileUploadForm.taxReturnsPath,'1')">删除</Button>
           </FormItem>
-          <FormItem label="完税申报表" >
+          <FormItem label="完税申报表" prop="paymentCertificatePath">
             <Upload action="/api/file/upload"
             style="float:left"
             accept="fileTypeString"
@@ -187,6 +187,7 @@ export default {
       accessToken: getStore('accessToken'),
       isCommissioner:getStore('isCommissioner'),
       showUploadModal: false,
+      
       form: {
         companyId: '',
         companyName: '',
@@ -401,9 +402,15 @@ export default {
       selectCount: 0,
       fileUploadForm: {
         uploadColomunIndex: null,
-        taxReturns: '',
-        paymentCertificate: '',
-        otherUploadId: ''
+        preTaxReturns:"",
+        preTaxReturnsPath:"",
+        taxReturns:"",
+        taxReturnsPath:'',
+        paymentCertificate:"",
+        paymentCertificatePath:"",
+        otherUpload:"",
+        otherUploadId:"",
+        index:""
       },
       routeType: '',
       payableTaxALL:0, // 应缴税额合计
@@ -416,7 +423,12 @@ export default {
       dictTaxCategorysMap:"",
       delFileName:"",
       delFileNameIndex:"",
-      tempPatams:null
+      tempPatams:null,
+      fileUploadFormRules:{
+        preTaxReturnsPath:[{required:true,message:"请上传",trigger: 'blur'}],
+        taxReturnsPath:[{required:true,message:"请上传",trigger: 'blur'}],
+        paymentCertificatePath:[{required:true,message:"请上传",trigger: 'blur'}],
+      },
     }
   },
   methods: {
@@ -672,17 +684,38 @@ export default {
         return;
       }
 
-      // 税种与申报表
+      // 税种与预申报表
       var tempString=""
-      let preTaxReturnsVerity = params.details.some(item => {
+      let preTaxReturnsVerity1 = params.details.some(item => {
         tempString= item.taxDict
         return !item.preTaxReturns;
       });
-      if (preTaxReturnsVerity) {
+      if (preTaxReturnsVerity1) {
         this.$Message.error('请上传'+   `${this.dictTaxCategorysMap.get(tempString)}`  +'的预申报表!');
         return;
       }
+      debugger
+      // 申报表
+      var tempStringTaxReturns=""
+      let preTaxReturnsVerity2 = params.details.some(item => {
+        tempStringTaxReturns= item.taxDict
+        return !item.taxReturns;
+      });
+      if (preTaxReturnsVerity2) {
+        this.$Message.error('请上传'+   `${this.dictTaxCategorysMap.get(tempStringTaxReturns)}`  +'的申报表!');
+        return;
+      }
 
+      // 完税申报表
+      var tempStringPaymentCertificate=""
+      let preTaxReturnsVerity3 = params.details.some(item => {
+        tempStringPaymentCertificate= item.taxDict
+        return !item.paymentCertificate;
+      });
+      if (preTaxReturnsVerity3) {
+        this.$Message.error('请上传'+   `${this.dictTaxCategorysMap.get(tempStringPaymentCertificate)}`  +'的完税申报表!');
+        return;
+      }
 
       // payableTax 应缴税额
       // lateFeePayable  应缴滞纳金

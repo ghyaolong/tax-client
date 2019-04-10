@@ -9,7 +9,7 @@
   }
 }
 .upload-box .ivu-upload-select {
-  width: 200px;
+  width: 500px;
 }
 .uploadFile-input {
   width: 200px;
