@@ -104,7 +104,7 @@
             style="float:left"
             accept="fileTypeString"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'PRE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc" ref="updateFile">
-              <Input type="text" readonly v-model="fileUploadForm.preTaxReturnsPathFileName" />
+              <Input type="text" readonly v-model="fileUploadForm.preTaxReturnsPathFileName" disabled/>
               <Button icon="ios-cloud-upload-outline" >{{`${fileUploadForm.preTaxReturnsPathFileName?"已上传":"上传文件"}`}}</Button>
             </Upload>
             <!-- <Button  @click.stop="delFiles(fileUploadForm.preTaxReturnsPath,'01')">删除</Button> -->
@@ -114,7 +114,7 @@
             style="float:left"
             accept="fileTypeString"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc">
-              <Input type="text" readonly v-model="fileUploadForm.taxReturnsPathFileName" />
+              <Input type="text" readonly v-model="fileUploadForm.taxReturnsPathFileName" disabled/>
               <Button icon="ios-cloud-upload-outline" >{{`${fileUploadForm.taxReturnsPathFileName?"已上传":"上传文件"}`}}</Button>
             </Upload>
             <Button  @click.stop="delFiles(fileUploadForm.taxReturnsPath,'1')">删除</Button>
@@ -124,7 +124,7 @@
             style="float:left"
             accept="fileTypeString"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'DONE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc">
-              <Input type="text" readonly v-model="fileUploadForm.paymentCertificatePathFileName" />
+              <Input type="text" readonly v-model="fileUploadForm.paymentCertificatePathFileName" disabled/>
               <Button icon="ios-cloud-upload-outline" >{{`${fileUploadForm.paymentCertificatePathFileName?"已上传":"上传文件"}`}}</Button>
             </Upload>
             <Button  @click.stop="delFiles(fileUploadForm.paymentCertificatePath,'2')">删除</Button>
@@ -134,7 +134,7 @@
             style="float:left"
             accept="fileTypeString"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'OTHER',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc">
-              <Input type="text" readonly v-model="fileUploadForm.otherUploadFileName" />
+              <Input type="text" readonly v-model="fileUploadForm.otherUploadFileName" disabled/>
               <Button icon="ios-cloud-upload-outline"  >{{`${fileUploadForm.otherUploadFileName?"已上传":"上传文件"}`}}</Button>
             </Upload>
             <Button  @click.stop="delFiles(fileUploadForm.otherUploadId,'3')">删除</Button>
