@@ -9,9 +9,9 @@
     width: 59%;
     margin-right: 10px;
   }
-  .upload-box .ivu-upload-select {
-    width: 500px;
-  }
+  // .upload-box .ivu-upload-select {
+  //   width: 500px;
+  // }
   .preview-modal-inline .ivu-input-wrapper {
     width: 70%;
     margin-right: 10px;
@@ -28,6 +28,11 @@
   }
   .ivu-input-number-input {
     text-align: center !important;
+  }
+  .loading {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto;
   }
 </style>
 <template>
@@ -71,16 +76,20 @@
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}"
             :accept="fileTypeString"
+            :on-progress="financeUploadPending"
             name="file" :data="{materialTypeDict: 'FINANCE_REPORT',taxDict:'none',currency:selectCurrencyCode}"
             :show-upload-list="false" :on-success="financeUploadSuc" class="upload-box" >
-              <Input type="text" readonly v-model="form.fileName" />
+              <Input type="text" readonly v-model="form.fileName" style="width:200px"/>
               <Button icon="ios-cloud-upload-outline">上传财务报表</Button>
             </Upload>
             <span style="color:red">只能上传 {{fileTypeString}} 文件</span>
           </Form-item>
+          <Button   @click.stop="priviewFile(form.financialReportPath)">预览</Button>
           <Button @click="delFileCWBB" >删除财务报表</Button>
         </Form>
-        <Spin size="large" fix v-if="loading"></Spin>
+        <div  v-if="loading" class="loading">
+          <img src="../../../assets/loading.gif" width="100%" height="100%"/>
+        </div>
       </Row>
       <Row class="operation">
         <!-- <Button @click="delAll" icon="md-trash">批量删除</Button> -->
@@ -113,17 +122,19 @@
             <Upload action="/api/file/upload"
             style="float:left"
             :accept="fileTypeString"
+            :on-progress="financeUploadPending"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'PRE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc" ref="updateFile">
               <Input type="text" readonly v-model="fileUploadForm.preTaxReturnsPathFileName" />
               <Button icon="ios-cloud-upload-outline" v-if="isCommissioner">{{`${fileUploadForm.preTaxReturnsPathFileName?"已上传":"上传文件"}`}}</Button>
-              <!-- <Button v-if="fileUploadForm.preTaxReturns" @click.stop="filePriview(fileUploadForm.preTaxReturnsPath)">预览</Button> -->
             </Upload>
+            <Button   @click.stop="priviewFile(fileUploadForm.preTaxReturnsPath)">预览</Button>
             <Button  v-if="isCommissioner" @click="handleDelFile">删除</Button>
           </FormItem>
           <FormItem label="申报表" v-if="routeType === 'taxReplenishments'">
             <Upload action="/api/file/upload"
             style="float:left"
             :accept="fileTypeString"
+            :on-progress="financeUploadPending"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.taxReturnsPathFileName" />
               <Button icon="ios-cloud-upload-outline" v-if="isCommissioner">{{`${fileUploadForm.taxReturnsPathFileName?"已上传":"上传文件"}`}}</Button>
@@ -135,6 +146,7 @@
             <Upload action="/api/file/upload"
             style="float:left"
             :accept="fileTypeString"
+            :on-progress="financeUploadPending"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'DONE_TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.paymentCertificatePathFileName" />
               <Button icon="ios-cloud-upload-outline"  v-if="isCommissioner">{{`${fileUploadForm.paymentCertificatePathFileName?"已上传":"上传文件"}`}}</Button>
@@ -146,6 +158,7 @@
             <Upload action="/api/file/upload"
             style="float:left"
             :accept="fileTypeString"
+            :on-progress="financeUploadPending"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'OTHER'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.otherUploadFileName" />
               <Button icon="ios-cloud-upload-outline"  v-if="isCommissioner">{{`${fileUploadForm.otherUploadFileName?"已上传":"上传文件"}`}}</Button>
@@ -156,6 +169,7 @@
       </Form>
       <span style="color:red">只能上传 {{fileTypeString}} 文件</span>
     </Modal>
+    <Spin size="large" fix v-show="spinShow"></Spin>
   </Row>
 </template>
 
@@ -172,6 +186,7 @@ import {
   resSubmit,
   getFileType
 } from '@/api/index'
+import fileLoadPath from '@/api/fileload';
 import { dictType } from '@/libs/constance.js'
 import { getStore } from '@/libs/storage';
 import Cookies from "js-cookie";
@@ -181,6 +196,7 @@ export default {
   name: 'taxApplication',
   data() {
     return {
+      spinShow:false,
       selectCurrencyCode:"", // 选择的税种code
       colSelectCurrencyCode:"", // 行选择的税种code
       fileTypeString:getStore('fileTypeString'),
@@ -425,6 +441,10 @@ export default {
     }
   },
   methods: {
+    // 上传文件
+    financeUploadPending(event, file, fileList) {
+      this.spinShow=true
+    },
     // 删除财务报表
     delFileCWBB() {
       const that=this
@@ -903,8 +923,10 @@ export default {
     /* 财务报表上传成功 */
     financeUploadSuc(res) {
       if (res && res.status == 1) {
+        this.spinShow=false
         return this.$Message.error(res.errMsg);
       }else{
+        this.spinShow=false
         this.$Message.info("操作成功");
         this.form.financialReport = res.data.id;
         this.form.financialReportPath = res.data.fileName;
@@ -915,8 +937,10 @@ export default {
     /* 税金申请 - 文件上传 */
     uploadSuc(res) {
       if (res && res.status == 1) {
+        this.spinShow=false
         return this.$Message.error(res.errMsg);
       }else{
+        this.spinShow=false
         this.$Message.info("操作成功");
         let key = {
           'PRE_TAX_REPORT': 'preTaxReturns',
@@ -934,6 +958,38 @@ export default {
           this.fileUploadForm[key + 'Path' + 'FileName'] = res.data.oriName
         }
       }
+    },
+    priviewFile(v) {
+        console.log("v",v)
+        const that = this;
+        if(v){
+          let lastString = v.lastIndexOf(".")
+          let filelastName = v.substr(lastString+1)
+          if(filelastName=="png" || filelastName=="jpg" || filelastName=="jpeg") {
+            let baseurl = fileLoadPath.loadFilePath
+            window.open(`${baseurl}${v}?view`)
+          }else{
+            let base="/api"
+            var xhr = new XMLHttpRequest();
+            xhr.responseType = "blob";
+              xhr.onreadystatechange = function(){
+                  if( xhr.readyState == 4){
+                      if( xhr.status >= 200 && xhr.status < 300 || xhr.status == 304){
+                        let blob = xhr.response
+                        let imgTag = URL.createObjectURL(blob)
+                        that.priviewFilePath=imgTag
+                        window.open(imgTag)
+                      }
+                  }
+              };
+              xhr.open("post",`${base}/previewFile`,true);
+              xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+              xhr.setRequestHeader("accessToken", this.accessToken);
+              xhr.send(JSON.stringify({fileName:v}));
+          }
+        }else{
+          this.$Message.error('没有上传文件!');
+        }
     },
     uploadModalOk() {
       let uploadColomunIndex = this.fileUploadForm.uploadColomunIndex;

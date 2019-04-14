@@ -8,7 +8,7 @@
 <template>
     <div class="search">
         <Row>
-          <Form ref="searchForm" :model="searchForm" inline :label-width="120" class="search-form">
+          <!-- <Form ref="searchForm" :model="searchForm" inline :label-width="120" class="search-form">
               <Form-item label="E编码" prop="eCode">
                 <Input type="text" v-model="searchForm.eCode" clearable placeholder="请输入E编码" style="width: 200px" :maxlength="20"/>
               </Form-item>
@@ -16,7 +16,7 @@
                 <Button @click="handleSearch" type="primary" icon="ios-search">搜索</Button>
                 <Button @click="handleResetSearch" >重置</Button>
               </Form-item>
-          </Form>
+          </Form> -->
             <Col>
                 <Card>
                     <Row class="operation">

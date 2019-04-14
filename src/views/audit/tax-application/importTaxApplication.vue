@@ -9,9 +9,9 @@
     width: 59%;
     margin-right: 10px;
   }
-  .upload-box .ivu-upload-select {
-    width: 500px;
-  }
+  // .upload-box .ivu-upload-select {
+  //   width: 500px;
+  // }
   .preview-modal-inline .ivu-input-wrapper {
     width: 70%;
     margin-right: 10px;
@@ -28,6 +28,11 @@
   }
   .ivu-input-number-input {
     text-align: center !important;
+  }
+  .loading {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto;
   }
 </style>
 <template>
@@ -68,6 +73,7 @@
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}"
             accept=fileTypeString
+            :on-progress="financeUploadPending"
             name="file" :data="{materialTypeDict: 'FINANCE_REPORT',taxDict:'none',currency:selectCurrencyCode}"
             :show-upload-list="false" :on-success="financeUploadSuc" class="upload-box" >
               <Input type="text" readonly v-model="form.fileName" />
@@ -77,7 +83,9 @@
           </Form-item>
           <Button @click="delFileCWBB" >删除财务报表</Button>
         </Form>
-        <Spin size="large" fix v-if="loading"></Spin>
+         <div  v-if="loading" class="loading">
+          <img src="../../../assets/loading.gif" width="100%" height="100%"/>
+        </div>
       </Row>
       <Row class="operation">
         <!-- <Button @click="delAll" icon="md-trash">批量删除</Button> -->
@@ -103,6 +111,7 @@
             <Upload action="/api/file/upload"
             style="float:left"
             accept="fileTypeString"
+            :on-progress="financeUploadPending"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'PRE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc" ref="updateFile">
               <Input type="text" readonly v-model="fileUploadForm.preTaxReturnsPathFileName" disabled/>
               <Button icon="ios-cloud-upload-outline" >{{`${fileUploadForm.preTaxReturnsPathFileName?"已上传":"上传文件"}`}}</Button>
@@ -113,6 +122,7 @@
             <Upload action="/api/file/upload"
             style="float:left"
             accept="fileTypeString"
+            :on-progress="financeUploadPending"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.taxReturnsPathFileName" disabled/>
               <Button icon="ios-cloud-upload-outline" >{{`${fileUploadForm.taxReturnsPathFileName?"已上传":"上传文件"}`}}</Button>
@@ -123,6 +133,7 @@
             <Upload action="/api/file/upload"
             style="float:left"
             accept="fileTypeString"
+            :on-progress="financeUploadPending"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'DONE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.paymentCertificatePathFileName" disabled/>
               <Button icon="ios-cloud-upload-outline" >{{`${fileUploadForm.paymentCertificatePathFileName?"已上传":"上传文件"}`}}</Button>
@@ -133,6 +144,7 @@
             <Upload action="/api/file/upload"
             style="float:left"
             accept="fileTypeString"
+            :on-progress="financeUploadPending"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'OTHER',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.otherUploadFileName" disabled/>
               <Button icon="ios-cloud-upload-outline"  >{{`${fileUploadForm.otherUploadFileName?"已上传":"上传文件"}`}}</Button>
@@ -149,6 +161,7 @@
       @on-cancel="taxModalCancel">
       <p>应缴税额和实缴税额,应缴滞纳金和实缴滞纳金。金额不相等,是否继续提交?</p>
     </Modal>
+    <Spin size="large" fix v-show="spinShow"></Spin>
   </Row>
 </template>
 
@@ -187,7 +200,7 @@ export default {
       accessToken: getStore('accessToken'),
       isCommissioner:getStore('isCommissioner'),
       showUploadModal: false,
-      
+      spinShow:false,
       form: {
         companyId: '',
         companyName: '',
@@ -432,6 +445,10 @@ export default {
     }
   },
   methods: {
+    //文件上传Load
+    financeUploadPending(){
+      this.spinShow=true
+    },
     // 文件上传之前文件大小校验
     // finleBeforeUpload(file) {
     //   // console.log(file)
@@ -1067,8 +1084,10 @@ export default {
     /* 财务报表上传成功 */
     financeUploadSuc(res) {
       if (res && res.status == 1) {
+        this.spinShow=false
         return this.$Message.error(res.errMsg);
       }else{
+        this.spinShow=false
         this.$Message.info("操作成功");
         this.form.financialReport = res.data.id;
         this.form.financialReportPath = res.data.fileName;
@@ -1079,8 +1098,10 @@ export default {
     /* 税金申请 - 文件上传 */
     uploadSuc(res) {
       if (res && res.status == 1) {
+        this.spinShow=false
         return this.$Message.error(res.errMsg);
       }else{
+        this.spinShow=false
         this.$Message.info("操作成功");
         let key = {
           'PRE_TAX_REPORT': 'preTaxReturns',

@@ -56,6 +56,7 @@
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}" name="file"
             :accept="fileTypeString"
+            :on-progress="financeUploadPending"
             :data="{materialTypeDict: 'TAX_REPORT',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
               <Button icon="ios-cloud-upload-outline">{{`${fileUploadForm.taxReturnsPathFileName?"已上传":"上传文件"}`}}</Button>
@@ -69,6 +70,7 @@
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}" name="file"
             :accept="fileTypeString"
+            :on-progress="financeUploadPending"
             :data="{materialTypeDict: 'DONE_TAX_REPORT',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
               <Button icon="ios-cloud-upload-outline">{{`${fileUploadForm.paymentCertificatePathFileName?"已上传":"上传文件"}`}}</Button>
@@ -82,6 +84,7 @@
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}" name="file"
             :accept="fileTypeString"
+            :on-progress="financeUploadPending"
             :data="{materialTypeDict: 'OTHER',taxDict:colSelectCurrencyCode,currency:selectCurrencyCode}" :show-upload-list="false"
             :on-success="uploadSuc" style="float:left">
               <Button icon="ios-cloud-upload-outline">{{`${fileUploadForm.otherUploadFileName?"已上传":"上传文件"}`}}</Button>
@@ -108,6 +111,9 @@
       @on-cancel="taxModalCancel">
       <p>应缴税额和实缴税额,应缴滞纳金和实缴滞纳金。金额不相等,是否继续提交?</p>
     </Modal>
+    <div  v-if="loading" class="loading"> 
+          <img src="../../../assets/loading.gif" width="100%" height="100%"/>
+     </div>
   </div>
 </template>
 
@@ -121,6 +127,7 @@ import { dictType } from '@/libs/constance.js'
 export default {
   data() {
     return {
+      spinShow:false,
       taxModal:false,
       dataDetils:{},
       details:[],
@@ -340,7 +347,9 @@ export default {
     }
   },
   methods:{
-
+    financeUploadPending(){
+      this.spinShow=true
+    },
     delFiles(filepath,type) {
       const that= this
       var indexs = this.fileUploadForm.uploadFileIndex;
@@ -479,21 +488,26 @@ export default {
       this.showUploadModal=false
     },
     uploadSuc(res) {
-      console.log('1231231',res)
-      let key = {
-        'PRE_TAX_REPORT': 'preTaxReturns',
-        'TAX_REPORT': 'taxReturns',
-        'DONE_TAX_REPORT': 'paymentCertificate',
-        'OTHER': 'otherUpload'
-      }[res.data.materialTypeDict];
-      if(res.data.materialTypeDict=="OTHER") {
-        this.fileUploadForm[key] = res.data.id;
-        this.fileUploadForm[key + 'Id'] = res.data.fileName;
-        this.fileUploadForm[key + 'FileName'] = res.data.oriName;
+       if (res && res.status == 1) {
+        this.spinShow=false
+        return this.$Message.error(res.errMsg);
       }else{
-        this.fileUploadForm[key] = res.data.id;
-        this.fileUploadForm[key + 'Path'] = res.data.fileName;
-        this.fileUploadForm[key + 'Path' + 'FileName'] = res.data.oriName
+          this.spinShow=false
+        let key = {
+          'PRE_TAX_REPORT': 'preTaxReturns',
+          'TAX_REPORT': 'taxReturns',
+          'DONE_TAX_REPORT': 'paymentCertificate',
+          'OTHER': 'otherUpload'
+        }[res.data.materialTypeDict];
+        if(res.data.materialTypeDict=="OTHER") {
+          this.fileUploadForm[key] = res.data.id;
+          this.fileUploadForm[key + 'Id'] = res.data.fileName;
+          this.fileUploadForm[key + 'FileName'] = res.data.oriName;
+        }else{
+          this.fileUploadForm[key] = res.data.id;
+          this.fileUploadForm[key + 'Path'] = res.data.fileName;
+          this.fileUploadForm[key + 'Path' + 'FileName'] = res.data.oriName
+        }
       }
     },
     // 确定
@@ -833,4 +847,9 @@ export default {
 .auditLogVoList {
   margin-top: 10px;
 }
+  .loading {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto;
+  }
 </style>
