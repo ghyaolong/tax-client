@@ -111,7 +111,7 @@
       @on-cancel="taxModalCancel">
       <p>应缴税额和实缴税额,应缴滞纳金和实缴滞纳金。金额不相等,是否继续提交?</p>
     </Modal>
-    <div  v-if="loading" class="loading"> 
+    <div  v-if="spinShow" class="loading"> 
           <img src="../../../assets/loading.gif" width="100%" height="100%"/>
      </div>
   </div>

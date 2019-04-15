@@ -83,7 +83,7 @@
           </Form-item>
           <Button @click="delFileCWBB" >删除财务报表</Button>
         </Form>
-         <div  v-if="loading" class="loading">
+         <div  v-if="spinShow" class="loading">
           <img src="../../../assets/loading.gif" width="100%" height="100%"/>
         </div>
       </Row>

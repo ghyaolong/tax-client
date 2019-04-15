@@ -8,9 +8,9 @@
     top: 0;
   }
 }
-.upload-box .ivu-upload-select {
-  width: 500px;
-}
+// .upload-box .ivu-upload-select {
+//   width: 500px;
+// }
 .uploadFile-input {
   width: 200px;
 }

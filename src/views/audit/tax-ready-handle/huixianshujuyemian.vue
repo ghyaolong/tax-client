@@ -9,9 +9,9 @@
     width: 59%;
     margin-right: 10px;
   }
-  .upload-box .ivu-upload-select {
-    width: 500px;
-  }
+  // .upload-box .ivu-upload-select {
+  //   width: 500px; 
+  // }
   .preview-modal-inline .ivu-input-wrapper {
     width: 70%;
     margin-right: 10px;
@@ -28,6 +28,11 @@
   }
   .ivu-input-number-input {
     text-align: center !important;
+  }
+    .loading {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto;
   }
 </style>
 <template>
@@ -71,10 +76,11 @@
             <Upload action="/api/file/upload"
             :headers="{accessToken: accessToken}"
             :accept="fileTypeString"
+            :on-progress="financeUploadPending"
             name="file" :data="{materialTypeDict: 'FINANCE_REPORT',taxDict:'none',currency:selectCurrencyCode}"
             :show-upload-list="false" :on-success="financeUploadSuc" class="upload-box">
-              <Input type="text" readonly v-model="form.fileName" />
-              <Button icon="ios-cloud-upload-outline">上传财务报表</Button>
+              <Input type="text" readonly v-model="form.fileName" style="width:200px"/>
+              <Button icon="ios-cloud-upload-outline">{{`${form.financialReport?"已上传":"上传财务报表"}`}}</Button>
               <!-- <span style="padding-left: 10px;" v-if="form.financialReport">已上传</span> -->
             </Upload>
             <span style="color:red">只能上传 {{fileTypeString}} 文件</span>
@@ -101,11 +107,14 @@
     <Modal
         v-model="showUploadModal"
         @on-ok="uploadModalOk"
+        width=600
         @on-cancel="uploadModalCancel">
         <Form label-position="left" :label-width="100">
           <FormItem label="预申报表">
             <Upload action="/api/file/upload"
             :accept="fileTypeString"
+            style="float:left"
+            :on-progress="financeUploadPending"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'PRE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.preTaxReturnsPathFileName" />
               <Button icon="ios-cloud-upload-outline">{{`${fileUploadForm.preTaxReturnsPathFileName?"已上传":"上传文件"}`}}</Button>
@@ -177,6 +186,9 @@
         footer-hide>
         <iframe style="width: 100%; height: 600px;" :src="filePath" frameborder="0"></iframe>
     </Modal>
+     <div  v-if="spinShow" class="loading"> 
+          <img src="../../../assets/loading.gif" width="100%" height="100%"/>
+     </div>
   </Row>
 </template>
 
@@ -438,7 +450,8 @@ export default {
       overduePayment:0, //实缴滞纳金合计
       taxsjsk:0, // 实缴税款合计
       userInfo:{},
-      dictTaxCategorysMap:""
+      dictTaxCategorysMap:"",
+      spinShow:false
     }
   },
   methods: {
@@ -455,6 +468,11 @@ export default {
     //     }
     //   }
     // },
+
+    financeUploadPending(){
+      this.spinShow=true
+    },
+
     // 删除预申报表
     handleDelFile() {
       const that=this
@@ -629,6 +647,8 @@ export default {
                 remarks: '',
               }]
         this.$Message.success('操作成功')
+        this.$store.commit("removeTag","resubmit")
+      this.$router.push({name: 'tax-ready-handle'});
       }).finally(()=>{
         this.loading = false;
       })
@@ -743,6 +763,8 @@ export default {
                 taxReturns: '',
                 remarks: '',
               }]
+      this.$store.commit("removeTag","resubmit")
+      this.$router.push({name: 'tax-ready-handle'});
       }).finally(() => {
         this.loading = false;
       })
@@ -1094,8 +1116,11 @@ export default {
     /* 财务报表上传成功 */
     financeUploadSuc(res) {
       if (res && res.status == 1) {
+        this.spinShow=false
         return this.$Message.error(res.errMsg);
       }else{
+        this.spinShow=false
+        this.$Message.success("操作成功");
         this.form.financialReport = res.data.id;
         this.form.financialReportPath = res.data.fileName;
         this.form.fileName = res.data.oriName
@@ -1105,8 +1130,10 @@ export default {
     /* 税金申请 - 文件上传 */
     uploadSuc(res) {
       if (res && res.status == 1) {
+        this.spinShow=false
         return this.$Message.error(res.errMsg);
       }else{
+        this.spinShow=false
         let key = {
           'PRE_TAX_REPORT': 'preTaxReturns',
           'TAX_REPORT': 'taxReturns',
