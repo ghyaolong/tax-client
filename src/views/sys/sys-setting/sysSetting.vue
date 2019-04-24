@@ -32,6 +32,7 @@
 
 <script>
 import {getAllSysConfig,editSysConfig} from '@/api/index'
+import { setStore } from '@/libs/storage';
 export default{
   data(){
     return {
@@ -49,7 +50,7 @@ export default{
           width: 60,
           align: 'center'
         },{
-          title:"参数",
+          title:"参数", 
           align: 'center',
           key:"property"
         },{
@@ -96,6 +97,9 @@ export default{
         if(res.status==0){
           this.$Message.success("修改成功")
           this.inint()
+          if(this.formItem.property=="fileSize"){
+            setStore("fileTypeSize",this.formItem.propertyValue)
+          }
         }else{
           this.$Message.error(res.errMsg)
         }

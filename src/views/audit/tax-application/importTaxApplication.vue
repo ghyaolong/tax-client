@@ -74,6 +74,7 @@
             :headers="{accessToken: accessToken}"
             accept=fileTypeString
             :on-progress="financeUploadPending"
+            :before-upload="finleBeforeUpload"
             name="file" :data="{materialTypeDict: 'FINANCE_REPORT',taxDict:'none',currency:selectCurrencyCode}"
             :show-upload-list="false" :on-success="financeUploadSuc" class="upload-box" >
               <Input type="text" readonly v-model="form.fileName" />
@@ -112,6 +113,7 @@
             style="float:left"
             accept="fileTypeString"
             :on-progress="financeUploadPending"
+            :before-upload="finleBeforeUpload"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'PRE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc" ref="updateFile">
               <Input type="text" readonly v-model="fileUploadForm.preTaxReturnsPathFileName" disabled/>
               <Button icon="ios-cloud-upload-outline" >{{`${fileUploadForm.preTaxReturnsPathFileName?"已上传":"上传文件"}`}}</Button>
@@ -123,6 +125,7 @@
             style="float:left"
             accept="fileTypeString"
             :on-progress="financeUploadPending"
+            :before-upload="finleBeforeUpload"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.taxReturnsPathFileName" disabled/>
               <Button icon="ios-cloud-upload-outline" >{{`${fileUploadForm.taxReturnsPathFileName?"已上传":"上传文件"}`}}</Button>
@@ -134,6 +137,7 @@
             style="float:left"
             accept="fileTypeString"
             :on-progress="financeUploadPending"
+            :before-upload="finleBeforeUpload"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'DONE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.paymentCertificatePathFileName" disabled/>
               <Button icon="ios-cloud-upload-outline" >{{`${fileUploadForm.paymentCertificatePathFileName?"已上传":"上传文件"}`}}</Button>
@@ -145,6 +149,7 @@
             style="float:left"
             accept="fileTypeString"
             :on-progress="financeUploadPending"
+            :before-upload="finleBeforeUpload"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'OTHER',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.otherUploadFileName" disabled/>
               <Button icon="ios-cloud-upload-outline"  >{{`${fileUploadForm.otherUploadFileName?"已上传":"上传文件"}`}}</Button>
@@ -450,18 +455,18 @@ export default {
       this.spinShow=true
     },
     // 文件上传之前文件大小校验
-    // finleBeforeUpload(file) {
-    //   // console.log(file)
-    //   if(file) {
-    //     let fileSize= file.size
-    //     if(fileSize/1024/1024 >4 ) {
-    //       this.$Message.error('上传文件不能大于4MB');
-    //       return false
-    //     }else{
-    //       return true
-    //     }
-    //   }
-    // },
+    finleBeforeUpload(file) {
+      // console.log(file)
+      if(file) {
+        let fileSize= file.size
+        if(fileSize/1024/1024 >getStore('fileTypeSize') ) {
+          this.$Message.error('上传文件不能大于'+getStore('fileTypeSize')+"MB");
+          return false
+        }else{
+          return true
+        }
+      }
+    },
         // 删除财务报表
     delFileCWBB() {
       const that=this

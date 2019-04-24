@@ -77,6 +77,7 @@
             :headers="{accessToken: accessToken}"
             :accept="fileTypeString"
             :on-progress="financeUploadPending"
+            :before-upload="finleBeforeUpload"
             name="file" :data="{materialTypeDict: 'FINANCE_REPORT',taxDict:'none',currency:selectCurrencyCode}"
             :show-upload-list="false" :on-success="financeUploadSuc" class="upload-box" >
               <Input type="text" readonly v-model="form.fileName" style="width:200px"/>
@@ -123,6 +124,7 @@
             style="float:left"
             :accept="fileTypeString"
             :on-progress="financeUploadPending"
+            :before-upload="finleBeforeUpload"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'PRE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc" ref="updateFile">
               <Input type="text" readonly v-model="fileUploadForm.preTaxReturnsPathFileName" />
               <Button icon="ios-cloud-upload-outline" v-if="isCommissioner">{{`${fileUploadForm.preTaxReturnsPathFileName?"已上传":"上传文件"}`}}</Button>
@@ -135,6 +137,7 @@
             style="float:left"
             :accept="fileTypeString"
             :on-progress="financeUploadPending"
+            :before-upload="finleBeforeUpload"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.taxReturnsPathFileName" />
               <Button icon="ios-cloud-upload-outline" v-if="isCommissioner">{{`${fileUploadForm.taxReturnsPathFileName?"已上传":"上传文件"}`}}</Button>
@@ -147,6 +150,7 @@
             style="float:left"
             :accept="fileTypeString"
             :on-progress="financeUploadPending"
+            :before-upload="finleBeforeUpload"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'DONE_TAX_REPORT'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.paymentCertificatePathFileName" />
               <Button icon="ios-cloud-upload-outline"  v-if="isCommissioner">{{`${fileUploadForm.paymentCertificatePathFileName?"已上传":"上传文件"}`}}</Button>
@@ -159,6 +163,7 @@
             style="float:left"
             :accept="fileTypeString"
             :on-progress="financeUploadPending"
+            :before-upload="finleBeforeUpload"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'OTHER'}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.otherUploadFileName" />
               <Button icon="ios-cloud-upload-outline"  v-if="isCommissioner">{{`${fileUploadForm.otherUploadFileName?"已上传":"上传文件"}`}}</Button>
@@ -184,7 +189,7 @@ import {
   getReviewer,   // 获取当前登录用户的上级审核人
   previewFile,   // 文件预览
   resSubmit,
-  getFileType
+  getFileType,
 } from '@/api/index'
 import fileLoadPath from '@/api/fileload';
 import { dictType } from '@/libs/constance.js'
@@ -441,6 +446,19 @@ export default {
     }
   },
   methods: {
+       // 文件上传之前文件大小校验
+    finleBeforeUpload(file) {
+      // console.log(file)
+      if(file) {
+        let fileSize= file.size
+        if(fileSize/1024/1024 >getStore('fileTypeSize') ) {
+          this.$Message.error('上传文件不能大于'+getStore('fileTypeSize')+"MB");
+          return false
+        }else{
+          return true
+        }
+      }
+    },
     // 上传文件
     financeUploadPending(event, file, fileList) {
       this.spinShow=true

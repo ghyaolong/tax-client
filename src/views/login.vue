@@ -43,7 +43,8 @@ import {
   getJWT,
   sendSms,
   smsLogin,
-  getFileType
+  getFileType,
+  getAllSysConfig
 } from "@/api/index";
 import util from "@/libs/util.js";
 export default {
@@ -171,7 +172,17 @@ export default {
               getFileType("fileType").then((res)=>{
                 this.setStore("fileTypeString", res.data&&res.data.propertyValue);
               })
-
+              // 获取上传文件的大小设置
+              getAllSysConfig().then((res)=>{
+                if(res && res.data) {
+                  res.data.map((item,index)=>{
+                    console.log("item",item)
+                    if(item.property=="fileSize"){
+                       this.setStore("fileTypeSize", item.propertyValue);
+                    }
+                  })
+                }
+              })
             }).catch(err => {
               // this.showErrorMsg(err.errMsg);
             }).finally(() => {

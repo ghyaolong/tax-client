@@ -77,6 +77,7 @@
             :headers="{accessToken: accessToken}"
             :accept="fileTypeString"
             :on-progress="financeUploadPending"
+            :before-upload="finleBeforeUpload"
             name="file" :data="{materialTypeDict: 'FINANCE_REPORT',taxDict:'none',currency:selectCurrencyCode}"
             :show-upload-list="false" :on-success="financeUploadSuc" class="upload-box">
               <Input type="text" readonly v-model="form.fileName" style="width:200px"/>
@@ -115,6 +116,7 @@
             :accept="fileTypeString"
             style="float:left"
             :on-progress="financeUploadPending"
+            :before-upload="finleBeforeUpload"
             :headers="{accessToken: accessToken}" name="file" :data="{materialTypeDict: 'PRE_TAX_REPORT',currency:selectCurrencyCode,taxDict:colSelectCurrencyCode}" :show-upload-list="false" :on-success="uploadSuc">
               <Input type="text" readonly v-model="fileUploadForm.preTaxReturnsPathFileName" />
               <Button icon="ios-cloud-upload-outline">{{`${fileUploadForm.preTaxReturnsPathFileName?"已上传":"上传文件"}`}}</Button>
@@ -455,19 +457,19 @@ export default {
     }
   },
   methods: {
-    // 文件上传之前文件大小校验
-    // finleBeforeUpload(file) {
-    //   // console.log(file)
-    //   if(file) {
-    //     let fileSize= file.size
-    //     if(fileSize/1024/1024 >4 ) {
-    //       this.$Message.error('上传文件不能大于4MB');
-    //       return false
-    //     }else{
-    //       return true
-    //     }
-    //   }
-    // },
+       // 文件上传之前文件大小校验
+    finleBeforeUpload(file) {
+      // console.log(file)
+      if(file) {
+        let fileSize= file.size
+        if(fileSize/1024/1024 >getStore('fileTypeSize') ) {
+          this.$Message.error('上传文件不能大于'+getStore('fileTypeSize')+"MB");
+          return false
+        }else{
+          return true
+        }
+      }
+    },
 
     financeUploadPending(){
       this.spinShow=true
